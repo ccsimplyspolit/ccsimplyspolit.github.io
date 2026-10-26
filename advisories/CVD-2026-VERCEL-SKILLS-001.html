@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CVD-2026-VERCEL-SKILLS-001 — vercel-labs/skills</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0d1117; color: #c9d1d9; max-width: 920px; margin: 2rem auto; padding: 0 1.5rem; line-height: 1.6; }
+    h1, h2 { color: #58a6ff; border-bottom: 1px solid #30363d; padding-bottom: 0.3rem; }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; background: #161b22; color: #e6edf3; border-radius: 6px; }
+    pre { padding: 1rem; overflow-x: auto; border: 1px solid #30363d; }
+    .meta { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+    a { color: #58a6ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <p><a href="index.html">&larr; Back to Coordinated Vulnerability Disclosure Index</a></p>
+  <h1>CVD-2026-VERCEL-SKILLS-001: Arbitrary Host File and Directory Read/Inclusion via Unchecked Symlink Dereferencing in copyDirectory() in vercel-labs/skills</h1>
+  <div class="meta">
+    <p><strong>Researcher:</strong> Serhii Shunko (<a href="https://github.com/ccsimplyspolit">@ccsimplyspolit</a>)</p>
+    <p><strong>Repository:</strong> <a href="https://github.com/vercel-labs/skills">vercel-labs/skills</a></p>
+    <p><strong>HackerOne Program:</strong> <code>vercel</code> (Scope ID <code>1040821</code> — https://github.com/vercel-labs/skills)</p>
+    <p><strong>Affected Component:</strong> <code>src/installer.ts (lines 517-569)</code></p>
+    <p><strong>Weakness / Severity:</strong> <code>CWE-59 / CWE-61 / CWE-22</code> &middot; <strong>High (CVSS 8.2)</strong></p>
+  </div>
+  <h2>Summary</h2>
+  <p>I identified an arbitrary host file/directory inclusion vulnerability via unchecked symbolic link dereferencing in `vercel-labs/skills` (`src/installer.ts`, lines 517-569). When a user installs a skill from a Git repository (`npx skills add &lt;repo&gt;`), `installSkillForAgent()` invokes `copyDirectory(skill.path, canonicalDir, agentType)`. `copyDirectory()` calls `cp(srcPath, destPath, { dereference: true, recursive: true })` (and `readFile(srcPath, &#x27;utf-8&#x27;)` when `agentType === &#x27;eve&#x27;`) without verifying that symbolic links inside the cloned repository resolve within the skill&#x27;s root directory.</p>
+  <h2>Suggested Remediation Patch</h2>
+  <pre><code>--- a/src/installer.ts
++++ b/src/installer.ts
+@@ -1,4 +1,5 @@
+-async function copyDirectory(src: string, dest: string, agentType?: AgentType): Promise&lt;void&gt; {
++async function copyDirectory(src: string, dest: string, agentType?: AgentType, rootSrc: string = src): Promise&lt;void&gt; {
+   await mkdir(dest, { recursive: true });
++  const realRootSrc = await realpath(rootSrc).catch(() =&gt; resolve(rootSrc));
+ 
+   const entries = await readdir(src, { withFileTypes: true });
+</code></pre>
+  <h2>Impact</h2>
+  <p>Installing a third-party skill repository via `npx skills add` allows a malicious skill author to copy arbitrary files or directories from the developer&#x27;s machine (such as `~/.ssh/id_rsa`, `~/.aws/credentials`, `.env`, or `/etc/passwd`) into the project&#x27;s `.agents/skills/&lt;skill&gt;/` directory, where AI coding agents automatically load the file contents into LLM context or developers commit them to version control.</p>
+</body>
+</html>
