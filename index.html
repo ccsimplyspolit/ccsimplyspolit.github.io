@@ -275,7 +275,7 @@
       </div>
     </header>
 
-                <section id="disclosures">
+                    <section id="disclosures">
       <h2>0x00 // Coordinated Vulnerability Disclosures &amp; Server Input Audits</h2>
       <div class="embargo-banner">
         <strong>[CVD EMBARGO POLICY]</strong> Active vulnerability reports currently in vendor triage (<code>GHSA-*</code> and <code>CVD-2026-*</code>) are listed in this public registry by identifier, CWE classification, cryptographic SHA-256 specification commitment, and affected component scope only. Full technical advisories, reproduction harnesses, and remediation diffs are strictly withheld from public access until upstream patches are released and coordinated embargoes are lifted.
@@ -539,7 +539,7 @@
             <td><a href="/advisories/GHSA-cr23-59mg-h2rc.html"><code>GHSA-cr23-59mg-h2rc</code></a></td>
             <td><code>bacnet-stack/bacnet-stack</code></td>
             <td><code>CWE-125 / CWE-400 / CWE-787</code></td>
-            <td>Pre-Auth Infinite Loop / Heap Exhaustion (CWE-835 / CWE-400) and Out-of-Bounds Read (CWE-125) in Calendar_Write_Property() and Notification_Class_Write_Property()</td>
+            <td>Pre-Auth Infinite Loop / Heap Exhaustion (CWE-835 / CWE-400) and Out-of-Bounds Read/Write (CWE-125 / CWE-787) via Unchecked Negative Decode Lengths in Calendar_Write_Property() and Notification_Class_Write_Property()</td>
             <td><a href="/advisories/GHSA-cr23-59mg-h2rc.html"><span class="embargo-tag">Accepted (GHSA Draft — Fix PR #1595)</span></a></td>
           </tr>
           <tr>
