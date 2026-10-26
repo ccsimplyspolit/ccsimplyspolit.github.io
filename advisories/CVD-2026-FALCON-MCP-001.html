@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CVD-2026-FALCON-MCP-001 — URL Route Truncation via Unfiltered &#x27;?&#x27; and &#x27;#&#x27; Characters and Trailing-Whitespace Dot-Segment Bypass in _validate_repository() (falcon_mcp/modules/ngsiem.py)</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0d1117; color: #c9d1d9; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; line-height: 1.6; }
+    h1, h2, h3 { color: #f0f6fc; }
+    a { color: #58a6ff; text-decoration: none; }
+    pre { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; overflow-x: auto; font-size: 0.85rem; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; background: #1f6feb; color: #fff; font-size: 0.8rem; font-weight: 600; margin-right: 0.5rem; }
+    .meta { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  <p><a href="../index.html">&larr; Back to Security Research Portal</a></p>
+  <h1>CVD-2026-FALCON-MCP-001: URL Route Truncation via Unfiltered &#x27;?&#x27; and &#x27;#&#x27; Characters and Trailing-Whitespace Dot-Segment Bypass in _validate_repository() (falcon_mcp/modules/ngsiem.py)</h1>
+  <div>
+    <span class="badge">High (CVSS 8.1)</span>
+    <span class="badge">CWE-20 / CWE-22</span>
+    <span class="badge">GitHub CNA PVR + HackerOne: crowdstrike</span>
+  </div>
+  <div class="meta">
+    <strong>Target Repository:</strong> <code>CrowdStrike/falcon-mcp</code> (commit <code>608986fa620e</code>, <code>2026-10-22T19:34:50Z</code>)<br/>
+    <strong>Affected Component:</strong> <code>falcon_mcp/modules/ngsiem.py (lines 57-96)</code><br/>
+    <strong>Researcher:</strong> Serhii Shunko (<a href="https://hackerone.com/sshunko">@sshunko</a> / <a href="https://github.com/ccsimplyspolit">@ccsimplyspolit</a>, ORCID <a href="https://orcid.org/0009-0002-4183-0361">0009-0002-4183-0361</a>)
+  </div>
+
+  <h2>1. Summary</h2>
+  <p>During a defensive static source audit of `https://github.com/CrowdStrike/falcon-mcp` (`main` branch, commit `608986fa620e`, pushed `2026-10-22T19:34:50Z`), I identified an incomplete URL path-parameter validation defect in `falcon_mcp/modules/ngsiem.py` (introduced in commit `608986fa620e`):
+1. **URL Query/Fragment Route Truncation (`CWE-20` / `CWE-22`, `falcon_mcp/modules/ngsiem.py:57-96`)**: `_validate_repository()` blocks `(&quot;/&quot;, &quot;\\&quot;, &quot;%&quot;)` (`_UNSAFE_REPOSITORY_CHARS`) and `(&quot;.&quot;, &quot;..&quot;)` (`_DOT_SEGMENTS`) before interpolating `repository` into `/humio/api/v1/repositories/{repository}/queryjobs`. However, it does not reject `?` or `#` (nor enforce a strict identifier character set). Passing `repository=&quot;search-all? arbitrary=1#&quot;` causes `requests` to parse `?arbitrary=1` as the query string and `#/queryjobs` as a client-side URL fragment, stripping `/queryjobs` from the outbound HTTP request path and retargeting the authenticated Falcon API call to `/humio/api/v1/repositories/search-all`.
+2. **Unstripped Whitespace Bypass on `_DOT_SEGMENTS` (`CWE-20`, `falcon_mcp/modules/ngsiem.py:81-88`)**: Line 81 checks `if not repository.strip():`, but line 88 checks `repository in _DOT_SEGMENTS` against the unstripped `repository` string, allowing `&quot;.. &quot;` or `&quot; ..&quot;` to bypass the `_DOT_SEGMENTS` equality check.</p>
+
+  <h2>2. Root Cause Analysis</h2>
+  <pre><code>- **`falcon_mcp/modules/ngsiem.py:57-96`**:
+```python
+_UNSAFE_REPOSITORY_CHARS = (&quot;/&quot;, &quot;\\&quot;, &quot;%&quot;)
+_DOT_SEGMENTS = (&quot;.&quot;, &quot;..&quot;)
+
+def _validate_repository(repository: Any) -&gt; dict[str, Any] | None:
+    if not isinstance(repository, str):
+        return None
+
+    if not repository.strip():
+        return _format_error_response(
+            &quot;Invalid repository: must be a non-empty repository or view name, &quot;
+            &quot;for example &#x27;search-all&#x27;.&quot;,
+            operation=&quot;StartSearchV1&quot;,
+        )
+
+    if any(char in repository for char in _UNSAFE_REPOSITORY_CHARS) or repository in _DOT_SEGMENTS:
+        return _format_error_response(...)
+
+    return None
+```</code></pre>
+
+  <h2>3. Steps to Reproduce (BEFORE PATCH vs. AFTER PATCH)</h2>
+  <pre><code>Run the standalone verification test suite in `verify_batch7_fresh_ai_cna.py` (`test_05_crowdstrike_falcon_mcp_ngsiem`):
+```bash
+uv run verify_batch7_fresh_ai_cna.py
+```
+- **BEFORE PATCH**: `falcon_repo_before(&#x27;search-all?filter=1#&#x27;)` and `falcon_repo_before(&#x27;.. &#x27;)` both return `&#x27;ALLOWED&#x27;`.
+- **AFTER PATCH**: Rejects `?`, `#`, leading/trailing whitespace, and any character outside `[A-Za-z0-9_.-]+` (`&#x27;REJECTED&#x27;`).</code></pre>
+
+  <h2>4. Suggested Remediation (Unified Diff)</h2>
+  <pre><code>--- a/falcon_mcp/modules/ngsiem.py
++++ b/falcon_mcp/modules/ngsiem.py
+@@ -54,7 +54,7 @@
+ # operation never selected. A separator is what makes traversal possible, so once
+ # those are rejected only a whole-value dot-segment can still alter the path —
+ # `a..b` is inert and stays allowed.
+-_UNSAFE_REPOSITORY_CHARS = (&quot;/&quot;, &quot;\\&quot;, &quot;%&quot;)
++_UNSAFE_REPOSITORY_CHARS = (&quot;/&quot;, &quot;\\&quot;, &quot;%&quot;, &quot;?&quot;, &quot;#&quot;)
+ _DOT_SEGMENTS = (&quot;.&quot;, &quot;..&quot;)
+ 
+ 
+@@ -78,16 +78,18 @@
+     if not isinstance(repository, str):
+         return None
+ 
+-    if not repository.strip():
++    cleaned = repository.strip()
++    if not cleaned or cleaned != repository:
+         return _format_error_response(
+             &quot;Invalid repository: must be a non-empty repository or view name, &quot;
+             &quot;for example &#x27;search-all&#x27;.&quot;,
+             operation=&quot;StartSearchV1&quot;,
+         )
+ 
+-    if any(char in repository for char in _UNSAFE_REPOSITORY_CHARS) or repository in _DOT_SEGMENTS:
++    if any(char in cleaned for char in _UNSAFE_REPOSITORY_CHARS) or cleaned in _DOT_SEGMENTS or not re.fullmatch(r&quot;[A-Za-z0-9_.-]+&quot;, cleaned):
+         return _format_error_response(
+             f&quot;Invalid repository {repository!r}: must not contain &#x27;/&#x27;, &#x27;\\&#x27;, &#x27;%&#x27;, &#x27;?&#x27;, or &#x27;#&#x27;, &quot;
+             &quot;or be &#x27;.&#x27; or &#x27;..&#x27;. Pass a plain repository or view name, &quot;
+             &quot;for example &#x27;search-all&#x27;.&quot;,
+             operation=&quot;StartSearchV1&quot;,
+         )</code></pre>
+
+  <h2>5. Security Impact</h2>
+  <p>An LLM agent or caller invoking `falcon_start_ngsiem_search` under prompt injection can inject `?` and `#` into `repository` to truncate the `/queryjobs` suffix and retarget authenticated CrowdStrike Falcon API requests to `/humio/api/v1/repositories/&lt;repo&gt;` with arbitrary query parameters.</p>
+</body>
+</html>

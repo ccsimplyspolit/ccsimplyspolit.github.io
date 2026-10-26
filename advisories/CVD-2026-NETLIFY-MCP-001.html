@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CVD-2026-NETLIFY-MCP-001 — Subdomain Origin Confusion &amp; Bearer Token Leakage in Edge Proxy (proxy.ts) and Teredo IPv6 Bypass in callback-guard.ts</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0d1117; color: #c9d1d9; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; line-height: 1.6; }
+    h1, h2, h3 { color: #f0f6fc; }
+    a { color: #58a6ff; text-decoration: none; }
+    pre { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; overflow-x: auto; font-size: 0.85rem; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; background: #1f6feb; color: #fff; font-size: 0.8rem; font-weight: 600; margin-right: 0.5rem; }
+    .meta { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  <p><a href="../index.html">&larr; Back to Security Research Portal</a></p>
+  <h1>CVD-2026-NETLIFY-MCP-001: Subdomain Origin Confusion &amp; Bearer Token Leakage in Edge Proxy (proxy.ts) and Teredo IPv6 Bypass in callback-guard.ts</h1>
+  <div>
+    <span class="badge">High (CVSS 8.6)</span>
+    <span class="badge">CWE-918 / CWE-285 / CWE-200</span>
+    <span class="badge">GitHub CNA PVR + HackerOne: netlify</span>
+  </div>
+  <div class="meta">
+    <strong>Target Repository:</strong> <code>netlify/netlify-mcp</code> (commit <code>080752a77c84</code>, <code>2026-10-23T21:25:38Z</code>)<br/>
+    <strong>Affected Component:</strong> <code>netlify/edge-functions/proxy.ts (lines 56-101) &amp; netlify/functions/mcp-server/events/callback-guard.ts (lines 61-71)</code><br/>
+    <strong>Researcher:</strong> Serhii Shunko (<a href="https://hackerone.com/sshunko">@sshunko</a> / <a href="https://github.com/ccsimplyspolit">@ccsimplyspolit</a>, ORCID <a href="https://orcid.org/0009-0002-4183-0361">0009-0002-4183-0361</a>)
+  </div>
+
+  <h2>1. Summary</h2>
+  <p>During a defensive static source audit of `https://github.com/netlify/netlify-mcp` (`main` branch, commit `080752a77c84`, pushed `2026-10-23T21:25:38Z`), I identified three security defects in the Netlify MCP Edge Proxy and event callback SSRF guard:
+1. **Subdomain Origin Confusion &amp; Bearer Token Exfiltration (`CWE-918` / `CWE-200`, `netlify/edge-functions/proxy.ts:56-68, 92`)**: `handleProxy()` constructs `const url = new URL(requestedPath as string, &#x27;https://api.netlify.com&#x27;)` from `req.url.split(token)[1]` and checks `if (!url.origin.endsWith(&#x27;.netlify.com&#x27;))`. Because WHATWG `new URL(&#x27;//app-preview.netlify.com/api/v1/user&#x27;, &#x27;https://api.netlify.com&#x27;)` resolves the origin to `https://app-preview.netlify.com` (which satisfies `.endsWith(&#x27;.netlify.com&#x27;)`), a protocol-relative `requestedPath` causes the Edge proxy to attach `Authorization: Bearer ${decryptedToken.accessToken}` and forward the decrypted Netlify personal/OAuth access token to any customer-deployed `.netlify.com` subdomain.
+2. **HTTP Method Mismatch &amp; Optional `apisAllowed` Bypass (`CWE-285`, `netlify/edge-functions/proxy.ts:72-97`)**: `apisAllowed` checks `method === req.method`, whereas the outbound `Request` uses `method: decryptedToken.apiMethod as string | undefined || req.method`. Furthermore, if `decryptedToken.apisAllowed` is omitted or non-array, the `if (Array.isArray(decryptedToken.apisAllowed))` guard is skipped completely.
+3. **Incomplete IPv6 Special/Tunnel Range Filtering in `isPrivateIPv6()` (`CWE-918`, `netlify/functions/mcp-server/events/callback-guard.ts:61-71`)**: `isPrivateIPv6()` treats all `2000::/3` (`0x2000..0x3fff`) addresses except `2002::/16` (6to4) as public, failing to block `2001:0000::/32` (RFC 4380 Teredo IPv4 tunneling), `2001:2::/48` (RFC 5180 benchmarking), and `2001:db8::/32` (RFC 3849 documentation).</p>
+
+  <h2>2. Root Cause Analysis</h2>
+  <pre><code>- **`netlify/edge-functions/proxy.ts:56-101`**:
+```typescript
+  const requestedPath = req.url.split(token)[1];
+  const url = new URL(requestedPath as string, &#x27;https://api.netlify.com&#x27;);
+
+  if (!url.origin.endsWith(&#x27;.netlify.com&#x27;)) {
+    log.error(&#x27;proxy blocked non-Netlify target host&#x27;, { host: url.host });
+    return new Response(&#x27;Forbidden&#x27;, { status: 403 });
+  }
+
+  const normalizedPath = url.pathname;
+
+  if (Array.isArray(decryptedToken.apisAllowed)) {
+    const isAllowed = decryptedToken.apisAllowed.some(({ path, method }: { path: string; method: string; }) =&gt; {
+      const pattern = &#x27;^&#x27; + escapeRegExp(path).replace(/:\w+/g, &#x27;[\\w\\-]+&#x27;) + &#x27;$&#x27;;
+      const pathMatches = new RegExp(pattern).test(normalizedPath);
+      return pathMatches &amp;&amp; method === req.method;
+    });
+...
+  req.headers.set(&#x27;Authorization&#x27;, `Bearer ${decryptedToken.accessToken}`);
+  req.headers.delete(&#x27;host&#x27;);
+
+  const updatedReq = new Request(url, {
+    method: decryptedToken.apiMethod as string | undefined || req.method,
+```
+- **`netlify/functions/mcp-server/events/callback-guard.ts:61-71`**:
+```typescript
+function isPrivateIPv6(ip: string): boolean {
+  const first = ip.toLowerCase().split(&#x27;%&#x27;)[0].split(&#x27;:&#x27;)[0];
+  const leading = first === &#x27;&#x27; ? 0 : Number.parseInt(first, 16);
+  if (!Number.isInteger(leading)) return true;
+
+  const globalUnicast = leading &gt;= 0x2000 &amp;&amp; leading &lt;= 0x3fff;
+  if (!globalUnicast) return true;
+  if (leading === 0x2002) return true; // 6to4 tunnels an IPv4 address
+  return false;
+}
+```</code></pre>
+
+  <h2>3. Steps to Reproduce (BEFORE PATCH vs. AFTER PATCH)</h2>
+  <pre><code>Run the standalone verification test suite in `verify_batch7_fresh_ai_cna.py` (`test_01_netlify_mcp_proxy_and_ipv6`):
+```bash
+uv run verify_batch7_fresh_ai_cna.py
+```
+- **BEFORE PATCH**: `netlify_before(&#x27;//app-preview.netlify.com/api/v1/user&#x27;, &#x27;GET&#x27;, &#x27;DELETE&#x27;, None)` returns `&#x27;FORWARD:https://app-preview.netlify.com:DELETE&#x27;`.
+- **AFTER PATCH**: Rejects protocol-relative paths, enforces `url.origin === &#x27;https://api.netlify.com&#x27;`, requires a non-empty `apisAllowed` array matching `effectiveMethod`, and blocks `2001:0000::/32`, `2001:2::/48`, and `2001:db8::/32`.</code></pre>
+
+  <h2>4. Suggested Remediation (Unified Diff)</h2>
+  <pre><code>--- a/netlify/edge-functions/proxy.ts
++++ b/netlify/edge-functions/proxy.ts
+@@ -54,6 +54,9 @@
+   }
+ 
+   const requestedPath = req.url.split(token)[1];
++  if (!requestedPath || !requestedPath.startsWith(&#x27;/&#x27;) || requestedPath.startsWith(&#x27;//&#x27;) || requestedPath.includes(&#x27;\\&#x27;)) {
++    return new Response(&#x27;Forbidden&#x27;, { status: 403 });
++  }
+ 
+   // Normalize BEFORE the allow-list check so we validate exactly what we forward.
+   // `new URL` resolves `../` traversal and other WHATWG normalization; matching
+@@ -62,15 +65,19 @@
+   // and then normalize to an endpoint the token was never scoped to reach.
+   const url = new URL(requestedPath as string, &#x27;https://api.netlify.com&#x27;);
+ 
+-  if (!url.origin.endsWith(&#x27;.netlify.com&#x27;)) {
++  if (url.origin !== &#x27;https://api.netlify.com&#x27;) {
+     log.error(&#x27;proxy blocked non-Netlify target host&#x27;, { host: url.host });
+     return new Response(&#x27;Forbidden&#x27;, { status: 403 });
+   }
+ 
+   const normalizedPath = url.pathname;
++  const effectiveMethod = (decryptedToken.apiMethod as string | undefined) || req.method;
+ 
++  if (!Array.isArray(decryptedToken.apisAllowed) || decryptedToken.apisAllowed.length === 0) {
++    return new Response(&#x27;Forbidden&#x27;, { status: 403 });
++  }
+   if (Array.isArray(decryptedToken.apisAllowed)) {
+     const isAllowed = decryptedToken.apisAllowed.some(({ path, method }: { path: string; method: string; }) =&gt; {
+       // Escape regex metacharacters in the allowed path, then turn `:param`
+       // placeholders into a bounded segment matcher, and anchor with ^...$ so
+       // the whole normalized path must match — not just a substring of it.
+       const pattern = &#x27;^&#x27; + escapeRegExp(path).replace(/:\w+/g, &#x27;[\\w\\-]+&#x27;) + &#x27;$&#x27;;
+       const pathMatches = new RegExp(pattern).test(normalizedPath);
+-      return pathMatches &amp;&amp; method === req.method;
++      return pathMatches &amp;&amp; method === effectiveMethod;
+     });
+@@ -92,7 +99,7 @@
+   req.headers.delete(&#x27;host&#x27;);
+ 
+   const updatedReq = new Request(url, {
+-    method: decryptedToken.apiMethod as string | undefined || req.method,
++    method: effectiveMethod,
+     headers: req.headers,
+     body: req.body,
+     redirect: &#x27;manual&#x27;, // prevent automatic redirects
+--- a/netlify/functions/mcp-server/events/callback-guard.ts
++++ b/netlify/functions/mcp-server/events/callback-guard.ts
+@@ -59,7 +59,8 @@
+  * Fails closed: anything we cannot read the leading hextet of is private.
+  */
+ function isPrivateIPv6(ip: string): boolean {
+-  const first = ip.toLowerCase().split(&#x27;%&#x27;)[0].split(&#x27;:&#x27;)[0];
++  const parts = ip.toLowerCase().split(&#x27;%&#x27;)[0].split(&#x27;:&#x27;);
++  const first = parts[0];
+   // A leading &#x27;::&#x27; yields an empty group, which is correctly not global unicast.
+   const leading = first === &#x27;&#x27; ? 0 : Number.parseInt(first, 16);
+   if (!Number.isInteger(leading)) return true;
+@@ -67,6 +68,10 @@
+   const globalUnicast = leading &gt;= 0x2000 &amp;&amp; leading &lt;= 0x3fff;
+   if (!globalUnicast) return true;
+   if (leading === 0x2002) return true; // 6to4 tunnels an IPv4 address
++  const second = parts[1] === &#x27;&#x27; || parts[1] === undefined ? 0 : Number.parseInt(parts[1], 16);
++  if (leading === 0x2001 &amp;&amp; (!Number.isInteger(second) || second === 0x0000 || second === 0x0002 || second === 0x0db8)) {
++    return true;
++  }
+   return false;
+ }</code></pre>
+
+  <h2>5. Security Impact</h2>
+  <p>A caller holding a scoped proxy JWE token can redirect the Edge proxy to an arbitrary `.netlify.com` site via a `//&lt;subdomain&gt;.netlify.com/...` path and capture the decrypted `Authorization: Bearer &lt;accessToken&gt;` header, escalating from a single-endpoint proxy token to full Netlify account access.</p>
+</body>
+</html>
