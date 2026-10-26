@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Union Type Confusion &amp; Out-of-Order Deserialization in Embeddable Scripting VMs | Serhii Shunko (@sshunko)</title>
+  <meta name="description" content="Technical write-up on Union Type Confusion (CWE-843) and bytecode/lineno length desynchronization (CWE-125) in C scripting virtual machines by Serhii Shunko (@sshunko).">
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --panel: #111621;
+      --border: #1f293a;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-green: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-red: #f87171;
+      --mono: "JetBrains Mono", "Fira Code", Consolas, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.7; padding: 2rem 1.25rem 4rem; }
+    .container { max-width: 880px; margin: 0 auto; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .back { font-family: var(--mono); font-size: 0.88rem; display: inline-block; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+    .meta { font-family: var(--mono); color: var(--muted); font-size: 0.85rem; margin-bottom: 2rem; }
+    h2 { font-family: var(--mono); font-size: 1.15rem; color: var(--accent); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+    p { margin-bottom: 1rem; }
+    pre { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.83rem; line-height: 1.5; margin: 1rem 0; }
+    code { font-family: var(--mono); background: rgba(255,255,255,0.06); padding: 0.1rem 0.35rem; border-radius: 3px; font-size: 0.85em; }
+    pre code { background: none; padding: 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
+    <h1>Union Type Confusion (<code>CWE-843</code>) &amp; Out-of-Order Deserialization in Embeddable Scripting VMs</h1>
+    <div class="meta">Author: Serhii Shunko (@sshunko / @ccsimplyspolit) &bull; ORCID: 0009-0002-4183-0361 &bull; References: <code>GHSA-g278-chr4-fg9f</code> &bull; <code>GHSA-7m49-w797-wqp6</code></div>
+
+    <h2>0x00 // Tagged Unions in Bytecode &amp; Closure Deserializers</h2>
+    <p>
+      Embeddable scripting virtual machines written in C (such as Lua, Gravity, QuickJS, and Janet) frequently represent function prototypes using a compact tagged union. A single <code>tag</code> field (e.g., <code>EXEC_TYPE_NATIVE</code>, <code>EXEC_TYPE_INTERNAL</code>, <code>EXEC_TYPE_SPECIAL</code>) selects whether the inline union holds:
+    </p>
+    <pre><code>typedef struct {
+    vm_exec_type tag; // Discriminator: NATIVE (0), INTERNAL (1), BRIDGED (2), SPECIAL (3)
+    union {
+        // Variant A: tag == EXEC_TYPE_NATIVE (0)
+        struct {
+            struct { size_t n, m; vm_value_t *p; } cpool; // offsets +0, +8, +16
+            struct { size_t n, m; vm_value_t *p; } pvalue;
+            struct { size_t n, m; vm_value_t *p; } pname;
+            uint32_t  ninsts;
+            uint32_t *bytecode;
+            uint32_t *lineno;
+        };
+        // Variant B: tag == EXEC_TYPE_INTERNAL (1)
+        vm_c_internal internal; // C function pointer at union offset +0
+
+        // Variant C: tag == EXEC_TYPE_SPECIAL (3)
+        struct {
+            uint16_t index;       // offset +0
+            void    *special[2];  // getter/setter closure pointers at offsets +8, +16
+        };
+    };
+} vm_function_t;</code></pre>
+
+    <h2>0x01 // The Out-of-Order Key Deserialization Hazard</h2>
+    <p>
+      When a VM serializes a function prototype to JSON or a key-value stream, it typically writes <code>"tag"</code> first, followed by variant-specific keys (such as <code>"pool"</code> and <code>"bytecode"</code> for <code>EXEC_TYPE_NATIVE</code>, or <code>"$get"</code> and <code>"$set"</code> for <code>EXEC_TYPE_SPECIAL</code>).
+    </p>
+    <p>
+      However, a deserializer that iterates over untrusted JSON keys in input order starts with a default discriminator (<code>f-&gt;tag = EXEC_TYPE_NATIVE</code>). If an attacker places <code>"pool": [1]</code> <em>before</em> <code>"tag": 3</code> (<code>EXEC_TYPE_SPECIAL</code>):
+    </p>
+    <pre><code>Union Memory Layout on x86_64:
++-----------------------+-----------------------+-----------------------+
+| Offset +0 (8 bytes)   | Offset +8 (8 bytes)   | Offset +16 (8 bytes)  |
++-----------------------+-----------------------+-----------------------+
+| EXEC_TYPE_NATIVE (0):                                                 |
+| cpool.n = 0x1         | cpool.m = 0x8         | cpool.p = 0x602000... |
++-----------------------+-----------------------+-----------------------+
+| EXEC_TYPE_SPECIAL (3) [after late "tag": 3 overwrite]:                |
+| index   = 0x0001      | special[0] = 0x8 (!)  | special[1] = cpool.p  |
++-----------------------+-----------------------+-----------------------+</code></pre>
+    <p>
+      Because the late <code>"tag": 3</code> assignment changes the union discriminator without verifying that no <code>EXEC_TYPE_NATIVE</code> fields were already populated, <code>f-&gt;special[0]</code> aliases the integer capacity <code>cpool.m</code> (<code>0x8</code>) and <code>f-&gt;special[1]</code> aliases the raw <code>vm_value_t *</code> array <code>cpool.p</code>. During garbage-collector marking (<code>vm_gc_mark_function()</code>) or property getter invocation, the VM dereferences <code>0x8</code> as a <code>vm_closure_t *</code> pointer.
+    </p>
+
+    <h2>0x02 // Defensive Invariant Enforcement</h2>
+    <p>
+      To eliminate union type confusion in key-value deserializers:
+    </p>
+    <pre><code>// 1. Whitelist only serializable union tags (reject EXEC_TYPE_INTERNAL / C function pointers)
+if (tag != EXEC_TYPE_NATIVE &amp;&amp; tag != EXEC_TYPE_SPECIAL) goto abort_load;
+
+// 2. Lock the active union variant once any variant-specific field has been populated
+if (native_fields_used &amp;&amp; tag != EXEC_TYPE_NATIVE) goto abort_load;
+
+// 3. Decouple auxiliary debug array lengths (lineno) from executable bytecode length (ninsts)
+//    and enforce order-independent post-loop consistency before returning `f`:
+uint32_t nlineno = 0;
+f-&gt;lineno = vm_bytecode_deserialize(ptr, len, &amp;nlineno);
+if (!f-&gt;lineno) goto abort_load;
+lineno_parsed = true;
+...
+// Post-loop invariant (independent of whether "lineno" or "bytecode" appeared first in JSON):
+if (lineno_parsed &amp;&amp; (!bytecode_parsed || nlineno &lt; f-&gt;ninsts)) goto abort_load;</code></pre>
+
+    <h2>0x03 // Signed LEB128 Count Casts &amp; Placeholder Reference Cycles in Binary VM Loaders</h2>
+    <p>
+      In binary bytecode loaders that ingest untrusted module blobs, three additional structural checks are required to prevent integer sign-extension wraps and uninitialized reference dereferences:
+    </p>
+    <pre><code>// 1. Reject unsigned LEB128 values &gt; INT32_MAX when reading signed section counts:
+uint32_t raw_count = 0;
+if (read_uleb128(reader, &amp;raw_count) &lt; 0 || raw_count &gt; INT32_MAX) {
+    return VM_ERR_INVALID_BYTECODE;
+}
+
+// 2. Verify remaining bytecode buffer length (bc_len - pos &gt;= instr_len) before
+//    performing multi-byte operand endianness or atom table fixups.
+
+// 3. Reject self-referential object table lookups where table[idx] is still a NULL
+//    placeholder during recursive container deserialization.</code></pre>
+  </div>
+</body>
+</html>

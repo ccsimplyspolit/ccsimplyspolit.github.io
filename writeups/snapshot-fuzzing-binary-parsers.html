@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deterministic Snapshot Fuzzing &amp; Relocation-Aware Auditing of Binary Protocol Parsers | Serhii Shunko (@sshunko)</title>
+  <meta name="description" content="Technical methodology write-up on deterministic copy-on-write (CoW) snapshot fuzzing and relocation-aware binary invariant verification for C/C++ protocol and container parsers by Serhii Shunko (@sshunko).">
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --panel: #111621;
+      --border: #1f293a;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-green: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-red: #f87171;
+      --mono: "JetBrains Mono", "Fira Code", Consolas, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.7; padding: 2rem 1.25rem 4rem; }
+    .container { max-width: 880px; margin: 0 auto; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .back { font-family: var(--mono); font-size: 0.88rem; display: inline-block; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+    .meta { font-family: var(--mono); color: var(--muted); font-size: 0.85rem; margin-bottom: 2rem; }
+    h2 { font-family: var(--mono); font-size: 1.15rem; color: var(--accent); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+    p { margin-bottom: 1rem; }
+    pre { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.83rem; line-height: 1.5; margin: 1rem 0; }
+    code { font-family: var(--mono); background: rgba(255,255,255,0.06); padding: 0.1rem 0.35rem; border-radius: 3px; font-size: 0.85em; }
+    pre code { background: none; padding: 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
+    <h1>Deterministic Snapshot Fuzzing &amp; Relocation-Aware Auditing of Binary Protocol Parsers</h1>
+    <div class="meta">Author: Serhii Shunko (@sshunko / @ccsimplyspolit) &bull; ORCID: 0009-0002-4183-0361 &bull; References: <a href="https://doi.org/10.5281/zenodo.23640494">DOI: 10.5281/zenodo.23640494</a> &bull; <a href="https://doi.org/10.5281/zenodo.23640496">DOI: 10.5281/zenodo.23640496</a></div>
+
+    <h2>0x00 // Why Traditional Process-Level Fuzzing Bottlenecks on Complex Engines</h2>
+    <p>
+      Many critical C/C++ deserializers (such as dedicated game-server tick processors, replay container parsers, and embedded telemetry routers) are deeply coupled to global engine singletons, thread-local allocators, and socket state machines. Spawning a full process per testcase yields <code>&lt; 5 execs/sec</code> because 99% of CPU cycles are spent initializing subsystems unrelated to the target parser function.
+    </p>
+    <p>
+      <strong>Deterministic Snapshot Fuzzing</strong> (pioneered by frameworks such as <code>0vercl0k/wtf</code> and hardware-assisted/page-table Copy-on-Write engines) solves this by capturing a complete architectural state snapshot (CPU registers + physical memory pages) immediately at the entry point of the target parser function (e.g., <code>CNetChan::ProcessMessages</code> or a container chunk decoder).
+    </p>
+
+    <h2>0x01 // Copy-on-Write (CoW) Dirty-Page Tracking &amp; Reset Loop</h2>
+    <p>
+      Instead of restoring gigabytes of RAM after each fuzzing iteration, a snapshot harness marks all writable guest/process pages as read-only in the shadow page table and records page-faulting writes in a bounded dirty-page bitmap:
+    </p>
+    <pre><code>Snapshot Harness Lifecycle (10,000+ execs/sec per core):
++-----------------------------------------------------------------------+
+| 1. Capture Baseline Snapshot at Parser Entry (RIP = ParsePacketEntry) |
+|    - RCX = this (NetChannel / ParserContext*)                         |
+|    - RDX = const uint8_t* input_buf                                   |
+|    - R8  = size_t input_len                                           |
++-----------------------------------------------------------------------+
+                                   |
+                                   v
++-----------------------------------------------------------------------+
+| 2. Per-Iteration In-Memory Mutation Injection                         |
+|    - Write mutated testcase into pre-mapped page at RDX               |
+|    - Set R8 = testcase_size                                           |
+|    - Execute until Parser Return Address or Guard Page Fault          |
++-----------------------------------------------------------------------+
+                                   |
+                                   v
++-----------------------------------------------------------------------+
+| 3. O(DirtyPages) Deterministic State Rollback                         |
+|    - Restore only the 4-15 dirty 4 KiB pages touched during the call  |
+|    - Restore GPRs/XMM state &amp; advance coverage bitmap                 |
++-----------------------------------------------------------------------+</code></pre>
+
+    <h2>0x02 // Combining Static IDA Pro Provenance with Page-Heap Guarding</h2>
+    <p>
+      Without source-level <code>AddressSanitizer (ASAN)</code> instrumentation, small heap out-of-bounds reads or writes (<code>CWE-125</code> / <code>CWE-787</code>) inside a custom slab allocator may not trigger an immediate hardware page fault. To achieve ASAN-equivalent sensitivity in binary-only snapshot harnesses:
+    </p>
+    <pre><code>// Hook custom allocator wrappers (malloc / realloc / CUtlMemory::Grow) inside the snapshot
+// to place each allocation at the end of a 4 KiB page followed by an unmapped guard page:
+void* GuardedPageAlloc(size_t requested_size) {
+    size_t aligned_pages = (requested_size + 0xFFF) &amp; ~0xFFFULL;
+    uint8_t* base = AllocateVirtualPages(aligned_pages + 0x1000);
+    MarkPageUnmapped(base + aligned_pages); // Immediate #PF on 1-byte OOB read/write
+    return base + aligned_pages - requested_size;
+}</code></pre>
+    <p>
+      By pairing static structure recovery in IDA Pro (identifying exact field offsets, <code>uint32_t count * sizeof(Elem)</code> multiplication sites, and signedness transitions) with guarded page allocations inside a deterministic snapshot loop, security auditors can systematically verify parser bounds invariants and author precise binary or source-level remediation patches.
+    </p>
+
+    <h2>0x03 // Overflow-Safe 64-Bit Offset Verification in Binary RPC Deserializers</h2>
+    <p>
+      When binary RPC handlers deserialize multi-dimensional descriptors alongside raw payload buffers, pointer arithmetic checks of the form <code>base + offset + size &lt;= end</code> are vulnerable to 64-bit unsigned wraparound. Defensive deserializers must enforce subtraction-based bounds invariants:
+    </p>
+    <pre><code>// Enforce overflow-safe containment before indexing or copying tensor/segment buffers:
+bool VerifySliceBounds(uintptr_t data_ptr, uintptr_t region_start, uintptr_t region_end,
+                       size_t byte_offset, size_t byte_size) {
+    if (data_ptr &lt; region_start || data_ptr &gt; region_end) return false;
+    size_t avail = region_end - data_ptr;
+    if (byte_offset &gt; avail || byte_size &gt; avail - byte_offset) return false;
+    return true;
+}</code></pre>
+  </div>
+</body>
+</html>

@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Serhii Shunko (@sshunko / @ccsimplyspolit) — Application &amp; Binary Security Research</title>
+  <meta name="description" content="Independent security research portal of Serhii Shunko (@sshunko / @ccsimplyspolit). Coordinated vulnerability disclosures (CVD), Protocol Buffers input validation audits, static x86_64 binary analysis, and defensive security tooling.">
+  <meta name="author" content="Serhii Shunko">
+  <meta name="keywords" content="Serhii Shunko, sshunko, ccsimplyspolit, Binary Security, Reverse Engineering, Vulnerability Research, Protocol Buffers, CWE-20, CWE-1284, CWE-918, Source 2, Static Analysis, ORCID 0009-0002-4183-0361">
+  <link rel="canonical" href="https://ccsimplyspolit.github.io/">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Serhii Shunko",
+    "alternateName": ["sshunko", "ccsimplyspolit"],
+    "url": "https://ccsimplyspolit.github.io/",
+    "jobTitle": "Independent Application & Binary Security Researcher",
+    "alumniOf": {
+      "@type": "CollegeOrUniversity",
+      "name": "Oles Honchar Dnipro National University"
+    },
+    "sameAs": [
+      "https://ccsimplyspolit.github.io/",
+      "https://github.com/ccsimplyspolit",
+      "https://orcid.org/0009-0002-4183-0361",
+      "https://hackerone.com/sshunko",
+      "https://bugcrowd.com/h/sshunko",
+      "https://app.intigriti.com/profile/sshunko",
+      "https://bughunters.google.com/profile/4da21a09-550c-43fe-9b62-e3e86dab4b9c",
+      "https://immunefi.com/profile/sshunko",
+      "https://pwn.college/hacker/247319",
+      "https://app.hextree.io/profile/simple-loop-block",
+      "https://crackmes.one/user/sshunko",
+      "https://ctftime.org/user/277345",
+      "https://huntr.com/users/ccsimplyspolit",
+      "https://www.linkedin.com/in/sshunko"
+    ]
+  }
+  </script>
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --panel: #111621;
+      --border: #1f293a;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-green: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-red: #f87171;
+      --mono: "JetBrains Mono", "Fira Code", Consolas, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.65;
+      padding: 0 1.25rem 4rem;
+    }
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 2.75rem 0 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .prompt {
+      font-family: var(--mono);
+      color: var(--accent-green);
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 780px;
+      margin-bottom: 1.25rem;
+    }
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.3rem 0.7rem;
+      border-radius: 4px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text);
+      text-decoration: none;
+      transition: border-color 0.15s ease;
+    }
+    .badge:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    h2 {
+      font-family: var(--mono);
+      font-size: 1.2rem;
+      color: var(--accent);
+      margin: 2.5rem 0 1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 1rem;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.55rem;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+    }
+    .id-tag { color: var(--accent-amber); font-weight: 600; }
+    .cwe-tag {
+      background: rgba(248, 113, 113, 0.12);
+      color: var(--accent-red);
+      border: 1px solid rgba(248, 113, 113, 0.3);
+      padding: 0.1rem 0.45rem;
+      border-radius: 3px;
+    }
+    .embargo-tag {
+      display: inline-block;
+      background: rgba(251, 191, 36, 0.12);
+      color: var(--accent-amber);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      padding: 0.12rem 0.5rem;
+      border-radius: 3px;
+      font-family: var(--mono);
+      font-size: 0.76rem;
+    }
+    .embargo-banner {
+      background: rgba(251, 191, 36, 0.08);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      border-radius: 6px;
+      padding: 0.9rem 1.15rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+    .embargo-banner strong {
+      color: var(--accent-amber);
+      font-family: var(--mono);
+    }
+    .tool-tag {
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--accent-green);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      padding: 0.1rem 0.45rem;
+      border-radius: 3px;
+    }
+    .card h3 {
+      font-size: 1.02rem;
+      margin-bottom: 0.5rem;
+    }
+    .card h3 a {
+      color: var(--text);
+      text-decoration: none;
+    }
+    .card h3 a:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+    .card p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 0.9rem;
+    }
+    .card-footer {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      margin-top: auto;
+    }
+    .card-footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .card-footer a:hover { text-decoration: underline; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+      background: var(--panel);
+      border: 1px solid var(--border);
+    }
+    th, td {
+      text-align: left;
+      padding: 0.75rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    td a { color: var(--accent); text-decoration: none; }
+    td a:hover { text-decoration: underline; }
+    code {
+      font-family: var(--mono);
+      background: rgba(255,255,255,0.06);
+      padding: 0.12rem 0.35rem;
+      border-radius: 3px;
+      font-size: 0.85em;
+    }
+    footer {
+      margin-top: 3.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-family: var(--mono);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="prompt">sshunko@research:~$ whoami --verbose</div>
+      <h1>Serhii Shunko (@sshunko / @ccsimplyspolit)</h1>
+      <p class="subtitle">
+        Independent Application &amp; Binary Security Researcher. Focusing on server-side protocol input validation (Protocol Buffers / RPC / VDF), static <code>x86_64</code> binary auditing, memory-safety vulnerability discovery, and deterministic simulation state verification. B.Sc. in Applied Mathematics &amp; Software Engineering (Oles Honchar Dnipro National University).
+      </p>
+      <div class="badges">
+        <a class="badge" href="https://github.com/ccsimplyspolit" rel="me">GitHub: @ccsimplyspolit</a>
+        <a class="badge" href="https://orcid.org/0009-0002-4183-0361" rel="me">ORCID: 0009-0002-4183-0361</a>
+        <a class="badge" href="https://hackerone.com/sshunko" rel="me">HackerOne: @sshunko (ID Verified)</a>
+        <a class="badge" href="https://bugcrowd.com/h/sshunko" rel="me">Bugcrowd: @sshunko</a>
+        <a class="badge" href="https://app.intigriti.com/profile/sshunko" rel="me">Intigriti: @sshunko</a>
+        <a class="badge" href="https://bughunters.google.com/profile/4da21a09-550c-43fe-9b62-e3e86dab4b9c" rel="me">Google VRP: @sshunko</a>
+        <a class="badge" href="https://immunefi.com/profile/sshunko" rel="me">Immunefi: @sshunko</a>
+        <a class="badge" href="https://pwn.college/hacker/247319" rel="me">pwn.college: @sshunko (#247319)</a>
+        <a class="badge" href="https://app.hextree.io/profile/simple-loop-block" rel="me">HexTree.io: @sshunko</a>
+        <a class="badge" href="https://crackmes.one/user/sshunko" rel="me">Crackmes.one: @sshunko</a>
+        <a class="badge" href="https://ctftime.org/user/277345" rel="me">CTFtime: @sshunko (#277345)</a>
+        <a class="badge" href="https://huntr.com/users/ccsimplyspolit" rel="me">Huntr: @ccsimplyspolit</a>
+        <a class="badge" href="https://www.linkedin.com/in/sshunko" rel="me">LinkedIn: @sshunko</a>
+        <a class="badge" href="https://doi.org/10.5281/zenodo.23640494">DOI: 10.5281/zenodo.23640494</a>
+        <a class="badge" href="https://doi.org/10.5281/zenodo.23640496">DOI: 10.5281/zenodo.23640496</a>
+        <a class="badge" href="https://doi.org/10.5281/zenodo.23640498">DOI: 10.5281/zenodo.23640498</a>
+        <a class="badge" href="mailto:cc.simply.spolit@gmail.com">Contact: cc.simply.spolit@gmail.com</a>
+      </div>
+    </header>
+
+    <section id="disclosures">
+      <h2>0x00 // Coordinated Vulnerability Disclosures &amp; Server Input Audits</h2>
+      <div class="embargo-banner">
+        <strong>[CVD EMBARGO POLICY]</strong> Active vulnerability reports currently in vendor triage (<code>GHSA-*</code> and <code>CVD-2026-*</code>) are listed in this public registry by identifier, CWE classification, and affected component scope only. Full technical advisories, reproduction harnesses, and remediation diffs are strictly withheld from public access until upstream patches are released and coordinated embargoes are lifted.
+      </div>
+      <div class="grid">
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-48q7-428c-jmfw</span>
+              <span class="cwe-tag">CWE-184 / CWE-200 / CWE-918 (High 7.5)</span>
+            </div>
+            <h3>Graphify-Labs/graphify: Preprocessor Directive Filtering &amp; SSRF Address Validation</h3>
+            <p>Coordinated vulnerability disclosure in Graphify AI knowledge graph builder: incomplete input filtering in source preprocessing and IPv6 transition-address validation in network transport. Technical details withheld during vendor triage.</p>
+          </div>
+          <div class="card-footer">
+            <span class="embargo-tag">Embargoed — In Vendor Triage (GitHub CNA)</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-mxjx-wqmx-hwx7</span>
+              <span class="cwe-tag">CWE-918 / CWE-184 / CWE-22 (High 8.2)</span>
+            </div>
+            <h3>HKUDS/nanobot: SSRF Address Normalization &amp; Workspace Boundary Enforcement</h3>
+            <p>Coordinated vulnerability disclosure in Nanobot AI agent framework: IPv6 transition-address SSRF filtering and workspace command/path boundary validation. Technical details withheld during vendor triage.</p>
+          </div>
+          <div class="card-footer">
+            <span class="embargo-tag">Embargoed — In Vendor Triage (GitHub CNA)</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-gx9q-44qw-3frv</span>
+              <span class="cwe-tag">CWE-170 / CWE-125 (High 7.1)</span>
+            </div>
+            <h3>DeusData/codebase-memory-mcp: Stack Buffer Termination &amp; XML Serializer Bounds</h3>
+            <p>Coordinated vulnerability disclosure in Codebase Memory MCP server: string termination and boundary validation in the C XML export subsystem. Technical details withheld during vendor triage.</p>
+          </div>
+          <div class="card-footer">
+            <span class="embargo-tag">Embargoed — In Vendor Triage (GitHub CNA)</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-j47j-8qq9-628m</span>
+              <span class="cwe-tag">CWE-121 / CWE-787 (High 8.8)</span>
+            </div>
+            <h3>gopro/gpmf-parser: Stack Buffer Bounds &amp; Nesting Depth Validation in KLV Telemetry Parser</h3>
+            <p>Coordinated vulnerability disclosure in GoPro's C telemetry parser: stack buffer bounds checking during matrix scaling and container nesting validation. Technical details withheld during vendor triage.</p>
+          </div>
+          <div class="card-footer">
+            <span class="embargo-tag">Embargoed — In Vendor Triage (GitHub CNA)</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-4xx2-wr42-gjg3</span>
+              <span class="cwe-tag">CWE-191 / CWE-125 (High 8.2)</span>
+            </div>
+            <h3>meshcore-dev/MeshCore: Unsigned Length Arithmetic &amp; Frame Bounds Validation</h3>
+            <p>Coordinated vulnerability disclosure in MeshCore packet router: unsigned length subtraction invariants and minimum frame size validation in packet reception handlers. Technical details withheld during vendor triage.</p>
+          </div>
+          <div class="card-footer">
+            <span class="embargo-tag">Embargoed — In Vendor Triage (GitHub CNA)</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-6hh9-gpj4-cr69</span>
+              <span class="cwe-tag">CWE-125 / CWE-908 (Medium 6.5)</span>
+            </div>
+            <h3>moonlight-stream/moonlight-common-c: Dispatch Table Bounds &amp; Buffer Initialization</h3>
+            <p>Coordinated vulnerability disclosure in Moonlight's core C streaming library: protocol dispatch table index validation and buffer initialization prior to packet deserialization. Technical details withheld during vendor triage.</p>
+          </div>
+          <div class="card-footer">
+            <span class="embargo-tag">Embargoed — In Vendor Triage (GitHub CNA)</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-g278-chr4-fg9f</span>
+              <span class="cwe-tag">CWE-843 / CWE-125 (High 8.6)</span>
+            </div>
+            <h3>marcobambini/gravity: Tagged-Union Deserialization Invariants &amp; Array Length Validation</h3>
+            <p>Coordinated vulnerability disclosure in Gravity VM: tagged-union state validation and auxiliary array length invariants during bytecode deserialization. Technical details withheld during vendor triage.</p>
+          </div>
+          <div class="card-footer">
+            <span class="embargo-tag">Embargoed — In Vendor Triage (GitHub CNA)</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-wf26-5m35-vf27</span>
+              <span class="cwe-tag">CWE-787 / CWE-674 (High 8.8)</span>
+            </div>
+            <h3>lief-project/LIEF: Binary Section Offset Bounds &amp; Type Parser Recursion Depth</h3>
+            <p>Coordinated vulnerability disclosure in LIEF binary instrumentation library: segment offset bounds checking and recursion depth limits in binary format parsers. Technical details withheld during vendor triage.</p>
+          </div>
+          <div class="card-footer">
+            <span class="embargo-tag">Embargoed — In Vendor Triage (GitHub CNA)</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-cr23-59mg-h2rc</span>
+              <span class="cwe-tag">CWE-835 / CWE-125 (High 8.2)</span>
+            </div>
+            <h3>bacnet-stack/bacnet-stack: Property Decoding Loop Termination &amp; Buffer Length Tracking</h3>
+            <p>Coordinated vulnerability disclosure in BACnet Protocol Stack: error status propagation in property decoding loops and remaining buffer length tracking. Technical details withheld during vendor triage.</p>
+          </div>
+          <div class="card-footer">
+            <span class="embargo-tag">Embargoed — In Vendor Triage (GitHub CNA)</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-7m49-w797-wqp6</span>
+              <span class="cwe-tag">CWE-121 / CWE-787 (Critical 9.8)</span>
+            </div>
+            <h3>pocketpy/pocketpy: Binary Deserializer Stack/Heap Bounds &amp; Value Type Validation</h3>
+            <p>Coordinated vulnerability disclosure in PocketPy C11 Python VM: buffer bounds validation and type safety invariants in binary object deserialization. Technical details withheld during vendor triage.</p>
+          </div>
+          <div class="card-footer">
+            <span class="embargo-tag">Embargoed — In Vendor Triage (GitHub CNA)</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">CVD-2026-CS2-001</span>
+              <span class="cwe-tag">CWE-20 / CWE-1284 (High 7.1)</span>
+            </div>
+            <h3>Source 2 Dedicated Server: Repeated Sub-Message Cardinality &amp; Input Domain Validation</h3>
+            <p>Static binary audit and local offline verification of repeated Protobuf sub-message bounds and floating-point input domain validation at the tick ingestion boundary.</p>
+          </div>
+          <div class="card-footer">
+            <span class="embargo-tag">Embargoed — In Vendor Triage</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">CVD-2026-CS2-003</span>
+              <span class="cwe-tag">CWE-20 / CWE-682 (High 7.1)</span>
+            </div>
+            <h3>Source 2 Dedicated Server: IEEE-754 View-Angle Domain Clamping Invariants</h3>
+            <p>Cross-reference binary audit of server-side entity orientation clamping and IEEE-754 NaN/Inf propagation guards prior to animation graph interpolation.</p>
+          </div>
+          <div class="card-footer">
+            <span class="embargo-tag">Embargoed — In Vendor Triage</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">CVD-2026-CS2-002</span>
+              <span class="cwe-tag">CWE-20 / CWE-841 (Medium 5.3)</span>
+            </div>
+            <h3>Source 2 Dedicated Server: Subtick Fractional Timestamp Monotonicity Validation</h3>
+            <p>Static binary analysis of fractional subtick timestamp ordering invariants and cooldown state transitions within single-tick command batches.</p>
+          </div>
+          <div class="card-footer">
+            <span class="embargo-tag">Embargoed — In Vendor Triage</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">CVD-2026-SSRF-001</span>
+              <span class="cwe-tag">CWE-918 / CWE-200 (Medium 6.5)</span>
+            </div>
+            <h3>arkadiyt/ssrf_filter: Multi-Hop Redirect Origin Tracking &amp; IPv6 Prefix Validation</h3>
+            <p>Static code audit of cross-origin redirect state tracking, relative URL resolution order, and IPv6 transition prefix coverage. Technical details withheld during vendor triage.</p>
+          </div>
+          <div class="card-footer">
+            <span class="embargo-tag">Embargoed — In Vendor Triage</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">CVD-2026-SUPA-001</span>
+              <span class="cwe-tag">CWE-184 / CWE-436 (Medium 6.5)</span>
+            </div>
+            <h3>supabase-community/supabase-mcp: SQL Tokenizer State-Machine Validation</h3>
+            <p>Static code audit of comment stripping and statement boundary tokenization in SQL confirmation guards. Technical details withheld during vendor triage.</p>
+          </div>
+          <div class="card-footer">
+            <span class="embargo-tag">Embargoed — In Vendor Triage</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">CVD-2026-TOMTOM-001</span>
+              <span class="cwe-tag">CWE-287 / CWE-918 (High 7.5)</span>
+            </div>
+            <h3>tomtom-international/tomtom-maps-mcp: Authentication Header Precedence &amp; URL Validation</h3>
+            <p>Static code audit of authentication header verification order, scope enforcement, and IPv6 URL validation. Technical details withheld during vendor triage.</p>
+          </div>
+          <div class="card-footer">
+            <span class="embargo-tag">Embargoed — In Vendor Triage</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">CVD-2026-GNS-001</span>
+              <span class="cwe-tag">CWE-191 / CWE-190 (High 7.5)</span>
+            </div>
+            <h3>ValveSoftware/GameNetworkingSockets: Encoder Length Arithmetic &amp; 64-Bit Offset Bounds</h3>
+            <p>Static code audit of zero-length input arithmetic in text encoders and 64-bit varint message offset bounds. Technical details withheld during vendor triage.</p>
+          </div>
+          <div class="card-footer">
+            <span class="embargo-tag">Embargoed — In Vendor Triage</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">CVD-2026-ONNX-001</span>
+              <span class="cwe-tag">CWE-20 / CWE-22 (High 7.5)</span>
+            </div>
+            <h3>onnx/onnx: Post-Parse External Tensor Path &amp; Descriptor Validation</h3>
+            <p>Static code audit of post-deserialization path containment and descriptor bounds checking for external tensors. Technical details withheld during vendor triage.</p>
+          </div>
+          <div class="card-footer">
+            <span class="embargo-tag">Embargoed — In Vendor Triage</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">CVD-2026-LLAMA-001</span>
+              <span class="cwe-tag">CWE-190 / CWE-787 (High 8.1)</span>
+            </div>
+            <h3>ggml-org/llama.cpp: RPC Tensor Deserialization Bounds &amp; 64-Bit Offset Arithmetic</h3>
+            <p>Static code audit of tensor header validation and overflow-safe pointer offset checks in distributed RPC handlers. Technical details withheld during vendor triage.</p>
+          </div>
+          <div class="card-footer">
+            <span class="embargo-tag">Embargoed — In Vendor Triage</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="api-audits">
+      <h2>0x01 // Protocol, Deserialization &amp; API Security Advisories</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Advisory ID</th>
+            <th>Target Scope</th>
+            <th>Vulnerability Class (CWE)</th>
+            <th>Component Scope (Embargo Summary)</th>
+            <th>Status / Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>CVD-2026-STRANDS-001</code></td>
+            <td><code>strands-agents/sdk-python</code></td>
+            <td><code>CWE-78 / CWE-88</code></td>
+            <td>Compound shell command composition and argument delimiter handling in sandbox execution helpers.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-NEBIUS-001</code></td>
+            <td><code>nebius/mcp-server &amp; nebius/contree-mcp</code></td>
+            <td><code>CWE-184 / CWE-200 / CWE-319</code></td>
+            <td>CLI argument filter normalization, cache exclusion path matching, and registry redirect handling.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-OMARCHY-001</code></td>
+            <td><code>basecamp/omarchy</code></td>
+            <td><code>CWE-78 / CWE-59</code></td>
+            <td>URI host string escaping in window-manager dispatch scripts and temporary directory ownership checks.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-CHIA-001</code></td>
+            <td><code>Chia-Network/chia-blockchain</code></td>
+            <td><code>CWE-20 / CWE-345</code></td>
+            <td>DataLayer plugin store grouping validation and upload verification invariants.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-CAO-001</code></td>
+            <td><code>awslabs/cli-agent-orchestrator</code></td>
+            <td><code>CWE-59 / CWE-22</code></td>
+            <td>Filesystem symlink canonicalization and ancestor path blocklist validation on macOS/POSIX.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-DJL-001</code></td>
+            <td><code>deepjavalibrary/djl-serving</code></td>
+            <td><code>CWE-863 / CWE-20 / CWE-918</code></td>
+            <td>Dynamic model and adapter URI allowlist enforcement across HTTP request property sources.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-SUPAMCP-002</code></td>
+            <td><code>supabase/mcp</code></td>
+            <td><code>CWE-863 / CWE-20</code></td>
+            <td>SQL statement classification and confirmation guard parsing for complex query structures.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-RAILS-001</code></td>
+            <td><code>rails/rails</code></td>
+            <td><code>CWE-755 / CWE-203</code></td>
+            <td>Malformed header exception handling and constant-response behavior in HTTP authentication middlewares.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-CURL-001</code></td>
+            <td><code>curl/curl</code></td>
+            <td><code>CWE-617 / CWE-401 / CWE-195</code></td>
+            <td>TLS session ticket deserialization invariants, error-path allocation cleanup, and signed/unsigned return handling.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-INGRESSNGINX-001</code></td>
+            <td><code>kubernetes/ingress-nginx</code></td>
+            <td><code>CWE-185 / CWE-942 / CWE-636</code></td>
+            <td>Annotation regex anchoring and fail-closed default enforcement in ingress configuration validators.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-CPYTHON-001</code></td>
+            <td><code>python/cpython</code></td>
+            <td><code>CWE-20 / CWE-755</code></td>
+            <td>Integer attribute validation in HTTP cookie parsing and truncated binary catalog bounds checks.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-PHP-001</code></td>
+            <td><code>php/php-src</code></td>
+            <td><code>CWE-601 / CWE-200 / CWE-401</code></td>
+            <td>Cross-origin port comparison and error-path URI buffer cleanup in HTTP redirect handling.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-REDIS-001</code></td>
+            <td><code>redis/redis</code></td>
+            <td><code>CWE-681 / CWE-191 / CWE-125</code></td>
+            <td>Integer width preservation and unsigned length bounds checking in binary cluster packet extensions.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-GOOSE-001</code></td>
+            <td><code>block/goose</code></td>
+            <td><code>CWE-22 / CWE-284 / CWE-863</code></td>
+            <td>Workspace directory path containment and fail-closed authorization list parsing in gateway handlers.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-CLOUDFLARE-MCP-001</code></td>
+            <td><code>cloudflare/mcp-server-cloudflare</code></td>
+            <td><code>CWE-79 / CWE-20 / CWE-863</code></td>
+            <td>URI scheme allowlisting and consent state validation in OAuth authorization helpers.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-MATTERMOST-AI-001</code></td>
+            <td><code>mattermost/mattermost-plugin-ai</code></td>
+            <td><code>CWE-862 / CWE-863 / CWE-400</code></td>
+            <td>Attachment channel authorization and caller identity verification in bridge message handlers.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-GHMCP-001</code></td>
+            <td><code>github/github-mcp-server</code></td>
+            <td><code>CWE-352 / CWE-400</code></td>
+            <td>State parameter verification ordering in loopback OAuth callback servers.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-GRAFANA-MCP-001</code></td>
+            <td><code>grafana/mcp-grafana</code></td>
+            <td><code>CWE-185 / CWE-20 / CWE-400</code></td>
+            <td>AST matcher complexity analysis and range duration parsing in query policy guards.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-NODE-001</code></td>
+            <td><code>nodejs/node</code></td>
+            <td><code>CWE-285 / CWE-863</code></td>
+            <td>Prefix tree wildcard matching and directory boundary normalization in filesystem permission checks.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-RUBY-001</code></td>
+            <td><code>ruby/ruby</code></td>
+            <td><code>CWE-1333 / CWE-755</code></td>
+            <td>Zero-repetition quantifier compilation invariants in regular expression bytecode generation.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-RUNDECK-002</code></td>
+            <td><code>rundeck/rundeck</code></td>
+            <td><code>CWE-22 / CWE-73 / CWE-639</code></td>
+            <td>Storage reference path canonicalization and project ownership verification during job import.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>CVD-2026-RUNDECK-001</code></td>
+            <td><code>rundeck/mcp</code></td>
+            <td><code>CWE-918 / CWE-522 / CWE-863</code></td>
+            <td>Origin validation for authenticated API requests and path normalization in confirmation guards.</td>
+            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
+          </tr>
+          <tr>
+            <td><code>ADV-2026-003</code></td>
+            <td><code>Replay Ingestion Workers</code></td>
+            <td><code>CWE-918</code></td>
+            <td>Post-resolution IP allowlisting and DNS-rebinding defenses for asynchronous replay-ingestion pipelines.</td>
+            <td><a href="https://github.com/ccsimplyspolit/cs-telemetry-internals/blob/main/advisories/api_security_audits/ADV-2026-003_ssrf_case_url_audit.md">Published Specification</a></td>
+          </tr>
+          <tr>
+            <td><code>ADV-2026-004</code></td>
+            <td><code>VDF / KeyValues Parsers</code></td>
+            <td><code>CWE-943 / CWE-674</code></td>
+            <td>Delimiter breakout, stack exhaustion, and Unicode digit normalization in VDF/KeyValues deserializers.</td>
+            <td><a href="https://github.com/ccsimplyspolit/cs-telemetry-internals/blob/main/advisories/api_security_audits/ADV-2026-004_key_value_injection_audit.md">Published Specification</a></td>
+          </tr>
+          <tr>
+            <td><code>ADV-2026-005</code></td>
+            <td><code>OpenID 2.0 Relying Parties</code></td>
+            <td><code>CWE-290 / CWE-294</code></td>
+            <td>Strict <code>openid.op_endpoint</code> pinning and cryptographic nonce consumption in stateless Relying Parties.</td>
+            <td><a href="https://github.com/ccsimplyspolit/cs-telemetry-internals/blob/main/advisories/api_security_audits/ADV-2026-005_openid_replay_mitigation.md">Published Specification</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="binary-research">
+      <h2>0x02 // Binary Integrity, Reverse Engineering &amp; Defensive Tooling</h2>
+      <div class="grid">
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">TOOL // STATIC ANALYSIS</span>
+              <span class="tool-tag">Python / SARIF v2.1.0</span>
+            </div>
+            <h3><a href="https://github.com/ccsimplyspolit/protobuf-bounds-auditor">protobuf-bounds-auditor</a></h3>
+            <p>Static security analyzer for Protocol Buffers (<code>.proto</code>) schemas detecting unbounded <code>repeated</code> sub-messages (<code>CWE-1284</code>), unvalidated IEEE-754 <code>float</code>/<code>double</code> wire fields (<code>CWE-20</code>), and untrusted allocation lengths (<code>CWE-400</code>).</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://github.com/ccsimplyspolit/protobuf-bounds-auditor">View Repository &rarr;</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">ADV-2026-001</span>
+              <span class="tool-tag">Windows x64 / IDAPython</span>
+            </div>
+            <h3><a href="https://github.com/ccsimplyspolit/cs-telemetry-internals/blob/main/advisories/ADV-2026-001_memory_scanning_telemetry.md">Client-Side Memory Page Validation &amp; Heuristic Telemetry</a></h3>
+            <p>Architectural specification of virtual address space traversal (<code>NtQueryVirtualMemory</code>), relocation-masked <code>.text</code> section hashing, and unbacked executable page detection.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://github.com/ccsimplyspolit/cs-telemetry-internals">View Repository &rarr;</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">ADV-2026-002</span>
+              <span class="tool-tag">PE64 / Deterministic Lockstep</span>
+            </div>
+            <h3><a href="https://github.com/ccsimplyspolit/cardinal-engine-integrity/blob/main/advisories/ADV-2026-002_anti_tamper_mechanics.md">Cardinal Engine Integrity &amp; 4,423-Function Simulation Audit</a></h3>
+            <p>Relocation-normalized section integrity verification, IAT boundary auditing, and static classification of 4,423 simulation functions in 64-bit deterministic RTS engines.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://github.com/ccsimplyspolit/cardinal-engine-integrity">View Repository &rarr;</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+        <section id="writeups">
+      <h2>0x03 // Methodology Write-ups (Fuzzing &amp; Memory Safety)</h2>
+      <div class="grid">
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">WRITE-UP // MEMORY SAFETY</span>
+              <span class="tool-tag">CWE-191 / CWE-121</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/writeups/integer-underflow-packet-parsers.html">Anatomy of Unsigned Integer Underflows &amp; Sticky-State Stack Overflows in C/C++ Parsers</a></h3>
+            <p>Analyzing two-pass validation mismatches in binary telemetry and packet routers: how narrow unsigned remainder subtraction (<code>uint8_t rem = len - i</code>), zero-count group calculations, and persistent cross-record state bypass outer container checks.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/writeups/integer-underflow-packet-parsers.html">Read Technical Write-up &rarr;</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">WRITE-UP // FUZZING</span>
+              <span class="tool-tag">libprotobuf-mutator / ASAN</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/writeups/libprotobuf-mutator-subtick-invariants.html">Structure-Aware Fuzzing of High-Frequency RPC &amp; Simulation Protocols with libprotobuf-mutator</a></h3>
+            <p>Combining static <code>.proto</code> schema auditing (<code>protobuf-bounds-auditor v1.1.0</code>) with automated <code>DEFINE_PROTO_FUZZER</code> C++ harness generation and post-deserialization invariant enforcement.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/writeups/libprotobuf-mutator-subtick-invariants.html">Read Technical Write-up &rarr;</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">WRITE-UP // VM INTERNALS</span>
+              <span class="tool-tag">CWE-843 / Bytecode VM</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/writeups/vm-deserialization-union-type-confusion.html">Union Type Confusion &amp; Out-of-Order Deserialization in Embeddable Scripting VMs</a></h3>
+            <p>Analyzing tagged-union memory aliasing, out-of-order key-value deserialization, signed LEB128 count wraparounds, and placeholder reference invariants in embeddable C scripting virtual machines.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/writeups/vm-deserialization-union-type-confusion.html">Read Technical Write-up &rarr;</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">WRITE-UP // SNAPSHOT FUZZING</span>
+              <span class="tool-tag">CoW Snapshots / Guard Pages</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/writeups/snapshot-fuzzing-binary-parsers.html">Deterministic Snapshot Fuzzing &amp; Relocation-Aware Auditing of Binary Protocol Parsers</a></h3>
+            <p>Combining Copy-on-Write (CoW) dirty-page rollback with page-aligned guard allocations and overflow-safe 64-bit pointer offset verification in binary RPC deserializers.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/writeups/snapshot-fuzzing-binary-parsers.html">Read Technical Write-up &rarr;</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <span>&copy; 2026 Serhii Shunko (@sshunko / @ccsimplyspolit) &bull; All research conducted in isolated offline lab environments.</span>
+      <span>ORCID: <a href="https://orcid.org/0009-0002-4183-0361" style="color: var(--accent);">0009-0002-4183-0361</a></span>
+    </footer>
+  </div>
+</body>
+</html>

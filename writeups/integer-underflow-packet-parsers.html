@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anatomy of Unsigned Integer Underflows (CWE-191) &amp; Sticky-State Stack Overflows (CWE-121) in C/C++ Parsers | Serhii Shunko (@sshunko)</title>
+  <meta name="description" content="Methodological write-up by Serhii Shunko (@sshunko) analyzing CWE-191 unsigned length wraparound and CWE-121 sticky-state stack buffer overflows in embedded and telemetry C/C++ parsers.">
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --panel: #111621;
+      --border: #1f293a;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-green: #34d399;
+      --accent-amber: #fbbf24;
+      --mono: "JetBrains Mono", "Fira Code", Consolas, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.7; padding: 2rem 1.25rem 4rem; }
+    .container { max-width: 920px; margin: 0 auto; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .back { font-family: var(--mono); font-size: 0.88rem; display: inline-block; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.7rem; margin-bottom: 0.5rem; }
+    .meta { font-family: var(--mono); color: var(--muted); font-size: 0.84rem; margin-bottom: 1.5rem; }
+    h2 { font-family: var(--mono); font-size: 1.15rem; color: var(--accent); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+    p { margin-bottom: 1rem; }
+    pre { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.83rem; line-height: 1.5; margin: 0.85rem 0; }
+    code { font-family: var(--mono); background: rgba(255,255,255,0.06); padding: 0.1rem 0.35rem; border-radius: 3px; font-size: 0.85em; }
+    pre code { background: none; padding: 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
+    <h1>Anatomy of Unsigned Integer Underflows (<code>CWE-191</code>) &amp; Sticky-State Stack Overflows (<code>CWE-121</code>) in C/C++ Parsers</h1>
+    <div class="meta">Author: Serhii Shunko (@sshunko / @ccsimplyspolit) &bull; ORCID: 0009-0002-4183-0361 &bull; Category: Memory Safety &amp; Static Analysis</div>
+
+    <h2>0x00 // Why Staged Validation Fails in Binary Parsers</h2>
+    <p>
+      Binary telemetry and embedded radio protocols frequently separate <strong>structural frame validation</strong> (Pass 1) from <strong>semantic payload extraction</strong> (Pass 2). A recurring vulnerability pattern arises when Pass 1 validates container boundaries (such as 32-bit KLV alignment or maximum hop-path byte length), and Pass 2 assumes that inner sub-headers or sticky state transitions are implicitly bounded by Pass 1.
+    </p>
+
+    <h2>0x01 // Pattern 1: Unsigned Remainder Wraparound (<code>uint8_t rem = len - i</code>, <code>CWE-191</code>)</h2>
+    <p>
+      In embedded packet routers (see embargoed disclosure <code>GHSA-4xx2-wr42-gjg3</code>), outer frame parsers verify that the variable-length routing path fits inside the received radio frame:
+    </p>
+    <pre><code>// Pass 1 (Frame Demux): Accepts any packet where i + path_byte_len &lt;= len
+// Consequently, pkt-&gt;payload_len = len - i can legitimately be 0..8 bytes.
+pkt-&gt;payload_len = len - i;</code></pre>
+    <p>
+      When a specialized handler in Pass 2 consumes a fixed 9-byte sub-header without re-verifying <code>pkt-&gt;payload_len &ge; 9</code>, subtracting the cursor <code>i = 9</code> in 8-bit unsigned arithmetic wraps modulo 256:
+    </p>
+    <pre><code>Memory / Register State Visualization (pkt-&gt;payload_len = 0, i = 9):
++-------------------------------------------------------------------+
+| uint8_t i          = 0x09 (9 bytes of sub-header read)            |
+| uint16_t pay_len   = 0x0000                                       |
+| uint8_t rem        = (uint8_t)(pay_len - i) = 0xF7 (247 bytes!)   |
++-------------------------------------------------------------------+
+| Packet::payload[184] buffer boundary:                             |
+| [0x00 .. 0x08: trace header] [0x09 .. 0xB7: payload] [0xB8.. OOB] |
+|                              |&lt;----- rem = 247 reads to 0x100 ---&gt;|
++-------------------------------------------------------------------+</code></pre>
+    <p>
+      <strong>Defensive Rule:</strong> Never compute a remaining length via subtraction (<code>len - i</code>) before asserting <code>i &le; len</code>, and never check multi-byte lookaheads via <code>offset + step_size &le; len</code> using narrow unsigned integers that can wrap.
+    </p>
+
+    <h2>0x02 // Pattern 2: Cross-Record Sticky State Desynchronization (<code>CWE-121</code>)</h2>
+    <p>
+      In stream-oriented KLV telemetry parsers (see embargoed disclosure <code>GHSA-j47j-8qq9-628m</code>), calibration metadata records persist in the parser context across subsequent data records. Even if each KLV record is 32-bit aligned and fits within the file buffer, a state-dependent transformation in Pass 2 that computes a Cartesian product <code>strlen(orin) * strlen(orio)</code> into a fixed 64-element stack matrix <code>double mtrx_buffer[64]</code> must enforce:
+    </p>
+    <pre><code>if (in_len != out_len || in_len == 0 || in_len &gt; 8 || in_len * out_len &gt; 64) {
+    return GPMF_ERROR_BAD_STRUCTURE;
+}</code></pre>
+
+    <h2>0x03 // Pattern 3: Zero-Count Group Underflow &amp; 64-Bit Varint Offset Arithmetic</h2>
+    <p>
+      In binary framing and base-encoding helpers, two additional boundary conditions frequently arise when zero-length payloads or 64-bit varint offsets interact with unsigned arithmetic:
+    </p>
+    <pre><code>// Defensive Pattern A: Guard (nGroups - 1) when input length is 0
+size_t nGroups = (input_len + 2) / 3;
+size_t out_required = 1 + nGroups * 4 + (
+    (line_break_str != nullptr &amp;&amp; nGroups &gt; 0)
+        ? strlen(line_break_str) * (1 + (nGroups - 1) / kGroupsPerLine)
+        : 0
+);
+
+// Defensive Pattern B: Guard 64-bit unsigned varint delta addition against INT64_MAX wrap
+if (raw_delta &gt; static_cast&lt;uint64_t&gt;(INT64_MAX - base_seq_num)) {
+    return false; // Reject overflowing sequence offset before state update
+}</code></pre>
+  </div>
+</body>
+</html>
