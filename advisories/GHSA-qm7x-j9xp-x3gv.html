@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GHSA-qm7x-j9xp-x3gv — czlonkowski/n8n-mcp Coordinated Disclosure Record | Serhii Shunko (@sshunko)</title>
-  <meta name="description" content="Coordinated Vulnerability Disclosure verification record for GHSA-qm7x-j9xp-x3gv in czlonkowski/n8n-mcp by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <meta name="description" content="Coordinated Vulnerability Disclosure embargo verification record for GHSA-qm7x-j9xp-x3gv in czlonkowski/n8n-mcp by Serhii Shunko (@sshunko / @ccsimplyspolit).">
   <style>
     :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,16 +21,17 @@
 <body>
   <div class="container">
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
-    <h1>GHSA-qm7x-j9xp-x3gv: SSRF Protection Bypass in validateUrlSync and validateWebhookUrl via Trailing-Dot FQDNs and RFC 6761 *.localhost Subdomains (<code>czlonkowski/n8n-mcp</code>)</h1>
+    <h1>GHSA-qm7x-j9xp-x3gv: Coordinated Vulnerability Disclosure Verification Record (<code>czlonkowski/n8n-mcp</code>)</h1>
     <div class="notice">
       <strong>[CVD EMBARGO / VENDOR TRIAGE NOTICE]</strong><br>
-      Privately reported to <code>czlonkowski/n8n-mcp</code> via GitHub Private Vulnerability Reporting on <code>2026-10-26T02:01:05Z</code> (<a href="https://github.com/czlonkowski/n8n-mcp/security/advisories/GHSA-qm7x-j9xp-x3gv">https://github.com/czlonkowski/n8n-mcp/security/advisories/GHSA-qm7x-j9xp-x3gv</a>).
+      Privately reported to <code>czlonkowski/n8n-mcp</code> via GitHub Private Vulnerability Reporting on <code>2026-10-26T02:01:05Z</code> (<a href="https://github.com/czlonkowski/n8n-mcp/security/advisories/GHSA-qm7x-j9xp-x3gv">https://github.com/czlonkowski/n8n-mcp/security/advisories/GHSA-qm7x-j9xp-x3gv</a>).<br>
+      In strict compliance with Coordinated Vulnerability Disclosure (CVD) embargo policy, line-level root-cause analysis, reproduction harnesses, and unified remediation diffs are withheld from public access until upstream vendor triage and patch release are complete.
     </div>
-    <h2>0x00 // GitHub REST API Verification Record</h2>
+    <h2>0x00 // Cryptographic Commitment &amp; GitHub CNA Verification Metadata</h2>
     <pre><code>{
   &quot;ghsa_id&quot;: &quot;GHSA-qm7x-j9xp-x3gv&quot;,
+  &quot;repository&quot;: &quot;czlonkowski/n8n-mcp&quot;,
   &quot;html_url&quot;: &quot;https://github.com/czlonkowski/n8n-mcp/security/advisories/GHSA-qm7x-j9xp-x3gv&quot;,
-  &quot;summary&quot;: &quot;SSRF Protection Bypass in validateUrlSync and validateWebhookUrl via Trailing-Dot FQDNs and RFC 6761 *.localhost Subdomains&quot;,
   &quot;state&quot;: &quot;triage&quot;,
   &quot;severity&quot;: &quot;medium&quot;,
   &quot;created_at&quot;: &quot;2026-10-26T02:01:05Z&quot;,
@@ -38,105 +39,9 @@
     &quot;CWE-184&quot;,
     &quot;CWE-918&quot;
   ],
-  &quot;vulnerabilities&quot;: [
-    {
-      &quot;package&quot;: {
-        &quot;ecosystem&quot;: &quot;npm&quot;,
-        &quot;name&quot;: &quot;n8n-mcp&quot;
-      },
-      &quot;vulnerable_version_range&quot;: &quot;&lt;= 2.99.1&quot;,
-      &quot;patched_versions&quot;: null,
-      &quot;vulnerable_functions&quot;: []
-    }
-  ]
+  &quot;embargo_policy&quot;: &quot;REDACTED_DURING_VENDOR_TRIAGE&quot;,
+  &quot;specification_sha256_commitment&quot;: &quot;f752cc762b1ccc1ae794c2d29d27238c73e2bb4892b97e3c6c083106d75f1e9f&quot;
 }</code></pre>
-    <h2>0x01 // Technical Specification &amp; Remediation Patch</h2>
-    <pre><code>### Summary
-In `src/utils/ssrf-protection.ts` (`&lt;= v2.99.1`), `SSRFProtection.validateUrlSync()` and `SSRFProtection.validateWebhookUrl()` normalize `url.hostname` via `.toLowerCase()` and IPv6 bracket-stripping, without stripping trailing DNS root-zone dots (`.`) and without checking RFC 6761 `.localhost` subdomains in `isLoopbackHost()`.
-
-Because the WHATWG `URL` parser preserves trailing dots in `url.hostname` (e.g., `new URL(&#x27;http://metadata.google.internal./computeMetadata/v1/&#x27;).hostname === &#x27;metadata.google.internal.&#x27;` and `new URL(&#x27;http://localhost.:5678/&#x27;).hostname === &#x27;localhost.&#x27;`), exact-match checks against `CLOUD_METADATA` and `LOCALHOST_PATTERNS` are bypassed.
-
-### Root Cause Analysis
-1. **Trailing-Dot FQDN Bypass of `CLOUD_METADATA` and `LOCALHOST_PATTERNS` (`src/utils/ssrf-protection.ts:129-139, 349-359, 645-652`)**:
-   - `CLOUD_METADATA` (`lines 58-74`) and `LOCALHOST_PATTERNS` (`lines 80-89`) are `Set&lt;string&gt;` collections of bare hostnames (`&#x27;metadata.google.internal&#x27;`, `&#x27;metadata&#x27;`, `&#x27;instance-data&#x27;`, `&#x27;localhost&#x27;`, `&#x27;localhost.localdomain&#x27;`).
-   - Neither `validateWebhookUrl()` (`line 349`) nor `validateUrlSync()` (`line 645`) strips trailing root dots (`.replace(/\.+$/, &#x27;&#x27;)`) before calling `isCloudMetadata(hostname)` or `isLoopbackHost(hostname)`.
-   - Consequently:
-     - `SSRFProtection.validateUrlSync(&#x27;http://metadata.google.internal./computeMetadata/v1/&#x27;)`, `SSRFProtection.validateUrlSync(&#x27;http://localhost.:5678/&#x27;)`, and `SSRFProtection.validateUrlSync(&#x27;http://localhost.localdomain.:5678/&#x27;)` return `{ valid: true }` even in **`strict` mode** (incomplete remediation of `GHSA-4ggg-h7ph-26qr` / `CVE-2026-39974` and `GHSA-56c3-vfp2-5qqj` / `CVE-2026-42449` for downstream consumers using `validateUrlSync`).
-     - In `validateWebhookUrl()`, `http://metadata.google.internal./` bypasses Step 2 (`isCloudMetadata(hostname)`), permitting GCP metadata access in `permissive` mode.
-2. **RFC 6761 `*.localhost` Subdomain Bypass in `isLoopbackHost` (`src/utils/ssrf-protection.ts:137-139`)**:
-   - `isLoopbackHost(host)` only checks `LOCALHOST_PATTERNS.has(host)` (`&#x27;localhost&#x27;`, `&#x27;localhost.localdomain&#x27;`), omitting `host.endsWith(&#x27;.localhost&#x27;)`.
-   - Under RFC 6761 (`systemd-resolved`, `nss-myhostname`, macOS, Windows, and Docker), all `*.localhost` names (e.g., `http://admin.localhost:5678/`) resolve locally to `127.0.0.1` / `::1`, yet `validateUrlSync` returns `{ valid: true }` in `strict` mode.
-
-### Impact
-- Bypass of `CLOUD_METADATA` and `LOCALHOST_PATTERNS` hostname blocks in `validateUrlSync` (across `strict`, `moderate`, and `permissive` modes) and `isCloudMetadata` in `validateWebhookUrl`.
-
-### Recommended Remediation
-Normalize hostnames by stripping trailing dots in both `validateWebhookUrl` and `validateUrlSync`, and treat `*.localhost` and `*.localhost.localdomain` as loopback hosts in `isLoopbackHost`:
-
-```diff
---- a/src/utils/ssrf-protection.ts
-+++ b/src/utils/ssrf-protection.ts
-@@ -135,7 +135,12 @@
-    * PRIVATE_IP_RANGES).
-    */
-   private static isLoopbackHost(host: string): boolean {
--    return LOCALHOST_PATTERNS.has(host) || (isIPv4(host) &amp;&amp; host.startsWith(&#x27;127.&#x27;));
-+    return (
-+      LOCALHOST_PATTERNS.has(host) ||
-+      host.endsWith(&#x27;.localhost&#x27;) ||
-+      host.endsWith(&#x27;.localhost.localdomain&#x27;) ||
-+      (isIPv4(host) &amp;&amp; host.startsWith(&#x27;127.&#x27;))
-+    );
-   }
- 
-   /**
-@@ -345,11 +350,14 @@
-         return { valid: false, reason: &#x27;Invalid protocol. Only HTTP/HTTPS allowed.&#x27; };
-       }
- 
--      // Get hostname and strip IPv6 brackets if present
-+      // Get hostname, strip IPv6 brackets and trailing FQDN dots
-       let hostname = url.hostname.toLowerCase();
--      // Remove IPv6 brackets for consistent comparison
-       if (hostname.startsWith(&#x27;[&#x27;) &amp;&amp; hostname.endsWith(&#x27;]&#x27;)) {
-         hostname = hostname.slice(1, -1);
-+      }
-+      hostname = hostname.replace(/\.+$/, &#x27;&#x27;);
-+      if (!hostname) {
-+        return { valid: false, reason: &#x27;Invalid URL format&#x27; };
-       }
- 
-       // Step 2: ALWAYS block cloud metadata endpoints (all modes)
-@@ -646,6 +654,10 @@
-     if (hostname.startsWith(&#x27;[&#x27;) &amp;&amp; hostname.endsWith(&#x27;]&#x27;)) {
-       hostname = hostname.slice(1, -1);
-     }
-+    hostname = hostname.replace(/\.+$/, &#x27;&#x27;);
-+    if (!hostname) {
-+      return { valid: false, reason: &#x27;Invalid URL format&#x27; };
-+    }
- 
-     if (SSRFProtection.isCloudMetadata(hostname)) {
-       return { valid: false, reason: &#x27;Cloud metadata endpoint blocked&#x27; };
-```
-
-### Formal Specification &amp; Taint Provenance (`re-source-reconstruction` / `PTN`)
-
-#### 1. Symbol &amp; Call-Graph Provenance Table
-| Source Location | Symbol / Function | Subsystem Role |
-|---|---|---|
-| `src/utils/ssrf-protection.ts:129-139` | `isCloudMetadata(host)` / `isLoopbackHost(host)` | Exact `Set.has(host)` lookup against `CLOUD_METADATA` and `LOCALHOST_PATTERNS` |
-| `src/utils/ssrf-protection.ts:342-365` | `SSRFProtection.validateWebhookUrl(urlString)` | Async webhook URL validator (`strict` / `moderate` / `permissive`) |
-| `src/utils/ssrf-protection.ts:635-697` | `SSRFProtection.validateUrlSync(urlString)` | Synchronous URL validator for SDK embedders |
-
-#### 2. PTN Data-Flow &amp; Taint Propagation
-- **`I:urlString`** (`http://metadata.google.internal./computeMetadata/v1/`, `http://localhost.:5678/`, `http://admin.localhost:5678/`) → **`new URL(urlString).hostname`** (preserves trailing `.`) → **`P(isCloudMetadata / isLoopbackHost, 1)`** (returns `false`) → **`E:validateUrlSync`** returns `{ valid: true }` even in `strict` mode.
-
-#### 3. Assumption Register (`[A1..A2]`) &amp; Falsification Probes (`QG1–QG7`)
-| ID | Assumption Statement | Confidence | Failure Impact if False | Concrete Falsification Probe |
-|---|---|---|---|---|
-| `A1` | Node.js WHATWG `new URL(&#x27;http://localhost.:5678/&#x27;).hostname` preserves the trailing root dot (`&#x27;localhost.&#x27;`). | `PROVEN` | `LOCALHOST_PATTERNS.has(&#x27;localhost.&#x27;)` and `CLOUD_METADATA.has(&#x27;metadata.google.internal.&#x27;)` evaluate to `false`. | Run `node -e &quot;console.log(new URL(&#x27;http://metadata.google.internal./&#x27;).hostname)&quot;` -&gt; `&#x27;metadata.google.internal.&#x27;`. |
-| `A2` | `isLoopbackHost` in `src/utils/ssrf-protection.ts:137-139` checks only `LOCALHOST_PATTERNS.has(host)` without `.endsWith(&#x27;.localhost&#x27;)`. | `PROVEN` | `validateUrlSync(&#x27;http://sub.localhost:5678/&#x27;)` returns `{ valid: true }` in `strict` mode. | Inspect `src/utils/ssrf-protection.ts:80-89, 137-139`. |</code></pre>
   </div>
 </body>
 </html>

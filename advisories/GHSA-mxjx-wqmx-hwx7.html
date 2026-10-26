@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GHSA-mxjx-wqmx-hwx7 — HKUDS/nanobot Coordinated Disclosure Record | Serhii Shunko (@sshunko)</title>
-  <meta name="description" content="Coordinated Vulnerability Disclosure verification record for GHSA-mxjx-wqmx-hwx7 in HKUDS/nanobot by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <meta name="description" content="Coordinated Vulnerability Disclosure embargo verification record for GHSA-mxjx-wqmx-hwx7 in HKUDS/nanobot by Serhii Shunko (@sshunko / @ccsimplyspolit).">
   <style>
     :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,16 +21,17 @@
 <body>
   <div class="container">
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
-    <h1>GHSA-mxjx-wqmx-hwx7: Incomplete Fix for GHSA-vc5v-6vwm-wf9m (ZDI-CAN-29369) in nanobot/security/network.py and Command/Path Guard Bypass in nanobot/agent/tools/shell.py (<code>HKUDS/nanobot</code>)</h1>
+    <h1>GHSA-mxjx-wqmx-hwx7: Coordinated Vulnerability Disclosure Verification Record (<code>HKUDS/nanobot</code>)</h1>
     <div class="notice">
       <strong>[CVD EMBARGO / VENDOR TRIAGE NOTICE]</strong><br>
-      Privately reported to <code>HKUDS/nanobot</code> via GitHub Private Vulnerability Reporting on <code>2026-10-25T13:31:24Z</code> (<a href="https://github.com/HKUDS/nanobot/security/advisories/GHSA-mxjx-wqmx-hwx7">https://github.com/HKUDS/nanobot/security/advisories/GHSA-mxjx-wqmx-hwx7</a>).
+      Privately reported to <code>HKUDS/nanobot</code> via GitHub Private Vulnerability Reporting on <code>2026-10-25T13:31:24Z</code> (<a href="https://github.com/HKUDS/nanobot/security/advisories/GHSA-mxjx-wqmx-hwx7">https://github.com/HKUDS/nanobot/security/advisories/GHSA-mxjx-wqmx-hwx7</a>).<br>
+      In strict compliance with Coordinated Vulnerability Disclosure (CVD) embargo policy, line-level root-cause analysis, reproduction harnesses, and unified remediation diffs are withheld from public access until upstream vendor triage and patch release are complete.
     </div>
-    <h2>0x00 // GitHub REST API Verification Record</h2>
+    <h2>0x00 // Cryptographic Commitment &amp; GitHub CNA Verification Metadata</h2>
     <pre><code>{
   &quot;ghsa_id&quot;: &quot;GHSA-mxjx-wqmx-hwx7&quot;,
+  &quot;repository&quot;: &quot;HKUDS/nanobot&quot;,
   &quot;html_url&quot;: &quot;https://github.com/HKUDS/nanobot/security/advisories/GHSA-mxjx-wqmx-hwx7&quot;,
-  &quot;summary&quot;: &quot;Incomplete Fix for GHSA-vc5v-6vwm-wf9m (ZDI-CAN-29369) in nanobot/security/network.py and Command/Path Guard Bypass in nanobot/agent/tools/shell.py&quot;,
   &quot;state&quot;: &quot;triage&quot;,
   &quot;severity&quot;: &quot;high&quot;,
   &quot;created_at&quot;: &quot;2026-10-25T13:31:24Z&quot;,
@@ -39,182 +40,9 @@
     &quot;CWE-184&quot;,
     &quot;CWE-918&quot;
   ],
-  &quot;vulnerabilities&quot;: [
-    {
-      &quot;package&quot;: {
-        &quot;ecosystem&quot;: &quot;pip&quot;,
-        &quot;name&quot;: &quot;nanobot-ai&quot;
-      },
-      &quot;vulnerable_version_range&quot;: &quot;&lt;= 0.3.5&quot;,
-      &quot;patched_versions&quot;: null,
-      &quot;vulnerable_functions&quot;: []
-    }
-  ]
+  &quot;embargo_policy&quot;: &quot;REDACTED_DURING_VENDOR_TRIAGE&quot;,
+  &quot;specification_sha256_commitment&quot;: &quot;584686182c879c2f2fca6b6bfb4ce01441c835df62b6d2e0e14761896fcc8013&quot;
 }</code></pre>
-    <h2>0x01 // Technical Specification &amp; Remediation Patch</h2>
-    <pre><code>### Summary &amp; Root-Cause Static Analysis
-
-1. **Incomplete Fix for `GHSA-vc5v-6vwm-wf9m` (`ZDI-CAN-29369`) in `nanobot/security/network.py` (`lines 56-75`, `CWE-918` / `CWE-184`):**
-   `_normalize_addr()` only unwraps `addr.ipv4_mapped` (`::ffff:0:0/96`) and `_is_private()` checks only a static 11-entry `_BLOCKED_NETWORKS` list. IPv6 transition addresses embedding internal IPv4 targets — including NAT64 (`64:ff9b::/96` and `64:ff9b:1::/48`), 6to4 (`2002::/16`), Teredo (`2001::/32`), IPv4-compatible (`::/96`), and SIIT (`::ffff:0:0:0/96`) — as well as non-global ranges covered by `ipaddress` stdlib predicates return `False` from `_is_private()`. Additionally, `WebSearchTool._search_searxng()` in `nanobot/agent/tools/web.py:720-726` creates `httpx.AsyncClient` without `validate_url_target()` or `PinnedDNSAsyncTransport`.
-
-2. **Command Guard Bypass &amp; Quote-Split Path Traversal in `nanobot/agent/tools/shell.py` (`lines 426-434, 858-928, 1027-1115`, `CWE-22`):**
-   In `ExecTool._prepare_command()`, `self._guard_command()` is gated behind `if access.restrict_to_workspace:`, completely skipping `deny_patterns`, `allow_patterns`, and `contains_internal_url()` in the default configuration (`restrict_to_workspace=False`). When `restrict_to_workspace=True`, `&quot;../&quot; in cmd` is checked only on the raw command string before `shlex.shlex(command, posix=True)` strips quotes in `_extract_absolute_paths()`, while `_extract_posix_paths_from_token()` only inspects tokens starting with `/` or `~`.
-
----
-
-### Formal Functional Specification (`re-source-reconstruction`)
-
-#### 1. Symbol &amp; Call-Graph Provenance Table
-
-| Function / Symbol | Source Location | Caller / Entry Vector | Sink / Impacted Resource |
-| :--- | :--- | :--- | :--- |
-| `_normalize_addr` / `_is_private` | `nanobot/security/network.py:56-75` | `resolve_url_target() / validate_url_target()` | `PinnedDNSAsyncTransport.handle_async_request()` |
-| `ExecTool._prepare_command` | `nanobot/agent/tools/shell.py:423-435` | `ExecTool.execute()` | `asyncio.create_subprocess_shell()` |
-| `ExecTool._extract_absolute_paths` | `nanobot/agent/tools/shell.py:1027-1055` | `ExecTool._guard_command()` | `Path(cwd / raw).resolve() containment check` |
-
-#### 2. Formal PTN Data-Flow &amp; Taint Propagation
-
-```text
-I: External URL `url` with IPv6 transition address (`64:ff9b::a9fe:a9fe`, `2002:a9fe:a9fe::1`, `2001:0:...`)
-  -&gt; P(validate_url_target, 1) -&gt; P(resolve_url_target, 1)
-  -&gt; L(_normalize_addr, 1) [only unwraps `addr.ipv4_mapped`; returns raw IPv6Address for NAT64/6to4/Teredo]
-  -&gt; L(_is_private, 1) [checks 4 IPv6 prefixes in `_BLOCKED_NETWORKS` -&gt; returns False]
-  -&gt; E: PinnedDNSAsyncTransport.handle_async_request (connects to internal metadata/loopback target)
-
-I: Agent shell command string `command`
-  -&gt; P(ExecTool._prepare_command, 1)
-  -&gt; L(access.restrict_to_workspace, 1) [when False, skips `_guard_command()` entirely; when True, `shlex` strips quotes after raw `&quot;../&quot; in cmd` check]
-  -&gt; E: asyncio.create_subprocess_shell (executes unguarded command or traverses outside `workspace_root`)
-```
-
-#### 3. Assumption Register (`[A1..An]`) &amp; Concrete Falsification Probes
-
-| ID | Confidence | Mathematical / Structural Proposition | Concrete Verification / Falsification Probe |
-| :--- | :--- | :--- | :--- |
-| `[A1]` | `PROVEN` | `_normalize_addr()` in `nanobot/security/network.py:56-68` only checks `addr.ipv4_mapped` and does not unwrap `64:ff9b::/96`, `addr.sixtofour`, or `addr.teredo`. | Inspect `nanobot/security/network.py:56-75` and verify `_is_private(ipaddress.IPv6Address(&#x27;64:ff9b::7f00:1&#x27;)) == False`. |
-| `[A2]` | `PROVEN` | `ExecTool._prepare_command()` gates `self._guard_command()` behind `if access.restrict_to_workspace:` even though `_guard_command()` enforces `deny_patterns` and `contains_internal_url()` unconditionally. | Compare `nanobot/agent/tools/shell.py:426-434` against `shell.py:824-858`. |
-| `[A3]` | `PROVEN` | `_extract_posix_paths_from_token()` ignores tokens decoded by `shlex.shlex(..., posix=True)` unless they begin with `/` or `~`. | Inspect `nanobot/agent/tools/shell.py:1027-1115`. |
-
-#### 4. Adversarial Review &amp; Self-Red-Team Quality Gates (`QG1–QG7`)
-
-- **`QG1` (Completeness):** `PASS` — Every root-cause sub-finding is paired with a complete, self-contained remediation diff hunk.
-- **`QG2` (No Placeholders):** `PASS` — Zero `TODO`, `FIXME`, or truncated `...` blocks in remediation patches.
-- **`QG3` (Type &amp; Width Exactness):** `PASS` — All integer widths, pointer offsets, and container bounds are explicitly checked against overflow/underflow.
-- **`QG4` (Structural &amp; Compile-Time Invariants):** `PASS` — Compile-time `static_assert` / `_Static_assert` and runtime guard invariants enforced.
-- **`QG5` (Falsifiability):** `PASS` — Every `[A1..A3]` entry includes a deterministic verification probe.
-- **`QG6` (Adversarial Personas — Saboteur / New Hire / Security Auditor):** `PASS` — Verified order-independence, multi-pass normalization, and error-path cleanup.
-- **`QG7` (Defensive CVD Compliance):** `PASS` — Strictly defensive source-level specification and remediation patch.
-
----
-
-### Defensive Remediation Patch
-
-```diff
---- a/nanobot/security/network.py
-+++ b/nanobot/security/network.py
-@@ -26,6 +26,9 @@
-     ipaddress.ip_network(&quot;fc00::/7&quot;),          # unique local
-     ipaddress.ip_network(&quot;fe80::/10&quot;),         # link-local v6
- ]
-+_NAT64_WKP = ipaddress.ip_network(&quot;64:ff9b::/96&quot;)
-+_NAT64_LOCAL = ipaddress.ip_network(&quot;64:ff9b:1::/48&quot;)
-+_SIIT_NET = ipaddress.ip_network(&quot;::ffff:0:0:0/96&quot;)
- 
- _URL_RE = re.compile(r&quot;https?://[^\s\&quot;&#x27;`;|&lt;&gt;]+&quot;, re.IGNORECASE)
- _allowed_networks: list[ipaddress.IPv4Network | ipaddress.IPv6Network] = []
-@@ -63,16 +66,33 @@
-     ``127.0.0.0/8`` nor ``::1/128``.  Converting it to IPv4 ensures
-     blocklist/allowlist checks work correctly.
-     &quot;&quot;&quot;
--    if isinstance(addr, ipaddress.IPv6Address) and addr.ipv4_mapped is not None:
--        return addr.ipv4_mapped
-+    if isinstance(addr, ipaddress.IPv6Address):
-+        if addr.ipv4_mapped is not None:
-+            return addr.ipv4_mapped
-+        if addr.sixtofour is not None:
-+            return addr.sixtofour
-+        if addr in _NAT64_WKP or addr in _NAT64_LOCAL or addr in _SIIT_NET or (int(addr) &gt;&gt; 32) == 0:
-+            return ipaddress.IPv4Address(int(addr) &amp; 0xFFFFFFFF)
-     return addr
- 
- 
- def _is_private(addr: ipaddress.IPv4Address | ipaddress.IPv6Address) -&gt; bool:
-+    if isinstance(addr, ipaddress.IPv6Address) and addr.teredo is not None:
-+        server_ip, client_ip = addr.teredo
-+        if _is_private(server_ip) or _is_private(client_ip):
-+            return True
-     normalized = _normalize_addr(addr)
-     if _allowed_networks and any(normalized in net for net in _allowed_networks):
-         return False
--    return any(normalized in net for net in _BLOCKED_NETWORKS)
-+    return (
-+        any(normalized in net for net in _BLOCKED_NETWORKS)
-+        or normalized.is_private
-+        or normalized.is_loopback
-+        or normalized.is_link_local
-+        or normalized.is_multicast
-+        or normalized.is_reserved
-+        or normalized.is_unspecified
-+    )
- 
- 
- def resolve_url_target(
---- a/nanobot/agent/tools/shell.py
-+++ b/nanobot/agent/tools/shell.py
-@@ -423,15 +423,14 @@
-         # Full access is an explicit trust decision. Keep the application-level
-         # command guard aligned with the selected access mode instead of
-         # continuing to block commands after workspace restriction is disabled.
--        if access.restrict_to_workspace:
--            guard_error = self._guard_command(
--                shlex.join(command) if isinstance(command, list) else command,
--                cwd,
--                restrict_to_workspace=True,
--                workspace_root=workspace_root,
--            )
--            if guard_error:
--                return guard_error
-+        guard_error = self._guard_command(
-+            shlex.join(command) if isinstance(command, list) else command,
-+            cwd,
-+            restrict_to_workspace=access.restrict_to_workspace,
-+            workspace_root=workspace_root,
-+        )
-+        if guard_error:
-+            return guard_error
- 
-         if self.sandbox:
-             if _IS_WINDOWS:
-@@ -1036,6 +1035,10 @@
-         paths = [*win_paths]
-         seen = set(win_paths)
-         for index, token in enumerate(tokens):
-+            norm_token = token.replace(&quot;\\&quot;, &quot;/&quot;)
-+            if norm_token == &quot;..&quot; or norm_token.startswith(&quot;../&quot;) or &quot;/../&quot; in norm_token or norm_token.endswith(&quot;/..&quot;):
-+                paths.append(token)
-+                seen.add(token)
-             for path in ExecTool._extract_posix_paths_from_token(token):
-                 if path not in seen:
-                     paths.append(path)
---- a/nanobot/agent/tools/web.py
-+++ b/nanobot/agent/tools/web.py
-@@ -718,11 +718,12 @@
-             logger.warning(&quot;SEARXNG_BASE_URL not set, falling back to DuckDuckGo&quot;)
-             return await self._search_duckduckgo(query, n)
-         endpoint = f&quot;{base_url.rstrip(&#x27;/&#x27;)}/search&quot;
--        is_valid, error_msg = _validate_url(endpoint)
-+        is_valid, error_msg = validate_url_target(endpoint)
-         if not is_valid:
-             return ToolResult.error(f&quot;Error: invalid SearXNG URL: {error_msg}&quot;)
-         try:
--            async with httpx.AsyncClient(proxy=self.proxy) as client:
-+            transport = PinnedDNSAsyncTransport(proxy=self.proxy)
-+            async with httpx.AsyncClient(transport=transport) as client:
-                 r = await client.get(
-                     endpoint,
-                     params={&quot;q&quot;: query, &quot;format&quot;: &quot;json&quot;},
-```
-</code></pre>
   </div>
 </body>
 </html>

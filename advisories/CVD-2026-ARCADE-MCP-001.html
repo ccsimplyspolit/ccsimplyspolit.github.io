@@ -1,168 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CVD-2026-ARCADE-MCP-001 — Path Traversal in _requirement_specs (-r Includes), Unblocked Loader Env Vars in deploy_config.py, and Raw Output Value Leak in ToolExecutor._serialize_output</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CVD-2026-ARCADE-MCP-001 — ArcadeAI/arcade-mcp Coordinated Disclosure Record | Serhii Shunko (@sshunko)</title>
+  <meta name="description" content="Coordinated Vulnerability Disclosure embargo verification record for CVD-2026-ARCADE-MCP-001 in ArcadeAI/arcade-mcp by Serhii Shunko (@sshunko / @ccsimplyspolit).">
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0d1117; color: #c9d1d9; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; line-height: 1.6; }
-    h1, h2, h3 { color: #f0f6fc; }
-    a { color: #58a6ff; text-decoration: none; }
-    pre { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; overflow-x: auto; font-size: 0.85rem; }
-    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-    .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; background: #1f6feb; color: #fff; font-size: 0.8rem; font-weight: 600; margin-right: 0.5rem; }
-    .meta { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
+    :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.65; padding: 2rem 1.25rem 4rem; }
+    .container { max-width: 960px; margin: 0 auto; }
+    a { color: var(--accent); text-decoration: none; }
+    .back { font-family: var(--mono); font-size: 0.88rem; display: inline-block; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    h2 { font-family: var(--mono); font-size: 1.05rem; color: var(--accent); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+    .notice { background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.35); border-radius: 6px; padding: 1rem 1.2rem; margin: 1.25rem 0; font-size: 0.92rem; }
+    pre { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.5; margin: 0.75rem 0; white-space: pre-wrap; }
   </style>
 </head>
 <body>
-  <p><a href="../index.html">&larr; Back to Security Research Portal</a></p>
-  <h1>CVD-2026-ARCADE-MCP-001: Path Traversal in _requirement_specs (-r Includes), Unblocked Loader Env Vars in deploy_config.py, and Raw Output Value Leak in ToolExecutor._serialize_output</h1>
-  <div>
-    <span class="badge">High (CVSS 7.8)</span>
-    <span class="badge">CWE-22 / CWE-426 / CWE-209</span>
-    <span class="badge">GitHub CNA PVR: ArcadeAI/arcade-mcp</span>
+  <div class="container">
+    <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
+    <h1>CVD-2026-ARCADE-MCP-001: Coordinated Vulnerability Disclosure Verification Record (<code>ArcadeAI/arcade-mcp</code>)</h1>
+    <div class="notice">
+      <strong>[CVD EMBARGO / VENDOR TRIAGE NOTICE]</strong><br>
+      Coordinated Vulnerability Disclosure record for <code>ArcadeAI/arcade-mcp</code> (CWE-22 / CWE-426 / CWE-209).<br>
+      In strict compliance with Coordinated Vulnerability Disclosure (CVD) embargo policy, affected source file paths, symbol names, reproduction harnesses, and unified remediation diffs are withheld from public access until upstream vendor triage and patch release are complete. The SHA-256 cryptographic commitment below binds the full specification timestamp and authorship.
+    </div>
+    <h2>0x00 // Cryptographic Commitment &amp; CVD Embargo Metadata</h2>
+    <pre><code>{
+  &quot;advisory_id&quot;: &quot;CVD-2026-ARCADE-MCP-001&quot;,
+  &quot;repository&quot;: &quot;ArcadeAI/arcade-mcp&quot;,
+  &quot;state&quot;: &quot;embargoed_vendor_triage&quot;,
+  &quot;cwe_ids&quot;: [
+    &quot;CWE-22&quot;,
+    &quot;CWE-426&quot;,
+    &quot;CWE-209&quot;
+  ],
+  &quot;component_scope_summary&quot;: &quot;Path containment for recursive dependency includes, reserved environment variable filtering, and error redaction.&quot;,
+  &quot;researcher&quot;: &quot;Serhii Shunko (@sshunko / @ccsimplyspolit)&quot;,
+  &quot;orcid&quot;: &quot;0009-0002-4183-0361&quot;,
+  &quot;embargo_policy&quot;: &quot;REDACTED_DURING_VENDOR_TRIAGE&quot;,
+  &quot;specification_sha256_commitment&quot;: &quot;13fcd0b2fdcd57ccadf1997ce2119a68ec9aef87afa9a71784f88df16ce30cd3&quot;
+}</code></pre>
   </div>
-  <div class="meta">
-    <strong>Target Repository:</strong> <code>ArcadeAI/arcade-mcp</code> (commit <code>18020d3096</code>, <code>2026-10-23T21:57:16Z</code>)<br/>
-    <strong>Affected Component:</strong> <code>libs/arcade-cli/arcade_cli/start_command.py (lines 281-297, 722-730), deploy_config.py (lines 30-58, 122-141), &amp; libs/arcade-core/arcade_core/executor.py (lines 156-163)</code><br/>
-    <strong>Researcher:</strong> Serhii Shunko (<a href="https://hackerone.com/sshunko">@sshunko</a> / <a href="https://github.com/ccsimplyspolit">@ccsimplyspolit</a>, ORCID <a href="https://orcid.org/0009-0002-4183-0361">0009-0002-4183-0361</a>)
-  </div>
-
-  <h2>1. Summary</h2>
-  <p>During a defensive static source audit of `https://github.com/ArcadeAI/arcade-mcp` (`main` branch, commit `18020d3096` / `0befb59d88` / `30a0b5779f`, pushed `2026-10-23T21:57:16Z`), I identified three security defects across `arcade-cli` and `arcade-core`:
-1. **Path Traversal via Recursive `-r` / `--requirement` Directives in `_requirement_specs()` (`CWE-22`, `start_command.py:281-297`)**: `_requirement_specs()` follows `-r &lt;path&gt;` directives in `requirements.txt` via `yield from _requirement_specs(path.parent / include.group(1), seen)` without verifying that the resolved path stays within `project_dir` or rejecting symlinks.
-2. **Runtime Code-Execution Environment Variables (`LD_PRELOAD`, `PYTHONPATH`, `PYTHONSTARTUP`) Not Reserved in `deploy_config.py` &amp; Redirect Following in `mcp_handshake()` (`CWE-426` / `CWE-918`, `deploy_config.py:30-58, 131-137` &amp; `start_command.py:722-730`)**: `_RESERVED_NAMES` and `_RESERVED_PREFIXES` block `PATH` and `HOME` but fail to block `LD_PRELOAD`, `LD_LIBRARY_PATH`, `DYLD_INSERT_LIBRARIES`, `PYTHONPATH`, `PYTHONSTARTUP`, or `PYTHONHOME` (and perform a case-sensitive check), while `mcp_handshake()` uses `follow_redirects=True` when sending `headers`.
-3. **Incomplete Fix for `ValidationError` Value Leakage in `ToolExecutor._serialize_output()` (`CWE-209`, `executor.py:156-163`)**: While commit `30a0b5779f` (*&#x27;fix(core): sanitize validation tracebacks and enforce declared input rules (#960)&#x27;*) sanitized `ValidationError` in `_serialize_input()` (`from None` and stripping `str(e)`), `_serialize_output()` right below it (`lines 158-162`) still interpolates `{e!s}` into `developer_message` and chains `from e`, leaking sensitive tool output values into error messages and stacktraces.</p>
-
-  <h2>2. Root Cause Analysis</h2>
-  <pre><code>- **`libs/arcade-cli/arcade_cli/start_command.py:281-297`**:
-```python
-def _requirement_specs(path: Path, seen: set[Path]) -&gt; Iterator[str]:
-    path = path.resolve()
-    if path in seen or not path.is_file():
-        return
-    seen.add(path)
-    text = re.sub(r&quot;\\\r?\n&quot;, &quot; &quot;, path.read_text(encoding=&quot;utf-8-sig&quot;))
-    for line in text.splitlines():
-        line = re.sub(r&quot;(^|\s)#.*&quot;, &quot;&quot;, line).strip()
-        include = re.match(r&quot;(?:-r|--requirement)(?:\s*=\s*|\s+)(\S+)$&quot;, line)
-        if include:
-            yield from _requirement_specs(path.parent / include.group(1), seen)
-```
-- **`libs/arcade-core/arcade_core/executor.py:158-162`**:
-```python
-        except ValidationError as e:
-            raise ToolOutputError(
-                message=&quot;Failed to serialize tool output&quot;,
-                developer_message=f&quot;Validation error occurred while serializing tool output: {e!s}. &quot;
-                f&quot;Please ensure the tool&#x27;s output matches the expected schema.&quot;,
-            ) from e
-```</code></pre>
-
-  <h2>3. Steps to Reproduce (BEFORE PATCH vs. AFTER PATCH)</h2>
-  <pre><code>Run the standalone verification test suite in `verify_batch9_fresh_ai_cna.py` (`test_03_arcade_mcp_requirements_traversal_and_env_bypass`):
-```bash
-uv run verify_batch9_fresh_ai_cna.py
-```
-- **BEFORE PATCH**: `check_env_before(&#x27;LD_PRELOAD&#x27;)` and `check_env_before(&#x27;PYTHONPATH&#x27;)` return `True`, `_requirement_specs()` follows `../` outside `project_dir`, and `_serialize_output()` echoes `{e!s}` with `from e`.
-- **AFTER PATCH**: Blocks `LD_*`, `DYLD_*`, `PYTHONPATH`, `PYTHONSTARTUP`, and `PYTHONHOME` case-insensitively, confines `_requirement_specs()` to `project_dir.resolve()`, disables redirect following in `mcp_handshake()`, and sanitizes `ValidationError` in `_serialize_output()`.</code></pre>
-
-  <h2>4. Suggested Remediation (Unified Diff)</h2>
-  <pre><code>--- a/libs/arcade-cli/arcade_cli/deploy_config.py
-+++ b/libs/arcade-cli/arcade_cli/deploy_config.py
-@@ -30,7 +30,7 @@ RUNNER_SETTINGS_PATH = &quot;.arcade/deploy.json&quot;
- # The runner sets these for itself and refuses a deployment that declares one
- # (apps/engine/pkg/deployments/worker/runner/reserved.go in the Engine). The ARCADE_BUNDLE_*
- # and ARCADE_ARTIFACT_STORE_URL names are its old names, still read during DEP-421&#x27;s change.
--_RESERVED_PREFIXES = (&quot;ARCADE_RUNNER_&quot;, &quot;KUBERNETES_&quot;, &quot;ARCADE_TELEMETRY_&quot;)
-+_RESERVED_PREFIXES = (&quot;ARCADE_RUNNER_&quot;, &quot;KUBERNETES_&quot;, &quot;ARCADE_TELEMETRY_&quot;, &quot;LD_&quot;, &quot;DYLD_&quot;)
- _RESERVED_NAMES = frozenset({
-     &quot;ARCADE_WORKER_SECRET&quot;,
-     &quot;ARCADE_ARTIFACT_STORE_URL&quot;,
-@@ -54,6 +54,9 @@ _RESERVED_NAMES = frozenset({
-     &quot;UV_CACHE_DIR&quot;,
-     &quot;UV_PYTHON_DOWNLOADS&quot;,
-     &quot;PIP_CACHE_DIR&quot;,
-+    &quot;PYTHONPATH&quot;,
-+    &quot;PYTHONSTARTUP&quot;,
-+    &quot;PYTHONHOME&quot;,
- })
- 
- # The platform credential&#x27;s header (DEP-417): the runner strips it from every request.
-@@ -131,7 +134,8 @@ def _check_names(config: DeployConfig) -&gt; None:
-         if not _VARIABLE_NAME.match(name):
-             raise ValueError(f&quot;{name!r} isn&#x27;t a valid environment variable name.&quot;)
-     for name in deployed:
--        if name in _RESERVED_NAMES or name.startswith(_RESERVED_PREFIXES):
-+        upper_name = name.upper()
-+        if upper_name in _RESERVED_NAMES or upper_name.startswith(_RESERVED_PREFIXES):
-             raise ValueError(
-                 f&quot;{name} is reserved for the deployment runtime; declare the value under &quot;
-                 &quot;another name.&quot;
---- a/libs/arcade-cli/arcade_cli/start_command.py
-+++ b/libs/arcade-cli/arcade_cli/start_command.py
-@@ -271,18 +271,24 @@ def declared_dependencies(project_dir: Path) -&gt; set[str]:
-     requirements = project_dir / &quot;requirements.txt&quot;
-     if requirements.is_file():
--        specs.extend(_requirement_specs(requirements, seen=set()))
-+        specs.extend(_requirement_specs(requirements, seen=set(), root_dir=project_dir.resolve()))
- 
-     names: set[str] = set()
-@@ -281,17 +287,23 @@ def declared_dependencies(project_dir: Path) -&gt; set[str]:
-     return names
- 
- 
--def _requirement_specs(path: Path, seen: set[Path]) -&gt; Iterator[str]:
-+def _requirement_specs(path: Path, seen: set[Path], root_dir: Path | None = None) -&gt; Iterator[str]:
-     &quot;&quot;&quot;The requirement lines of a requirements file, following ``-r`` includes.&quot;&quot;&quot;
-+    if path.is_symlink():
-+        return
-     path = path.resolve()
-+    if root_dir is not None:
-+        try:
-+            path.relative_to(root_dir)
-+        except ValueError:
-+            return
-     if path in seen or not path.is_file():
-         return
-     seen.add(path)
-     # A trailing backslash continues a line, as in `uv export` and `pip-compile` output.
-     text = re.sub(r&quot;\\\r?\n&quot;, &quot; &quot;, path.read_text(encoding=&quot;utf-8-sig&quot;))
-     for line in text.splitlines():
-         line = re.sub(r&quot;(^|\s)#.*&quot;, &quot;&quot;, line).strip()
-         include = re.match(r&quot;(?:-r|--requirement)(?:\s*=\s*|\s+)(\S+)$&quot;, line)
-         if include:
--            yield from _requirement_specs(path.parent / include.group(1), seen)
-+            yield from _requirement_specs(path.parent / include.group(1), seen, root_dir=root_dir)
-         elif line and not line.startswith(&quot;-&quot;):
-@@ -726,7 +738,7 @@ def mcp_handshake(
-             json=request,
-             headers={**_MCP_HEADERS, **(headers or {})},
-             timeout=timeout,
--            follow_redirects=True,
-+            follow_redirects=False,
-         )
-     except httpx.HTTPError:
-         return None
---- a/libs/arcade-core/arcade_core/executor.py
-+++ b/libs/arcade-core/arcade_core/executor.py
-@@ -156,9 +156,12 @@ class ToolExecutor:
-             output = output_model(**{&quot;result&quot;: results})
- 
-         except ValidationError as e:
-+            developer_summary = &quot;; &quot;.join(
-+                f&quot;{&#x27;.&#x27;.join(str(loc) for loc in err[&#x27;loc&#x27;]) or &#x27;&lt;root&gt;&#x27;}[{err[&#x27;type&#x27;]}]&quot;
-+                for err in e.errors()
-+            )
-             raise ToolOutputError(
-                 message=&quot;Failed to serialize tool output&quot;,
--                developer_message=f&quot;Validation error occurred while serializing tool output: {e!s}. &quot;
-+                developer_message=f&quot;Validation error occurred while serializing tool output: {developer_summary}. &quot;
-                 f&quot;Please ensure the tool&#x27;s output matches the expected schema.&quot;,
--            ) from e
-+            ) from None</code></pre>
-
-  <h2>5. Security Impact</h2>
-  <p>A maliciously crafted project or deploy configuration can override runtime loader variables (`LD_PRELOAD`, `PYTHONPATH`), traverse outside the project root via `requirements.txt` `-r` includes, and leak sensitive tool output values via unsanitized Pydantic `ValidationError` exceptions in `_serialize_output()`.</p>
 </body>
 </html>

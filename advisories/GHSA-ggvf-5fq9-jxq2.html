@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GHSA-ggvf-5fq9-jxq2 — rtk-ai/rtk Coordinated Disclosure Record | Serhii Shunko (@sshunko)</title>
-  <meta name="description" content="Coordinated Vulnerability Disclosure verification record for GHSA-ggvf-5fq9-jxq2 in rtk-ai/rtk by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <meta name="description" content="Coordinated Vulnerability Disclosure embargo verification record for GHSA-ggvf-5fq9-jxq2 in rtk-ai/rtk by Serhii Shunko (@sshunko / @ccsimplyspolit).">
   <style>
     :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,16 +21,17 @@
 <body>
   <div class="container">
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
-    <h1>GHSA-ggvf-5fq9-jxq2: Project Pipeline Trust Gate Bypass via RTK_CONFIG_DIR Override and Un-Hashed External Directive File Targets (<code>rtk-ai/rtk</code>)</h1>
+    <h1>GHSA-ggvf-5fq9-jxq2: Coordinated Vulnerability Disclosure Verification Record (<code>rtk-ai/rtk</code>)</h1>
     <div class="notice">
       <strong>[CVD EMBARGO / VENDOR TRIAGE NOTICE]</strong><br>
-      Privately reported to <code>rtk-ai/rtk</code> via GitHub Private Vulnerability Reporting on <code>2026-10-26T02:00:58Z</code> (<a href="https://github.com/rtk-ai/rtk/security/advisories/GHSA-ggvf-5fq9-jxq2">https://github.com/rtk-ai/rtk/security/advisories/GHSA-ggvf-5fq9-jxq2</a>).
+      Privately reported to <code>rtk-ai/rtk</code> via GitHub Private Vulnerability Reporting on <code>2026-10-26T02:00:58Z</code> (<a href="https://github.com/rtk-ai/rtk/security/advisories/GHSA-ggvf-5fq9-jxq2">https://github.com/rtk-ai/rtk/security/advisories/GHSA-ggvf-5fq9-jxq2</a>).<br>
+      In strict compliance with Coordinated Vulnerability Disclosure (CVD) embargo policy, line-level root-cause analysis, reproduction harnesses, and unified remediation diffs are withheld from public access until upstream vendor triage and patch release are complete.
     </div>
-    <h2>0x00 // GitHub REST API Verification Record</h2>
+    <h2>0x00 // Cryptographic Commitment &amp; GitHub CNA Verification Metadata</h2>
     <pre><code>{
   &quot;ghsa_id&quot;: &quot;GHSA-ggvf-5fq9-jxq2&quot;,
+  &quot;repository&quot;: &quot;rtk-ai/rtk&quot;,
   &quot;html_url&quot;: &quot;https://github.com/rtk-ai/rtk/security/advisories/GHSA-ggvf-5fq9-jxq2&quot;,
-  &quot;summary&quot;: &quot;Project Pipeline Trust Gate Bypass via RTK_CONFIG_DIR Override and Un-Hashed External Directive File Targets&quot;,
   &quot;state&quot;: &quot;triage&quot;,
   &quot;severity&quot;: &quot;high&quot;,
   &quot;created_at&quot;: &quot;2026-10-26T02:00:58Z&quot;,
@@ -39,90 +40,9 @@
     &quot;CWE-345&quot;,
     &quot;CWE-829&quot;
   ],
-  &quot;vulnerabilities&quot;: [
-    {
-      &quot;package&quot;: {
-        &quot;ecosystem&quot;: &quot;rust&quot;,
-        &quot;name&quot;: &quot;rtk&quot;
-      },
-      &quot;vulnerable_version_range&quot;: &quot;&lt;= 1.0.1&quot;,
-      &quot;patched_versions&quot;: null,
-      &quot;vulnerable_functions&quot;: []
-    }
-  ]
+  &quot;embargo_policy&quot;: &quot;REDACTED_DURING_VENDOR_TRIAGE&quot;,
+  &quot;specification_sha256_commitment&quot;: &quot;7c2af39f11678f088a6899c02c138f2acf33d52e04ecf95cd26044e744f9bcb8&quot;
 }</code></pre>
-    <h2>0x01 // Technical Specification &amp; Remediation Patch</h2>
-    <pre><code>### Summary
-In `src/core/pipeline_config.rs` and `src/hooks/trust.rs` (`&lt;= v1.0.1`), `rtk` enforces an explicit SHA-256 trust store (`rtk trust`) for repo-local `.rtk/filters.toml` and `.rtk/pipeline.toml` (and blocks `RTK_TRUST_PROJECT_FILTERS=1` outside CI per `CVE-2026-45792`). However, two gaps in `pipeline_config.rs` allow untrusted project configurations or modified directive files to bypass the `rtk trust` gate:
-
-### Root Cause Analysis
-1. **Unconditional `RTK_CONFIG_DIR` Override Promotes Untrusted Project `pipeline.toml` to `Scope::User` (`src/core/pipeline_config.rs:82-89, 200-236`)**:
-   - In `src/hooks/trust.rs:106-120` (`CVE-2026-45792`), `RTK_TRUST_PROJECT_FILTERS=1` is restricted to verified CI environments so that project-controlled environment files (`.envrc`, `.claude/settings.json`, IDE launch configs) cannot bypass `rtk trust`. Moreover, for `filters.toml`, even the user-global config path is verified via `gated_filter_paths_labeled()` (`src/hooks/trust.rs:208-214`).
-   - By contrast, `user_config_root()` in `src/core/pipeline_config.rs:82-89` unconditionally reads `std::env::var(&quot;RTK_CONFIG_DIR&quot;)` in any environment without a CI check, and `load_from()` (`lines 200-236`) loads `$RTK_CONFIG_DIR/pipeline.toml` and `$RTK_CONFIG_DIR/pipelines/*.toml` with **`Scope::User`** without calling `trust::check_trust_with_content()`.
-   - Setting `RTK_CONFIG_DIR=.rtk` (or pointing it at any repo subdirectory) causes `rtk` to load the untrusted repository `pipeline.toml` as `Scope::User`, bypassing `rtk trust` completely and unlocking `Scope::User`-restricted capabilities such as `[proxy.request]` rules and `[upstream.*.api_key_command]` shell execution.
-2. **Arbitrary Relative/Absolute Path Traversal and Missing Content Hashing on `directive.def.file` (`src/core/pipeline_config.rs:21-27, 943-950`)**:
-   - A project `pipeline.toml` `[directive.&lt;name&gt;]` entry can specify `file = &quot;...&quot;`. `directive_text()` (`lines 21-27`) resolves `directive.origin.parent().unwrap_or(Path::new(&quot;.&quot;)).join(rel)` and reads the target file with `std::fs::read_to_string(&amp;path)` without checking for `..` traversal or absolute paths, allowing a project directive to inject arbitrary host file contents into the LLM context.
-   - Furthermore, `trust::check_trust_with_content()` (`src/core/pipeline_config.rs:248`) only hashes the bytes of `.rtk/pipeline.toml` itself, not the external file referenced by `directive.def.file`, and `trust_summary()` (`lines 943-950`) does not display the referenced file&#x27;s contents during `rtk trust`. Modifying the external file after `rtk trust` does not invalidate `TrustStatus::Trusted`.
-
-### Impact
-- Complete bypass of the `rtk trust` integrity check for `pipeline.toml` when `RTK_CONFIG_DIR` is set in the process environment, elevating repo-local pipeline configs to `Scope::User`.
-- Post-approval tampering and arbitrary file inclusion via `directive.def.file` in project `pipeline.toml`.
-
-### Recommended Remediation
-1. Restrict `RTK_CONFIG_DIR` overrides or require `RTK_CONFIG_DIR` paths located inside the current project worktree to be treated as `Scope::Project` and verified via `trust::check_trust_with_content`.
-2. Confine `directive.def.file` to canonical paths within the `.rtk/` directory and include the referenced file&#x27;s SHA-256 digest in the `rtk trust` verification record:
-
-```diff
---- a/src/core/pipeline_config.rs
-+++ b/src/core/pipeline_config.rs
-@@ -19,10 +19,23 @@
-         return Some(text.to_string());
-     }
-     if let Some(file) = def.file.as_deref() {
--        let path = std::path::Path::new(&amp;directive.origin)
-+        let rel_path = std::path::Path::new(file);
-+        if rel_path.is_absolute()
-+            || rel_path
-+                .components()
-+                .any(|c| matches!(c, std::path::Component::ParentDir))
-+        {
-+            return None;
-+        }
-+        let base = std::path::Path::new(&amp;directive.origin)
-             .parent()
--            .map(|base| base.join(file))
--            .unwrap_or_else(|| PathBuf::from(file));
-+            .unwrap_or_else(|| std::path::Path::new(&quot;.&quot;))
-+            .canonicalize()
-+            .ok()?;
-+        let path = base.join(rel_path).canonicalize().ok()?;
-+        if !path.starts_with(&amp;base) {
-+            return None;
-+        }
-         return std::fs::read_to_string(&amp;path).ok();
-     }
-     if let Some(name) = def.use_.as_deref()
-```
-
-### Formal Specification &amp; Taint Provenance (`re-source-reconstruction` / `PTN`)
-
-#### 1. Symbol &amp; Call-Graph Provenance Table
-| Source Location | Symbol / Function | Subsystem Role |
-|---|---|---|
-| `src/core/pipeline_config.rs:82-89` | `user_config_root()` | Returns `PathBuf::from(os_val)` when `RTK_CONFIG_DIR` is set |
-| `src/core/pipeline_config.rs:200-258` | `load_from(user_root, project_root)` | Loads `user_root/pipeline.toml` with `Scope::User` (no `trust::check_trust_with_content` call) |
-| `src/core/pipeline_config.rs:21-27` | `directive_text(directive)` | Joins `directive.def.file` onto `directive.origin.parent()` and reads file without traversal check or SHA-256 verification |
-| `src/hooks/trust.rs:106-120` | `check_trust_with_content(project_Filter_path, ...)` | Blocks `RTK_TRUST_PROJECT_FILTERS=1` outside CI (`CVE-2026-45792`) |
-
-#### 2. PTN Data-Flow &amp; Taint Propagation
-- **`I:env[&quot;RTK_CONFIG_DIR&quot;]`** (`.rtk`) → **`user_config_root()`** → **`P(load_from, 1)`** (`user_root`) → **`load_single_file(path, Scope::User)`** (bypasses `trust::check_trust_with_content` at line 248 and unlocks `Scope::User`-only `[proxy.request]` and `api_key_command`).
-- **`I:.rtk/pipeline.toml[directive.*.file]`** → **`P(directive_text, 1)`** → `base.join(rel)` (no `Component::ParentDir` or `is_absolute()` check, and un-hashed by `rtk trust`) → **`E:std::fs::read_to_string(&amp;path)`**.
-
-#### 3. Assumption Register (`[A1..A2]`) &amp; Falsification Probes (`QG1–QG7`)
-| ID | Assumption Statement | Confidence | Failure Impact if False | Concrete Falsification Probe |
-|---|---|---|---|---|
-| `A1` | `load_from` in `src/core/pipeline_config.rs:200-236` never invokes `trust::check_trust_with_content` on files under `user_config_root()`. | `PROVEN` | Any directory pointed to by `RTK_CONFIG_DIR` is implicitly trusted as `Scope::User`. | Inspect `src/core/pipeline_config.rs:200-258`; `trust::check_trust_with_content` is only called inside the `if let Some(proj) = project_root` block at line 248. |
-| `A2` | `trust::check_trust_with_content` hashes only the contents of `.rtk/pipeline.toml`, not external files referenced via `directive.def.file`. | `PROVEN` | Post-approval modification of the external file does not change the hash of `.rtk/pipeline.toml`. | Inspect `src/core/pipeline_config.rs:242-255` (`std::fs::read(&amp;proj_single)` is passed as `content` to `check_trust_with_content`). |</code></pre>
   </div>
 </body>
 </html>

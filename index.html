@@ -275,10 +275,10 @@
       </div>
     </header>
 
-        <section id="disclosures">
+            <section id="disclosures">
       <h2>0x00 // Coordinated Vulnerability Disclosures &amp; Server Input Audits</h2>
       <div class="embargo-banner">
-        <strong>[CVD EMBARGO POLICY]</strong> Active vulnerability reports currently in vendor triage (<code>GHSA-*</code> and <code>CVD-2026-*</code>) are listed in this public registry by identifier, CWE classification, and affected component scope only. Full technical advisories, reproduction harnesses, and remediation diffs are strictly withheld from public access until upstream patches are released and coordinated embargoes are lifted.
+        <strong>[CVD EMBARGO POLICY]</strong> Active vulnerability reports currently in vendor triage (<code>GHSA-*</code> and <code>CVD-2026-*</code>) are listed in this public registry by identifier, CWE classification, cryptographic SHA-256 specification commitment, and affected component scope only. Full technical advisories, reproduction harnesses, and remediation diffs are strictly withheld from public access until upstream patches are released and coordinated embargoes are lifted.
       </div>
       <div class="grid">
         <article class="card">
@@ -287,8 +287,8 @@
               <span class="id-tag">GHSA-h3mc-v47q-wj82</span>
               <span class="cwe-tag">CWE-125 / CWE-190 / CWE-191</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-h3mc-v47q-wj82.html" style="color: inherit;">SNP Unreliable Framing 64-Bit Offset Bounds, Zero-Length Segment Logging &amp; Base64/UtlBuffer Invariants (<code>ValveSoftware/GameNetworkingSockets</code>)</a></h3>
-            <p>Analysis of 64-bit unreliable message offset bounds, zero-length segment debug logging guards, <code>Base64EncodeMaxOutput(0)</code> unsigned underflow, and <code>CUtlBuffer::GetString</code> truncation seek offsets.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-h3mc-v47q-wj82.html" style="color: inherit;">SNP Unreliable Framing 64-Bit Offset Bounds &amp; Encoder Length Invariants (<code>ValveSoftware/GameNetworkingSockets</code>)</a></h3>
+            <p>Coordinated vulnerability disclosure covering 64-bit unreliable message offset bounds, zero-length segment logging guards, and buffer string truncation seek offsets (GitHub CNA &amp; H1 #4145334).</p>
           </div>
           <div class="card-footer">
             <a href="https://ccsimplyspolit.github.io/advisories/GHSA-h3mc-v47q-wj82.html"><span class="embargo-tag">In Triage (GHSA-h3mc-v47q-wj82) &rarr;</span></a>
@@ -301,8 +301,8 @@
               <span class="id-tag">GHSA-2qf6-94w7-mjcq</span>
               <span class="cwe-tag">CWE-22 / CWE-61 / CWE-73</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-2qf6-94w7-mjcq.html" style="color: inherit;">External Tensor Symlink Escape &amp; Tar/Zip Extraction Path Validation in ONNX Model Loaders (<code>onnx/onnx</code>)</a></h3>
-            <p>Mitigating pre-existing symlink traversal in <code>save_external_data</code>, sibling-prefix bypass in <code>_extract_model_safe</code>, and cross-drive <code>os.path.commonpath</code> exceptions on Windows.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-2qf6-94w7-mjcq.html" style="color: inherit;">External Tensor Symlink Containment &amp; Archive Extraction Path Validation (<code>onnx/onnx</code>)</a></h3>
+            <p>Coordinated vulnerability disclosure covering symlink containment and archive extraction boundary validation in model loaders.</p>
           </div>
           <div class="card-footer">
             <a href="https://ccsimplyspolit.github.io/advisories/GHSA-2qf6-94w7-mjcq.html"><span class="embargo-tag">In Triage (GHSA-2qf6-94w7-mjcq) &rarr;</span></a>
@@ -315,8 +315,8 @@
               <span class="id-tag">GHSA-29j7-mxxj-g9hg</span>
               <span class="cwe-tag">CWE-79 / CWE-20 / CWE-863</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-29j7-mxxj-g9hg.html" style="color: inherit;">OAuth Redirect URI Scheme Allowlisting &amp; Signed Consent State Binding in MCP OAuth Workers (<code>cloudflare/mcp-server-cloudflare</code>)</a></h3>
-            <p>Enforcing strict <code>http:</code>/<code>https:</code> scheme validation before rendering OAuth fallback links and binding consent approvals to server-verified parameters.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-29j7-mxxj-g9hg.html" style="color: inherit;">OAuth Redirect URI Scheme Allowlisting &amp; Signed Consent State Binding (<code>cloudflare/mcp-server-cloudflare</code>)</a></h3>
+            <p>Coordinated vulnerability disclosure covering URI scheme validation and server-verified consent parameter binding in MCP OAuth workers.</p>
           </div>
           <div class="card-footer">
             <a href="https://ccsimplyspolit.github.io/advisories/GHSA-29j7-mxxj-g9hg.html"><span class="embargo-tag">In Triage (GHSA-29j7-mxxj-g9hg) &rarr;</span></a>
@@ -329,8 +329,8 @@
               <span class="id-tag">GHSA-rg4w-8g8x-2vhf</span>
               <span class="cwe-tag">CWE-352 / CWE-400</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-rg4w-8g8x-2vhf.html" style="color: inherit;">Loopback OAuth Callback State Verification Ordering &amp; Single-Use Code Exchange (<code>github/github-mcp-server</code>)</a></h3>
-            <p>Validating the cryptographic OAuth <code>state</code> parameter prior to closing the single-use callback channel in local CLI OAuth flows.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-rg4w-8g8x-2vhf.html" style="color: inherit;">Loopback OAuth Callback State Verification Ordering &amp; Single-Use Channel Handling (<code>github/github-mcp-server</code>)</a></h3>
+            <p>Coordinated vulnerability disclosure covering cryptographic OAuth state verification ordering prior to callback channel closure.</p>
           </div>
           <div class="card-footer">
             <a href="https://ccsimplyspolit.github.io/advisories/GHSA-rg4w-8g8x-2vhf.html"><span class="embargo-tag">In Triage (GHSA-rg4w-8g8x-2vhf) &rarr;</span></a>
@@ -343,8 +343,8 @@
               <span class="id-tag">GHSA-g4pg-rg2m-6vm4</span>
               <span class="cwe-tag">CWE-918 / CWE-22</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-g4pg-rg2m-6vm4.html" style="color: inherit;">Path Segment Normalization &amp; URI Encoding in PayPal Agent Toolkit Resource Handlers (<code>paypal/agent-toolkit</code>)</a></h3>
-            <p>Enforcing strict path segment encoding (<code>encodeURIComponent</code>) for resource identifiers interpolated into REST API request paths.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-g4pg-rg2m-6vm4.html" style="color: inherit;">Path Segment Normalization &amp; URI Encoding in Resource Handlers (<code>paypal/agent-toolkit</code>)</a></h3>
+            <p>Coordinated vulnerability disclosure covering path segment encoding for resource identifiers in REST API request builders.</p>
           </div>
           <div class="card-footer">
             <a href="https://ccsimplyspolit.github.io/advisories/GHSA-g4pg-rg2m-6vm4.html"><span class="embargo-tag">In Triage (GHSA-g4pg-rg2m-6vm4) &rarr;</span></a>
@@ -357,8 +357,8 @@
               <span class="id-tag">GHSA-x2gm-fvv7-8x97</span>
               <span class="cwe-tag">CWE-347 / CWE-290</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-x2gm-fvv7-8x97.html" style="color: inherit;">Strict XPath Element Traversal &amp; Canonicalization Attribute Handling in SAML Signature Verification (<code>stytchauth/samlshield</code>)</a></h3>
-            <p>Hardening XML signature validation against cross-subtree XPath <code>//</code> lookups and attribute namespace collisions during exclusive canonicalization.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-x2gm-fvv7-8x97.html" style="color: inherit;">Strict XPath Element Traversal &amp; Canonicalization Attribute Handling (<code>stytchauth/samlshield</code>)</a></h3>
+            <p>Coordinated vulnerability disclosure covering XML signature verification subtree bounds and exclusive canonicalization.</p>
           </div>
           <div class="card-footer">
             <a href="https://ccsimplyspolit.github.io/advisories/GHSA-x2gm-fvv7-8x97.html"><span class="embargo-tag">In Triage (GHSA-x2gm-fvv7-8x97) &rarr;</span></a>
@@ -369,10 +369,10 @@
           <div>
             <div class="card-header">
               <span class="id-tag">CVD-2026-GHAW-CORE-001</span>
-              <span class="cwe-tag">CWE-78 / CWE-88</span>
+              <span class="cwe-tag">CWE-377 / CWE-59 / CWE-732</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-GHAW-CORE-001.html" style="color: inherit;">Single-Quoted Shell Command Interpolation &amp; Prompt Expression Sanitization in GitHub Agentic Workflows (<code>github/gh-aw</code>)</a></h3>
-            <p>Enforcing strict single-quote escaping in generated shell execution scripts and workflow expression interpolation boundaries.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-GHAW-CORE-001.html" style="color: inherit;">Exclusive Temporary File Creation &amp; Permission Mode Preservation (<code>github/gh-aw</code>)</a></h3>
+            <p>Embargoed static security audit of temporary file creation flags and permission mode preservation in CLI compilation pipelines.</p>
           </div>
           <div class="card-footer">
             <a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-GHAW-CORE-001.html"><span class="embargo-tag">Embargoed (Vendor Triage) &rarr;</span></a>
@@ -383,10 +383,10 @@
           <div>
             <div class="card-header">
               <span class="id-tag">CVD-2026-GHAW-FW-001</span>
-              <span class="cwe-tag">CWE-78 / CWE-863</span>
+              <span class="cwe-tag">CWE-59 / CWE-732</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-GHAW-FW-001.html" style="color: inherit;">One-Shot Token LD_PRELOAD Integrity &amp; Docker Wrapper Environment Sanitization in gh-aw-firewall (<code>github/gh-aw-firewall</code>)</a></h3>
-            <p>Securing container entrypoint argument escaping and preload library integrity against untrusted workspace overrides.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-GHAW-FW-001.html" style="color: inherit;">Chroot Initialization Symlink Handling &amp; Container Audit Path Validation (<code>github/gh-aw-firewall</code>)</a></h3>
+            <p>Embargoed static security audit of non-symlink ownership operations and target path validation in firewall container helpers.</p>
           </div>
           <div class="card-footer">
             <a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-GHAW-FW-001.html"><span class="embargo-tag">Embargoed (Vendor Triage) &rarr;</span></a>
@@ -397,10 +397,10 @@
           <div>
             <div class="card-header">
               <span class="id-tag">CVD-2026-CREWAI-MEM-001</span>
-              <span class="cwe-tag">CWE-943 / CWE-89</span>
+              <span class="cwe-tag">CWE-328 / CWE-639 / CWE-59</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-CREWAI-MEM-001.html" style="color: inherit;">Filter Expression Escaping &amp; Scope Path Canonicalization in CrewAI Unified Memory Storage (<code>crewAIInc/crewAI</code>)</a></h3>
-            <p>Eliminating unescaped string interpolation in LanceDB SQL filter predicates and hierarchical scope prefix queries.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-CREWAI-MEM-001.html" style="color: inherit;">Point ID Hashing, Scoped Deletion Filtering &amp; Shard Cleanup Containment (<code>crewAIInc/crewAI</code>)</a></h3>
+            <p>Embargoed static security audit of non-UUID point ID hashing, scope prefix enforcement on deletion, and symlink checks in edge storage.</p>
           </div>
           <div class="card-footer">
             <a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-CREWAI-MEM-001.html"><span class="embargo-tag">Embargoed (Vendor Triage) &rarr;</span></a>
@@ -411,10 +411,10 @@
           <div>
             <div class="card-header">
               <span class="id-tag">CVD-2026-HF-MCP-001</span>
-              <span class="cwe-tag">CWE-918</span>
+              <span class="cwe-tag">CWE-22 / CWE-918 / CWE-200</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-HF-MCP-001.html" style="color: inherit;">Redirect Target Host &amp; Scheme Re-Validation in HuggingFace Gradio MCP File Fetcher (<code>huggingface/hf-mcp-server</code>)</a></h3>
-            <p>Preventing cross-origin redirect following to internal network endpoints when fetching remote Gradio space assets.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-HF-MCP-001.html" style="color: inherit;">Gradio Space Identifier Path Validation &amp; Remote Schema Fetch Restrictions (<code>huggingface/hf-mcp-server</code>)</a></h3>
+            <p>Embargoed static security audit of path segment sanitization in Space discovery and remote schema transport validation.</p>
           </div>
           <div class="card-footer">
             <a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-HF-MCP-001.html"><span class="embargo-tag">Embargoed (Vendor Triage) &rarr;</span></a>
@@ -425,10 +425,10 @@
           <div>
             <div class="card-header">
               <span class="id-tag">CVD-2026-APIFY-MCP-001</span>
-              <span class="cwe-tag">CWE-918 / CWE-20</span>
+              <span class="cwe-tag">CWE-200 / CWE-290</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-APIFY-MCP-001.html" style="color: inherit;">Strict Origin &amp; Path Validation in Apify OpenAPI MCP Proxy Request Construction (<code>apify/apify-mcp-server</code>)</a></h3>
-            <p>Enforcing base URL origin pinning and path parameter encoding in dynamically generated OpenAPI MCP tool handlers.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-APIFY-MCP-001.html" style="color: inherit;">Telemetry Trace Credential Redaction &amp; Client Tracking Classification (<code>apify/apify-mcp-server</code>)</a></h3>
+            <p>Embargoed static security audit of sensitive token redaction in trace identifiers and client classification patterns.</p>
           </div>
           <div class="card-footer">
             <a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-APIFY-MCP-001.html"><span class="embargo-tag">Embargoed (Vendor Triage) &rarr;</span></a>
@@ -439,10 +439,10 @@
           <div>
             <div class="card-header">
               <span class="id-tag">CVD-2026-ARCADE-MCP-001</span>
-              <span class="cwe-tag">CWE-352 / CWE-287</span>
+              <span class="cwe-tag">CWE-22 / CWE-426 / CWE-209</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-ARCADE-MCP-001.html" style="color: inherit;">Cryptographic OAuth State Parameter Enforcement in Arcade CLI Local Callback Server (<code>ArcadeAI/arcade-mcp</code>)</a></h3>
-            <p>Binding local OAuth loopback callback execution to a high-entropy single-use <code>state</code> nonce.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-ARCADE-MCP-001.html" style="color: inherit;">Recursive Dependency Include Containment &amp; Reserved Environment Filtering (<code>ArcadeAI/arcade-mcp</code>)</a></h3>
+            <p>Embargoed static security audit of recursive requirement path containment, reserved environment filtering, and error redaction.</p>
           </div>
           <div class="card-footer">
             <a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-ARCADE-MCP-001.html"><span class="embargo-tag">Embargoed (Vendor Triage) &rarr;</span></a>
@@ -453,10 +453,10 @@
           <div>
             <div class="card-header">
               <span class="id-tag">CVD-2026-MONGODB-MCP-001</span>
-              <span class="cwe-tag">CWE-200 / CWE-522</span>
+              <span class="cwe-tag">CWE-863 / CWE-20</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-MONGODB-MCP-001.html" style="color: inherit;">Credential Authority Redaction &amp; Assistant Ephemeral Key Isolation in MongoDB MCP Server (<code>mongodb-js/mongodb-mcp-server</code>)</a></h3>
-            <p>Preventing unredacted URI authority fragments in connection error telemetry and isolating ephemeral key material.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-MONGODB-MCP-001.html" style="color: inherit;">One-Way Security Override Enforcement &amp; Request Configuration Bounds (<code>mongodb-js/mongodb-mcp-server</code>)</a></h3>
+            <p>Embargoed static security audit of one-way override invariants for security guards and numeric configuration bounds.</p>
           </div>
           <div class="card-footer">
             <a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-MONGODB-MCP-001.html"><span class="embargo-tag">Embargoed (Vendor Triage) &rarr;</span></a>
@@ -467,10 +467,10 @@
           <div>
             <div class="card-header">
               <span class="id-tag">CVD-2026-FAST-AGENT-001</span>
-              <span class="cwe-tag">CWE-22 / CWE-59</span>
+              <span class="cwe-tag">CWE-22 / CWE-200</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-FAST-AGENT-001.html" style="color: inherit;">Symlink Containment &amp; Atomic Directory Extraction in Fast-Agent Card Pack Installer (<code>evalstate/fast-agent</code>)</a></h3>
-            <p>Enforcing canonical realpath containment during remote agent pack extraction and skill directory installation.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-FAST-AGENT-001.html" style="color: inherit;">Resource URI Scheme Allowlisting &amp; Local/UNC Path Containment (<code>evalstate/fast-agent</code>)</a></h3>
+            <p>Embargoed static security audit of resource URI scheme validation and local/UNC path restrictions in tool output handlers.</p>
           </div>
           <div class="card-footer">
             <a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-FAST-AGENT-001.html"><span class="embargo-tag">Embargoed (Vendor Triage) &rarr;</span></a>
@@ -603,7 +603,7 @@
             <td><code>ValveSoftware/GameNetworkingSockets</code></td>
             <td><code>CWE-125 / CWE-190 / CWE-191</code></td>
             <td>Unbounded 64-Bit Unreliable Message Number Offset, Zero-Length Segment OOB Read, Base64EncodeMaxOutput(0) Underflow, and CUtlBuffer::GetString Seek Misalignment</td>
-            <td><a href="/advisories/GHSA-h3mc-v47q-wj82.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
+            <td><a href="/advisories/GHSA-h3mc-v47q-wj82.html"><span class="embargo-tag">In Triage (GHSA &amp; H1 #4145334)</span></a></td>
           </tr>
           <tr>
             <td><a href="/advisories/GHSA-rg4w-8g8x-2vhf.html"><code>GHSA-rg4w-8g8x-2vhf</code></a></td>
@@ -634,17 +634,10 @@
             <td><a href="/advisories/GHSA-x2gm-fvv7-8x97.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
           </tr>
           <tr>
-            <td><code>CVD-2026-VALVE-SDK-001</code></td>
-            <td><code>ValveSoftware/source-sdk-2013</code></td>
-            <td><code>CWE-121 / CWE-787</code></td>
-            <td>Stack buffer bounds enforcement in legacy KeyValues token and networking parsers (H1 #4145334).</td>
-            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
-          </tr>
-          <tr>
             <td><code>CVD-2026-NEBIUS-001</code></td>
-            <td><code>nebius/token-factory-cookbook</code></td>
-            <td><code>CWE-918 / CWE-22</code></td>
-            <td>Outbound webhook URL validation and path canonicalization in cookbook automation runners (H1 #4145362).</td>
+            <td><code>nebius/mcp-server &amp; nebius/contree-mcp</code></td>
+            <td><code>CWE-88 / CWE-22 / CWE-200</code></td>
+            <td>CLI option delimiter handling, symlink/prefix cache exclusion checks, and cross-origin redirect header stripping (H1 #4145362).</td>
             <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
           </tr>
           <tr>
@@ -663,9 +656,9 @@
           </tr>
           <tr>
             <td><code>CVD-2026-AWS-MCP-001</code></td>
-            <td><code>awslabs/mcp</code></td>
-            <td><code>CWE-78 / CWE-88</code></td>
-            <td>Argument validation and subcommand sanitization in AWS MCP server tool handlers (H1 #4145338).</td>
+            <td><code>awslabs/aidlc-mcp-server</code></td>
+            <td><code>CWE-22 / CWE-78 / CWE-59</code></td>
+            <td>Archive extraction path containment and command argument validation in MCP workflow helpers (H1 #4145338).</td>
             <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
           </tr>
           <tr>
@@ -685,78 +678,78 @@
           <tr>
             <td><a href="/advisories/CVD-2026-CREWAI-MEM-001.html"><code>CVD-2026-CREWAI-MEM-001</code></a></td>
             <td><code>crewAIInc/crewAI</code></td>
-            <td><code>CWE-943 / CWE-89</code></td>
-            <td>SQL filter predicate escaping and hierarchical scope prefix sanitization in unified memory.</td>
+            <td><code>CWE-328 / CWE-639 / CWE-59</code></td>
+            <td>Point ID hashing, scope filter enforcement during record deletion, and symlink validation in edge shard storage.</td>
             <td><a href="/advisories/CVD-2026-CREWAI-MEM-001.html"><span class="embargo-tag">Embargoed (Vendor Triage)</span></a></td>
           </tr>
           <tr>
             <td><a href="/advisories/CVD-2026-GHAW-CORE-001.html"><code>CVD-2026-GHAW-CORE-001</code></a></td>
             <td><code>github/gh-aw</code></td>
-            <td><code>CWE-78 / CWE-88</code></td>
-            <td>Single-quoted shell command escaping and prompt expression sanitization in Agentic Workflows.</td>
+            <td><code>CWE-377 / CWE-59 / CWE-732</code></td>
+            <td>Exclusive temporary file creation and permission mode preservation in CLI compilation progress writers.</td>
             <td><a href="/advisories/CVD-2026-GHAW-CORE-001.html"><span class="embargo-tag">Embargoed (Vendor Triage)</span></a></td>
           </tr>
           <tr>
             <td><code>CVD-2026-PHP-001</code></td>
             <td><code>php/php-src</code></td>
-            <td><code>CWE-125 / CWE-787</code></td>
-            <td>Multipart boundary remainder validation and buffer offset bounds in standard stream filters.</td>
+            <td><code>CWE-200 / CWE-918</code></td>
+            <td>Cross-origin port comparison and credential header stripping across HTTP redirects in SOAP client transport.</td>
             <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
           </tr>
           <tr>
             <td><code>CVD-2026-CPYTHON-001</code></td>
             <td><code>python/cpython</code></td>
-            <td><code>CWE-20 / CWE-400</code></td>
-            <td>Header folding and control-character sanitization invariants in standard library protocol parsers.</td>
+            <td><code>CWE-20 / CWE-284</code></td>
+            <td>Cookie policy domain/path matching invariants and catalog expression validation in standard library modules.</td>
             <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
           </tr>
           <tr>
             <td><a href="/advisories/CVD-2026-GHAW-FW-001.html"><code>CVD-2026-GHAW-FW-001</code></a></td>
             <td><code>github/gh-aw-firewall</code></td>
-            <td><code>CWE-78 / CWE-863</code></td>
-            <td>One-shot token preload integrity and container wrapper environment sanitization.</td>
+            <td><code>CWE-59 / CWE-732</code></td>
+            <td>Non-symlink ownership changes in chroot initialization and target path validation in container audit preservation.</td>
             <td><a href="/advisories/CVD-2026-GHAW-FW-001.html"><span class="embargo-tag">Embargoed (Vendor Triage)</span></a></td>
           </tr>
           <tr>
             <td><a href="/advisories/CVD-2026-HF-MCP-001.html"><code>CVD-2026-HF-MCP-001</code></a></td>
             <td><code>huggingface/hf-mcp-server</code></td>
-            <td><code>CWE-918</code></td>
-            <td>Cross-origin redirect target host and scheme re-validation in Gradio MCP file fetching.</td>
+            <td><code>CWE-22 / CWE-918 / CWE-200</code></td>
+            <td>Path segment validation in Gradio Space discovery and origin/scheme enforcement for remote tool schemas.</td>
             <td><a href="/advisories/CVD-2026-HF-MCP-001.html"><span class="embargo-tag">Embargoed (Vendor Triage)</span></a></td>
           </tr>
           <tr>
             <td><a href="/advisories/CVD-2026-APIFY-MCP-001.html"><code>CVD-2026-APIFY-MCP-001</code></a></td>
             <td><code>apify/apify-mcp-server</code></td>
-            <td><code>CWE-918 / CWE-20</code></td>
-            <td>Base URL origin pinning and path parameter encoding in OpenAPI MCP proxy tools.</td>
+            <td><code>CWE-200 / CWE-290</code></td>
+            <td>Sensitive header redaction in telemetry trace identifiers and client tracking classification rules.</td>
             <td><a href="/advisories/CVD-2026-APIFY-MCP-001.html"><span class="embargo-tag">Embargoed (Vendor Triage)</span></a></td>
           </tr>
           <tr>
             <td><a href="/advisories/CVD-2026-ARCADE-MCP-001.html"><code>CVD-2026-ARCADE-MCP-001</code></a></td>
             <td><code>ArcadeAI/arcade-mcp</code></td>
-            <td><code>CWE-352 / CWE-287</code></td>
-            <td>Cryptographic OAuth state nonce validation in local loopback callback servers.</td>
+            <td><code>CWE-22 / CWE-426 / CWE-209</code></td>
+            <td>Path containment for recursive dependency includes, reserved environment variable filtering, and error redaction.</td>
             <td><a href="/advisories/CVD-2026-ARCADE-MCP-001.html"><span class="embargo-tag">Embargoed (Vendor Triage)</span></a></td>
           </tr>
           <tr>
             <td><a href="/advisories/CVD-2026-MONGODB-MCP-001.html"><code>CVD-2026-MONGODB-MCP-001</code></a></td>
             <td><code>mongodb-js/mongodb-mcp-server</code></td>
-            <td><code>CWE-200 / CWE-522</code></td>
-            <td>Connection string credential redaction and ephemeral assistant key isolation.</td>
+            <td><code>CWE-863 / CWE-20</code></td>
+            <td>One-way security override enforcement for delimiter guards and numeric bounds checking in request overrides.</td>
             <td><a href="/advisories/CVD-2026-MONGODB-MCP-001.html"><span class="embargo-tag">Embargoed (Vendor Triage)</span></a></td>
           </tr>
           <tr>
             <td><code>CVD-2026-OMARCHY-001</code></td>
             <td><code>omacom/omarchy</code></td>
-            <td><code>CWE-78 / CWE-426</code></td>
-            <td>Command path pinning and privilege boundary hardening in system configuration scripts.</td>
+            <td><code>CWE-78 / CWE-20</code></td>
+            <td>URI host string escaping in network captive-portal helpers and path validation in system scripts.</td>
             <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
           </tr>
           <tr>
             <td><a href="/advisories/CVD-2026-FAST-AGENT-001.html"><code>CVD-2026-FAST-AGENT-001</code></a></td>
             <td><code>evalstate/fast-agent</code></td>
-            <td><code>CWE-22 / CWE-59</code></td>
-            <td>Symlink realpath containment during remote card pack and skill directory installation.</td>
+            <td><code>CWE-22 / CWE-200</code></td>
+            <td>Scheme allowlisting and local/UNC file path restriction in tool output resource handlers.</td>
             <td><a href="/advisories/CVD-2026-FAST-AGENT-001.html"><span class="embargo-tag">Embargoed (Vendor Triage)</span></a></td>
           </tr>
           <tr>

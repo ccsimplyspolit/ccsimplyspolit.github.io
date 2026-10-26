@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GHSA-hfc6-f2q5-m256 — tinyhumansai/openhuman Coordinated Disclosure Record | Serhii Shunko (@sshunko)</title>
-  <meta name="description" content="Coordinated Vulnerability Disclosure verification record for GHSA-hfc6-f2q5-m256 in tinyhumansai/openhuman by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <meta name="description" content="Coordinated Vulnerability Disclosure embargo verification record for GHSA-hfc6-f2q5-m256 in tinyhumansai/openhuman by Serhii Shunko (@sshunko / @ccsimplyspolit).">
   <style>
     :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,16 +21,17 @@
 <body>
   <div class="container">
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
-    <h1>GHSA-hfc6-f2q5-m256: Shell Protected-Path Floor and Read-Only Classifier Bypass via Intra-Word Quote Splitting, file:// URLs, and git --output in CommandAnalysis (<code>tinyhumansai/openhuman</code>)</h1>
+    <h1>GHSA-hfc6-f2q5-m256: Coordinated Vulnerability Disclosure Verification Record (<code>tinyhumansai/openhuman</code>)</h1>
     <div class="notice">
       <strong>[CVD EMBARGO / VENDOR TRIAGE NOTICE]</strong><br>
-      Privately reported to <code>tinyhumansai/openhuman</code> via GitHub Private Vulnerability Reporting on <code>2026-10-26T02:00:51Z</code> (<a href="https://github.com/tinyhumansai/openhuman/security/advisories/GHSA-hfc6-f2q5-m256">https://github.com/tinyhumansai/openhuman/security/advisories/GHSA-hfc6-f2q5-m256</a>).
+      Privately reported to <code>tinyhumansai/openhuman</code> via GitHub Private Vulnerability Reporting on <code>2026-10-26T02:00:51Z</code> (<a href="https://github.com/tinyhumansai/openhuman/security/advisories/GHSA-hfc6-f2q5-m256">https://github.com/tinyhumansai/openhuman/security/advisories/GHSA-hfc6-f2q5-m256</a>).<br>
+      In strict compliance with Coordinated Vulnerability Disclosure (CVD) embargo policy, line-level root-cause analysis, reproduction harnesses, and unified remediation diffs are withheld from public access until upstream vendor triage and patch release are complete.
     </div>
-    <h2>0x00 // GitHub REST API Verification Record</h2>
+    <h2>0x00 // Cryptographic Commitment &amp; GitHub CNA Verification Metadata</h2>
     <pre><code>{
   &quot;ghsa_id&quot;: &quot;GHSA-hfc6-f2q5-m256&quot;,
+  &quot;repository&quot;: &quot;tinyhumansai/openhuman&quot;,
   &quot;html_url&quot;: &quot;https://github.com/tinyhumansai/openhuman/security/advisories/GHSA-hfc6-f2q5-m256&quot;,
-  &quot;summary&quot;: &quot;Shell Protected-Path Floor and Read-Only Classifier Bypass via Intra-Word Quote Splitting, file:// URLs, and git --output in CommandAnalysis&quot;,
   &quot;state&quot;: &quot;triage&quot;,
   &quot;severity&quot;: &quot;high&quot;,
   &quot;created_at&quot;: &quot;2026-10-26T02:00:51Z&quot;,
@@ -39,108 +40,9 @@
     &quot;CWE-78&quot;,
     &quot;CWE-863&quot;
   ],
-  &quot;vulnerabilities&quot;: [
-    {
-      &quot;package&quot;: {
-        &quot;ecosystem&quot;: &quot;rust&quot;,
-        &quot;name&quot;: &quot;openhuman-core&quot;
-      },
-      &quot;vulnerable_version_range&quot;: &quot;&lt;= 0.64.15&quot;,
-      &quot;patched_versions&quot;: null,
-      &quot;vulnerable_functions&quot;: []
-    }
-  ]
+  &quot;embargo_policy&quot;: &quot;REDACTED_DURING_VENDOR_TRIAGE&quot;,
+  &quot;specification_sha256_commitment&quot;: &quot;8a67fcda1a141b261251568131e0bba8b9fde48dcd3f067d844b6e5a5217b6d8&quot;
 }</code></pre>
-    <h2>0x01 // Technical Specification &amp; Remediation Patch</h2>
-    <pre><code>### Summary
-In `crates/openhuman-core/src/security/policy/command_analysis.rs`, `command_checks.rs`, `command_vocabulary.rs`, and `util/url.rs` (`&lt;= v0.64.15`), `OpenHumanSecurityGate` relies on `CommandAnalysis::from_shell_analysis` and `SecurityPolicy::check_gated_command_analysis` to enforce the unconditional protected-path floor (`SENSITIVE_COMPONENTS` such as `.ssh`/`.aws`, `SENSITIVE_FILES`, and `ALWAYS_FORBIDDEN_PREFIXES` such as `/etc`) and to classify `Read`-only shell commands (`GateDecision::Allow` without human approval across all autonomy tiers, including `ReadOnly` and `Supervised`). Three flaws allow shell commands to bypass these guards:
-
-### Root Cause Analysis
-1. **Intra-Word Quote Splitting in `CommandAnalysis::from_shell_analysis` Breaks `check_protected_path_words` (`crates/openhuman-core/src/security/policy/command_analysis.rs:83-94`)**:
-   - While `normalized_command_name()` (`command_vocabulary.rs:320-338`) uses `shell_unquote()` to strip syntactic quotes inside a shell word the way the shell does (`c&#x27;&#x27;url` -&gt; `curl`), `CommandAnalysis::from_shell_analysis` (`command_analysis.rs:84-93`) populates `analysis.literal_words` by splitting `source` directly on `&#x27;` and `&quot;` characters:
-     ```rust
-     source.split(|c: char| {
-         c.is_whitespace()
-             || matches!(c, &#x27;\&#x27;&#x27; | &#x27;&quot;&#x27; | &#x27;(&#x27; | &#x27;)&#x27; | &#x27;[&#x27; | &#x27;]&#x27; | &#x27;,&#x27; | &#x27;;&#x27; | &#x27;=&#x27; | &#x27;@&#x27;)
-     })
-     ```
-   - Consequently, a shell-quoted protected path such as `/et&quot;c&quot;/passwd` or `~/.s&#x27;s&#x27;h/id_rsa` is split into separate fragments (`[&quot;/et&quot;, &quot;c&quot;, &quot;/passwd&quot;]` or `[&quot;~/.s&quot;, &quot;s&quot;, &quot;h/id_rsa&quot;]`) instead of being unquoted into `/etc/passwd` or `~/.ssh/id_rsa`.
-   - None of the split fragments match `is_always_forbidden()`, and when paired with a `READ_ONLY_BASES` command (`cat`, `head`, `tail`, `grep`, `rg`), `check_gated_command_analysis` returns `Ok(CommandClass::Read)`, allowing unprompted reads of protected credential stores even in `AutonomyLevel::ReadOnly` and `AutonomyLevel::Supervised`.
-2. **Unconditional `word.contains(&quot;://&quot;)` Skip in `check_protected_path_words` Misses `file://` URLs (`crates/openhuman-core/src/security/policy/command_checks.rs:438`)**:
-   - `check_protected_path_words()` skips any token containing `&quot;://&quot;` (`if word.is_empty() || word.contains(&quot;://&quot;) { continue; }`), which exempts `file:///etc/passwd` and `file:///Users/&lt;user&gt;/.ssh/id_rsa` from the protected-path floor.
-3. **`git diff` / `git log` / `git show` with `--output=&lt;path&gt;` Classified as `CommandClass::Read` (`crates/openhuman-core/src/security/policy/command_vocabulary.rs:573-588`)**:
-   - `classify_host_command` classifies `git` subcommands solely by checking whether `args.first()` is in `GIT_READ_VERBS` (`diff`, `log`, `show`, `status`, etc.), without checking for `--output=&lt;file&gt;` or `-O` flags (unlike `tree -o` and `rg --pre` on lines 598–599). Because `git diff --output=&lt;file&gt;` and `git log --output=&lt;file&gt;` write directly to `&lt;file&gt;`, classifying them as `CommandClass::Read` permits arbitrary file creation/overwrite in `AutonomyLevel::ReadOnly` and `AutonomyLevel::Supervised` without human approval.
-4. **`host_is_local` Omits IPv4-Mapped IPv6 (`[::ffff:127.0.0.1]`) Despite Explicit Documentation Claim (`crates/openhuman-core/src/util/url.rs:105-122`)**:
-   - The doc comment on `host_is_local()` states that typed-host matching ensures `::ffff:127.0.0.1` classifies as local, but the `Some(url::Host::Ipv6(addr))` arm only checks `addr.is_loopback() || addr.is_unspecified()` (which returns `false` for `::ffff:127.0.0.1` in Rust&#x27;s `std::net::Ipv6Addr`) without checking `addr.to_ipv4_mapped()`.
-
-### Impact
-- Bypass of the unconditional protected-path floor (`check_protected_path_words`) for credential stores (`.ssh`, `.aws`, `.gnupg`, `/etc`) and bypass of `AutonomyLevel::ReadOnly` / `AutonomyLevel::Supervised` write restrictions via `git diff/log/show --output=&lt;file&gt;`.
-
-### Recommended Remediation
-1. In `CommandAnalysis::from_shell_analysis`, apply `shell_unquote()` to each shell word (and sub-tokens split on `=`, `@`, `,`) rather than splitting on `&#x27;` and `&quot;`.
-2. In `check_protected_path_words`, strip `file://` prefixes instead of skipping `file://` URLs.
-3. In `classify_host_command`, treat `git` with `--output` / `--output=*` / `-c` / `--exec-path` as `CommandClass::Write`.
-4. In `host_is_local`, delegate `addr.to_ipv4_mapped()` to the IPv4 locality check:
-
-```diff
---- a/crates/openhuman-core/src/security/policy/command_analysis.rs
-+++ b/crates/openhuman-core/src/security/policy/command_analysis.rs
-@@ -1,6 +1,6 @@
- use super::command_vocabulary::{
-     classify_segment_source, effective_command, has_dangerous_env_assignment, is_assignment,
--    is_command_executor, normalized_command_name, shell_words,
-+    is_command_executor, normalized_command_name, shell_unquote, shell_words,
- };
- use crate::security::policy::CommandClass;
- 
-@@ -78,18 +78,13 @@
-             analysis.tee |= words
-                 .iter()
-                 .any(|word| word == &amp;&quot;tee&quot; || word.ends_with(&quot;/tee&quot;));
--            // Split option values out (`--file=/p`, `if=/p`, `-d@/p`) so the
--            // protected-path floor sees the path inside them.
-+            // Split option values out (`--file=/p`, `if=/p`, `-d@/p`) after shell
-+            // quote removal so intra-word quotes (`&quot;/etc/&quot;shadow`) cannot split paths.
-             analysis.literal_words.extend(
--                source
--                    .split(|c: char| {
--                        c.is_whitespace()
--                            || matches!(
--                                c,
--                                &#x27;\&#x27;&#x27; | &#x27;&quot;&#x27; | &#x27;(&#x27; | &#x27;)&#x27; | &#x27;[&#x27; | &#x27;]&#x27; | &#x27;,&#x27; | &#x27;;&#x27; | &#x27;=&#x27; | &#x27;@&#x27;
--                            )
--                    })
--                    .map(|word| word.trim_matches([&#x27;&lt;&#x27;, &#x27;&gt;&#x27;, &#x27;&amp;&#x27;, &#x27;|&#x27;]).to_owned())
-+                words
-+                    .iter()
-+                    .flat_map(|w| w.split([&#x27;(&#x27;, &#x27;)&#x27;, &#x27;[&#x27;, &#x27;]&#x27;, &#x27;,&#x27;, &#x27;;&#x27;, &#x27;=&#x27;, &#x27;@&#x27;]))
-+                    .map(|word| shell_unquote(word.trim_matches([&#x27;&lt;&#x27;, &#x27;&gt;&#x27;, &#x27;&amp;&#x27;, &#x27;|&#x27;])))
-                     .filter(|word| !word.is_empty()),
-             );
-             analysis.segments.push(CommandSegment {
-```
-
-### Formal Specification &amp; Taint Provenance (`re-source-reconstruction` / `PTN`)
-
-#### 1. Symbol &amp; Call-Graph Provenance Table
-| Source Location | Symbol / Function | Subsystem Role |
-|---|---|---|
-| `crates/openhuman-core/src/security/policy/command_analysis.rs:37-108` | `CommandAnalysis::from_shell_analysis(facts)` | Splits shell segments into `literal_words` for protected-path checking |
-| `crates/openhuman-core/src/security/policy/command_checks.rs:173-203` | `SecurityPolicy::check_gated_command_analysis(&amp;analysis)` | Enforces protected-path floor and `AutonomyLevel` gate |
-| `crates/openhuman-core/src/security/policy/command_checks.rs:435-473` | `SecurityPolicy::check_protected_path_words(words)` | Rejects paths matching `is_always_forbidden` |
-| `crates/openhuman-core/src/security/policy/command_vocabulary.rs:533-617` | `classify_host_command(base, args, joined)` | Classifies command into `Read`, `Write`, `Network`, `Install`, `Destructive` |
-| `crates/openhuman-core/src/util/url.rs:110-122` | `host_is_local(parsed: &amp;url::Url)` | Classifies loopback/private/localhost URLs |
-
-#### 2. PTN Data-Flow &amp; Taint Propagation
-- **`I:ToolCallRequest.arguments[&quot;command&quot;]`** → **`P(CommandAnalysis::from_shell_analysis, 1)`** (`facts.segments`) → **`L(from_shell_analysis, analysis.literal_words)`** (splits on `&#x27;` and `&quot;` before unquoting, fragmenting `/et&quot;c&quot;/passwd` into `[&quot;/et&quot;, &quot;c&quot;, &quot;/passwd&quot;]`) → **`P(SecurityPolicy::check_protected_path_words, 2)`** (misses `is_always_forbidden` and skips `word.contains(&quot;://&quot;)` for `file://` URLs) → **`E:ShellTool::execute`**.
-- **`I:ToolCallRequest.arguments[&quot;command&quot;]`** (`git diff --output=&lt;path&gt;`) → **`P(classify_host_command, 1..2)`** (`base = &quot;git&quot;`, `args[0] = &quot;diff&quot;`) → **`verb_class(args, GIT_READ_VERBS)`** → returns `CommandClass::Read` (`GateDecision::Allow` in `ReadOnly` and `Supervised` modes).
-
-#### 3. Assumption Register (`[A1..A3]`) &amp; Falsification Probes (`QG1–QG7`)
-| ID | Assumption Statement | Confidence | Failure Impact if False | Concrete Falsification Probe |
-|---|---|---|---|---|
-| `A1` | TinyBox passes raw segment source strings (preserving syntactic quotes) in `tinybox_bus::ShellAnalysis.segments`. | `PROVEN` | If quotes were already stripped, `shell_words(&amp;source)` and `normalized_command_name` in the same loop (`lines 49-55`) would not need quote handling. | Inspect `command_analysis.rs:49-61` where `raw_command.trim_matches([&#x27;\&#x27;&#x27;, &#x27;&quot;&#x27;])` and `shell_unquote` are explicitly required. |
-| `A2` | `check_protected_path_words` is the sole host-side path floor executed inside `OpenHumanSecurityGate::shell_decision`. | `PROVEN` | None — `security_gate.rs:304` calls `policy.check_gated_command_analysis(&amp;analysis)?` which calls `self.check_protected_path_words(&amp;analysis.literal_words)?`. | Run `cargo test -p openhuman-core check_protected_path` with `cat /et&quot;c&quot;/passwd` and `curl file:///etc/passwd`. |
-| `A3` | `std::net::Ipv6Addr::is_loopback()` returns `false` for IPv4-mapped IPv6 loopback `::ffff:127.0.0.1`. | `PROVEN` | `host_is_local` misclassifies `http://[::ffff:127.0.0.1]:11434/v1` as non-local. | Evaluate `Url::parse(&quot;http://[::ffff:127.0.0.1]:1&quot;).unwrap()` in `url_tests.rs:39`. |</code></pre>
   </div>
 </body>
 </html>

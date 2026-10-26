@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GHSA-cr23-59mg-h2rc — bacnet-stack/bacnet-stack Coordinated Disclosure Record | Serhii Shunko (@sshunko)</title>
-  <meta name="description" content="Coordinated Vulnerability Disclosure verification record for GHSA-cr23-59mg-h2rc in bacnet-stack/bacnet-stack by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <meta name="description" content="Coordinated Vulnerability Disclosure embargo verification record for GHSA-cr23-59mg-h2rc in bacnet-stack/bacnet-stack by Serhii Shunko (@sshunko / @ccsimplyspolit).">
   <style>
     :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,16 +21,17 @@
 <body>
   <div class="container">
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
-    <h1>GHSA-cr23-59mg-h2rc: Pre-Auth Infinite Loop / Heap Exhaustion (CWE-835 / CWE-400) and Out-of-Bounds Read (CWE-125) in Calendar_Write_Property() and Notification_Class_Write_Property() (<code>bacnet-stack/bacnet-stack</code>)</h1>
+    <h1>GHSA-cr23-59mg-h2rc: Coordinated Vulnerability Disclosure Verification Record (<code>bacnet-stack/bacnet-stack</code>)</h1>
     <div class="notice">
       <strong>[CVD EMBARGO / VENDOR TRIAGE NOTICE]</strong><br>
-      Privately reported to <code>bacnet-stack/bacnet-stack</code> via GitHub Private Vulnerability Reporting on <code>2026-10-25T12:59:06Z</code> (<a href="https://github.com/bacnet-stack/bacnet-stack/security/advisories/GHSA-cr23-59mg-h2rc">https://github.com/bacnet-stack/bacnet-stack/security/advisories/GHSA-cr23-59mg-h2rc</a>).
+      Privately reported to <code>bacnet-stack/bacnet-stack</code> via GitHub Private Vulnerability Reporting on <code>2026-10-25T12:59:06Z</code> (<a href="https://github.com/bacnet-stack/bacnet-stack/security/advisories/GHSA-cr23-59mg-h2rc">https://github.com/bacnet-stack/bacnet-stack/security/advisories/GHSA-cr23-59mg-h2rc</a>).<br>
+      In strict compliance with Coordinated Vulnerability Disclosure (CVD) embargo policy, line-level root-cause analysis, reproduction harnesses, and unified remediation diffs are withheld from public access until upstream vendor triage and patch release are complete.
     </div>
-    <h2>0x00 // GitHub REST API Verification Record</h2>
+    <h2>0x00 // Cryptographic Commitment &amp; GitHub CNA Verification Metadata</h2>
     <pre><code>{
   &quot;ghsa_id&quot;: &quot;GHSA-cr23-59mg-h2rc&quot;,
+  &quot;repository&quot;: &quot;bacnet-stack/bacnet-stack&quot;,
   &quot;html_url&quot;: &quot;https://github.com/bacnet-stack/bacnet-stack/security/advisories/GHSA-cr23-59mg-h2rc&quot;,
-  &quot;summary&quot;: &quot;Pre-Auth Infinite Loop / Heap Exhaustion (CWE-835 / CWE-400) and Out-of-Bounds Read (CWE-125) in Calendar_Write_Property() and Notification_Class_Write_Property()&quot;,
   &quot;state&quot;: &quot;triage&quot;,
   &quot;severity&quot;: &quot;high&quot;,
   &quot;created_at&quot;: &quot;2026-10-25T12:59:06Z&quot;,
@@ -40,159 +41,9 @@
     &quot;CWE-787&quot;,
     &quot;CWE-835&quot;
   ],
-  &quot;vulnerabilities&quot;: [
-    {
-      &quot;package&quot;: {
-        &quot;ecosystem&quot;: &quot;other&quot;,
-        &quot;name&quot;: &quot;bacnet-stack&quot;
-      },
-      &quot;vulnerable_version_range&quot;: &quot;&lt;= 1.6.0-rc1&quot;,
-      &quot;patched_versions&quot;: null,
-      &quot;vulnerable_functions&quot;: []
-    }
-  ]
+  &quot;embargo_policy&quot;: &quot;REDACTED_DURING_VENDOR_TRIAGE&quot;,
+  &quot;specification_sha256_commitment&quot;: &quot;ff1c8301ff2cb08ea03229097779b1df19b12760b9b8cb6f081877aeff259154&quot;
 }</code></pre>
-    <h2>0x01 // Technical Specification &amp; Remediation Patch</h2>
-    <pre><code>### Summary &amp; Root-Cause Static Analysis
-
-1. **Remote Pre-Auth Infinite Loop, Heap Exhaustion &amp; OOB Under-Read in `Calendar_Write_Property()` (`src/bacnet/basic/object/calendar.c:695-716`, `CWE-835` / `CWE-400` / `CWE-125`):**
-   `bacnet_calendar_entry_decode()` returns `BACNET_STATUS_ERROR` (`-1`) when a context-2 `BACNET_CALENDAR_WEEK_N_DAY` entry has `octet_string.length != 3`, whereas `Calendar_Write_Property()` only checks `if (len == BACNET_STATUS_REJECT)` (`-2`). Consequently, `iOffset += len` decrements `iOffset` by `1` on `BACNET_STATUS_ERROR` (`-1`) and still calls `Calendar_Date_List_Add()` (`calloc`), causing either an infinite loop with unbounded heap allocation or an out-of-bounds buffer under-read at `&amp;wp_data-&gt;application_data[-1]`.
-
-2. **Out-of-Bounds Read via Unsubtracted `application_data_len` in `Notification_Class_Write_Property()` (`src/bacnet/basic/object/nc.c:508-531, 578-597`, `CWE-125`):**
-   Both the `PROP_PRIORITY` (`BACNET_ARRAY_ALL`) loop and the `PROP_RECIPIENT_LIST` loop advance `&amp;wp_data-&gt;application_data[iOffset]` while passing the full unsubtracted `wp_data-&gt;application_data_len` instead of `wp_data-&gt;application_data_len - iOffset`, and fail to reject negative decode returns (`len &lt;= 0`).
-
-3. **Discarded `BACNET_STATUS_ERROR` in `bacaction.c` &amp; Off-by-One / Underflow in `bvlc-sc.c` (`src/bacnet/bacaction.c:225-245`, `src/bacnet/datalink/bsc/bvlc-sc.c:810, 2370-2388`, `CWE-787`):**
-   `bacnet_action_property_value_decode()` adds `len = -1` to `apdu_len` without checking `len &lt; 0`; `bvlc_sc_encode_result()` checks `pdu_len &lt; offs + 4` before writing 5 bytes; and `bvlc_sc_remove_orig_and_dest()` executes `memmove(&amp;pdu[offs - 4], pdu, 4)` without verifying `offs &lt;= pdu_len`.
-
----
-
-### Formal Functional Specification (`re-source-reconstruction`)
-
-#### 1. Symbol &amp; Call-Graph Provenance Table
-
-| Function / Symbol | Source Location | Caller / Entry Vector | Sink / Impacted Resource |
-| :--- | :--- | :--- | :--- |
-| `Calendar_Write_Property` | `src/bacnet/basic/object/calendar.c:665-720` | `handler_write_property() -&gt; Device_Write_Property()` | `bacnet_calendar_entry_decode() -&gt; iOffset += len -&gt; Calendar_Date_List_Add()` |
-| `bacnet_calendar_entry_decode` | `src/bacnet/calendar_entry.c:154-165` | `Calendar_Write_Property()` | `returns BACNET_STATUS_ERROR (-1) when octet_string.length != 3` |
-| `Notification_Class_Write_Property` | `src/bacnet/basic/object/nc.c:508-531, 578-597` | `Device_Write_Property()` | `bacapp_decode_application_data / bacnet_destination_decode` |
-| `bvlc_sc_encode_result / remove_orig_and_dest` | `src/bacnet/datalink/bsc/bvlc-sc.c:810, 2375` | `BACnet/SC BVLC frame handler` | `pdu[offs..offs+4] / memmove(&amp;pdu[offs - 4], pdu, 4)` |
-
-#### 2. Formal PTN Data-Flow &amp; Taint Propagation
-
-```text
-I: BACnet Confirmed-REQ WriteProperty APDU (`OBJECT_CALENDAR`, `PROP_DATE_LIST`, `wp_data-&gt;application_data`)
-  -&gt; P(Calendar_Write_Property, 1) [BACNET_WRITE_PROPERTY_DATA *wp_data]
-  -&gt; L(bacnet_calendar_entry_decode, 1) [context tag 2 `BACNET_CALENDAR_WEEK_N_DAY` with `octet_string.length != 3` returns `BACNET_STATUS_ERROR` (-1)]
-  -&gt; L(Calendar_Write_Property, 2) [only checks `len == BACNET_STATUS_REJECT` (-2); executes `iOffset += -1`]
-  -&gt; E: Calendar_Date_List_Add (infinite loop `iOffset: 0 -&gt; 4 -&gt; 3 -&gt; 2 -&gt; 1 -&gt; 0` with unbounded `calloc`, or OOB under-read at `&amp;wp_data-&gt;application_data[-1]`)
-```
-
-#### 3. Assumption Register (`[A1..An]`) &amp; Concrete Falsification Probes
-
-| ID | Confidence | Mathematical / Structural Proposition | Concrete Verification / Falsification Probe |
-| :--- | :--- | :--- | :--- |
-| `[A1]` | `PROVEN` | `bacnet_calendar_entry_decode()` returns `BACNET_STATUS_ERROR` (`-1`) rather than `BACNET_STATUS_REJECT` (`-2`) when `octet_string.length != 3`. | Inspect `src/bacnet/calendar_entry.c:162-164` and `src/bacnet/bacdef.h`. |
-| `[A2]` | `PROVEN` | `bacapp_decode_application_data()` at the start of `Calendar_Write_Property()` returns `0` (not an error) when the payload starts with a context-specific tag. | Inspect `src/bacnet/basic/object/calendar.c:669-676` and `src/bacnet/bacapp.c`. |
-| `[A3]` | `PROVEN` | `Notification_Class_Write_Property()` passes `wp_data-&gt;application_data_len` without subtracting `iOffset` at lines 512 and 583. | Inspect `src/bacnet/basic/object/nc.c:508-531, 578-597`. |
-
-#### 4. Adversarial Review &amp; Self-Red-Team Quality Gates (`QG1–QG7`)
-
-- **`QG1` (Completeness):** `PASS` — Every root-cause sub-finding is paired with a complete, self-contained remediation diff hunk.
-- **`QG2` (No Placeholders):** `PASS` — Zero `TODO`, `FIXME`, or truncated `...` blocks in remediation patches.
-- **`QG3` (Type &amp; Width Exactness):** `PASS` — All integer widths, pointer offsets, and container bounds are explicitly checked against overflow/underflow.
-- **`QG4` (Structural &amp; Compile-Time Invariants):** `PASS` — Compile-time `static_assert` / `_Static_assert` and runtime guard invariants enforced.
-- **`QG5` (Falsifiability):** `PASS` — Every `[A1..A3]` entry includes a deterministic verification probe.
-- **`QG6` (Adversarial Personas — Saboteur / New Hire / Security Auditor):** `PASS` — Verified order-independence, multi-pass normalization, and error-path cleanup.
-- **`QG7` (Defensive CVD Compliance):** `PASS` — Strictly defensive source-level specification and remediation patch.
-
----
-
-### Defensive Remediation Patch
-
-```diff
---- a/src/bacnet/basic/object/calendar.c
-+++ b/src/bacnet/basic/object/calendar.c
-@@ -701,13 +701,19 @@
-                 len = bacnet_calendar_entry_decode(
-                     &amp;wp_data-&gt;application_data[iOffset],
-                     wp_data-&gt;application_data_len - iOffset, &amp;entry);
--                if (len == BACNET_STATUS_REJECT) {
-+                if (len &lt;= 0) {
-                     wp_data-&gt;error_class = ERROR_CLASS_PROPERTY;
-                     wp_data-&gt;error_code = ERROR_CODE_INVALID_DATA_TYPE;
-                     return false;
-                 }
-                 iOffset += len;
--                Calendar_Date_List_Add(wp_data-&gt;object_instance, &amp;entry);
-+                if (!Calendar_Date_List_Add(
-+                        wp_data-&gt;object_instance, &amp;entry)) {
-+                    wp_data-&gt;error_class = ERROR_CLASS_RESOURCES;
-+                    wp_data-&gt;error_code =
-+                        ERROR_CODE_NO_SPACE_TO_WRITE_PROPERTY;
-+                    return false;
-+                }
-             }
-             pv = Calendar_Present_Value(wp_data-&gt;object_instance);
-             status = Calendar_Present_Value_Write(
---- a/src/bacnet/basic/object/nc.c
-+++ b/src/bacnet/basic/object/nc.c
-@@ -509,8 +509,8 @@
-                     for (idx = 0; idx &lt; MAX_BACNET_EVENT_TRANSITION; idx++) {
-                         len = bacapp_decode_application_data(
-                             &amp;wp_data-&gt;application_data[iOffset],
--                            wp_data-&gt;application_data_len, &amp;value);
--                        if ((len == 0) ||
-+                            wp_data-&gt;application_data_len - iOffset, &amp;value);
-+                        if ((len &lt;= 0) ||
-                             (value.tag !=
-                              BACNET_APPLICATION_TAG_UNSIGNED_INT)) {
-                             /* Bad decode, wrong tag or following required
-@@ -580,8 +580,8 @@
-                 destination = &amp;TmpNotify.Recipient_List[idx];
-                 len = bacnet_destination_decode(
-                     &amp;wp_data-&gt;application_data[iOffset],
--                    wp_data-&gt;application_data_len, destination);
--                if (len == BACNET_STATUS_REJECT) {
-+                    wp_data-&gt;application_data_len - iOffset, destination);
-+                if (len &lt;= 0) {
-                     wp_data-&gt;error_class = ERROR_CLASS_PROPERTY;
-                     wp_data-&gt;error_code = ERROR_CODE_INVALID_DATA_TYPE;
-                     return false;
---- a/src/bacnet/bacaction.c
-+++ b/src/bacnet/bacaction.c
-@@ -232,6 +232,9 @@
- #endif
-                 default:
-                     return BACNET_STATUS_ERROR;
-+            }
-+            if (len &lt; 0) {
-+                return BACNET_STATUS_ERROR;
-             }
-             if ((len == 0) &amp;&amp; (tag.number != BACNET_APPLICATION_TAG_NULL) &amp;&amp;
-                 (tag.number != BACNET_APPLICATION_TAG_BOOLEAN) &amp;&amp;
---- a/src/bacnet/datalink/bsc/bvlc-sc.c
-+++ b/src/bacnet/datalink/bsc/bvlc-sc.c
-@@ -807,7 +807,7 @@
-         return offs;
-     }
- 
--    if (pdu_len &lt; offs + 4) {
-+    if (pdu_len &lt; offs + 5) {
-         return 0;
-     }
- 
-@@ -2379,6 +2379,9 @@
-         if (pdu[1] &amp; BVLC_SC_CONTROL_DEST_VADDR) {
-             offs += BVLC_SC_VMAC_SIZE;
-         }
-+        if (offs &gt; pdu_len) {
-+            return pdu_len;
-+        }
-         pdu[1] &amp;= ~(BVLC_SC_CONTROL_ORIG_VADDR);
-         pdu[1] &amp;= ~(BVLC_SC_CONTROL_DEST_VADDR);
-         memmove(&amp;pdu[offs - 4], pdu, 4);
-```
-</code></pre>
   </div>
 </body>
 </html>

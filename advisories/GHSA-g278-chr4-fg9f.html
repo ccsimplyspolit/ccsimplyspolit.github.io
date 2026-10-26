@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GHSA-g278-chr4-fg9f — marcobambini/gravity Coordinated Disclosure Record | Serhii Shunko (@sshunko)</title>
-  <meta name="description" content="Coordinated Vulnerability Disclosure verification record for GHSA-g278-chr4-fg9f in marcobambini/gravity by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <meta name="description" content="Coordinated Vulnerability Disclosure embargo verification record for GHSA-g278-chr4-fg9f in marcobambini/gravity by Serhii Shunko (@sshunko / @ccsimplyspolit).">
   <style>
     :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,16 +21,17 @@
 <body>
   <div class="container">
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
-    <h1>GHSA-g278-chr4-fg9f: Union Type Confusion (CWE-843) and Heap Buffer Over-Read (CWE-125) in gravity_function_deserialize() (<code>marcobambini/gravity</code>)</h1>
+    <h1>GHSA-g278-chr4-fg9f: Coordinated Vulnerability Disclosure Verification Record (<code>marcobambini/gravity</code>)</h1>
     <div class="notice">
       <strong>[CVD EMBARGO / VENDOR TRIAGE NOTICE]</strong><br>
-      Privately reported to <code>marcobambini/gravity</code> via GitHub Private Vulnerability Reporting on <code>2026-10-25T12:21:29Z</code> (<a href="https://github.com/marcobambini/gravity/security/advisories/GHSA-g278-chr4-fg9f">https://github.com/marcobambini/gravity/security/advisories/GHSA-g278-chr4-fg9f</a>).
+      Privately reported to <code>marcobambini/gravity</code> via GitHub Private Vulnerability Reporting on <code>2026-10-25T12:21:29Z</code> (<a href="https://github.com/marcobambini/gravity/security/advisories/GHSA-g278-chr4-fg9f">https://github.com/marcobambini/gravity/security/advisories/GHSA-g278-chr4-fg9f</a>).<br>
+      In strict compliance with Coordinated Vulnerability Disclosure (CVD) embargo policy, line-level root-cause analysis, reproduction harnesses, and unified remediation diffs are withheld from public access until upstream vendor triage and patch release are complete.
     </div>
-    <h2>0x00 // GitHub REST API Verification Record</h2>
+    <h2>0x00 // Cryptographic Commitment &amp; GitHub CNA Verification Metadata</h2>
     <pre><code>{
   &quot;ghsa_id&quot;: &quot;GHSA-g278-chr4-fg9f&quot;,
+  &quot;repository&quot;: &quot;marcobambini/gravity&quot;,
   &quot;html_url&quot;: &quot;https://github.com/marcobambini/gravity/security/advisories/GHSA-g278-chr4-fg9f&quot;,
-  &quot;summary&quot;: &quot;Union Type Confusion (CWE-843) and Heap Buffer Over-Read (CWE-125) in gravity_function_deserialize()&quot;,
   &quot;state&quot;: &quot;triage&quot;,
   &quot;severity&quot;: &quot;high&quot;,
   &quot;created_at&quot;: &quot;2026-10-25T12:21:29Z&quot;,
@@ -38,167 +39,9 @@
     &quot;CWE-125&quot;,
     &quot;CWE-843&quot;
   ],
-  &quot;vulnerabilities&quot;: [
-    {
-      &quot;package&quot;: {
-        &quot;ecosystem&quot;: &quot;other&quot;,
-        &quot;name&quot;: &quot;marcobambini/gravity&quot;
-      },
-      &quot;vulnerable_version_range&quot;: &quot;&lt;= 0.9.9&quot;,
-      &quot;patched_versions&quot;: null,
-      &quot;vulnerable_functions&quot;: []
-    }
-  ]
+  &quot;embargo_policy&quot;: &quot;REDACTED_DURING_VENDOR_TRIAGE&quot;,
+  &quot;specification_sha256_commitment&quot;: &quot;17ec93bb581dd584a5c2c07377d402f37a56dedd8e39b355cff84714e058eebf&quot;
 }</code></pre>
-    <h2>0x01 // Technical Specification &amp; Remediation Patch</h2>
-    <pre><code>### Summary &amp; Root-Cause Static Analysis
-
-1. **Union Type Confusion via Out-of-Order `&quot;tag&quot;` Deserialization &amp; Unrestricted `EXEC_TYPE_INTERNAL` Tag (`src/shared/gravity_value.c:966-1190`, `CWE-843`):**
-   In `gravity_function_t` (`src/shared/gravity_value.h:285-308`), `f-&gt;tag` discriminates an anonymous `union` shared between `EXEC_TYPE_NATIVE` (`cpool`, `pvalue`, `pname`, `ninsts`, `bytecode`, `lineno`), `EXEC_TYPE_INTERNAL` (`gravity_c_internal internal` callback pointer at union offset `0`), and `EXEC_TYPE_SPECIAL` (`uint16_t index; void *special[2]` at union offsets `8` and `16`). Because `gravity_function_new()` initializes `f-&gt;tag = EXEC_TYPE_NATIVE` (`0`) and `gravity_function_deserialize()` processes JSON keys in arbitrary order, supplying `&quot;pool&quot;` (or `&quot;bytecode&quot;`, `&quot;pvalues&quot;`, `&quot;pnames&quot;`) prior to `&quot;tag&quot;: 3` (`EXEC_TYPE_SPECIAL`) or `&quot;tag&quot;: 1` (`EXEC_TYPE_INTERNAL`) aliases the initialized `cpool` struct fields (`cpool.n`, `cpool.m`, `cpool.p`) directly onto `f-&gt;special[0..1]` (`gravity_closure_t *`) or `f-&gt;internal` (`gravity_c_internal`).
-
-2. **Heap-Based Buffer Over-Read &amp; `f-&gt;ninsts` Overwrite via `&quot;lineno&quot;` Deserialization (`src/shared/gravity_value.c:1068-1070`, `CWE-125`):**
-   The `GRAVITY_JSON_LABELLINENO` handler calls `gravity_bytecode_deserialize(..., &amp;f-&gt;ninsts)` without checking `f-&gt;tag == EXEC_TYPE_NATIVE` and overwrites `f-&gt;ninsts` with the decoded length of the `&quot;lineno&quot;` buffer. When `&quot;lineno&quot;` is longer than `&quot;bytecode&quot;` (in either key order), subsequent serialization (`JSON.stringify()` -&gt; `gravity_function_bytecode_serialize()`) or bytecode traversal reads past the end of the heap-allocated `f-&gt;bytecode` buffer.
-
----
-
-### Formal Functional Specification (`re-source-reconstruction`)
-
-#### 1. Symbol &amp; Call-Graph Provenance Table
-
-| Function / Symbol | Source Location | Caller / Entry Vector | Sink / Impacted Resource |
-| :--- | :--- | :--- | :--- |
-| `gravity_function_deserialize` | `src/shared/gravity_value.c:931-1190` | `JSON.parse() / gravity_vm_loadbuffer()` | `f-&gt;tag = value-&gt;u.integer / gravity_bytecode_deserialize(..., &amp;f-&gt;ninsts)` |
-| `gravity_function_blacken / size` | `src/shared/gravity_value.c:1250-1285` | `gravity_gray_object() GC marker` | `dereferences (gravity_closure_t *)f-&gt;special[0..1]` |
-| `gravity_function_bytecode_serialize` | `src/shared/gravity_value.c:740-755` | `gravity_function_serialize() / JSON.stringify()` | `reads f-&gt;bytecode[0..f-&gt;ninsts-1]` |
-
-#### 2. Formal PTN Data-Flow &amp; Taint Propagation
-
-```text
-I: JSON object with `&quot;type&quot;: &quot;function&quot;`, `&quot;pool&quot;: [...]`, and subsequent `&quot;tag&quot;: 3` (`EXEC_TYPE_SPECIAL`)
-  -&gt; P(gravity_function_deserialize, 2) [json_value *json]
-  -&gt; L(GRAVITY_JSON_LABELPOOL, 1) [`f-&gt;tag` defaults to `EXEC_TYPE_NATIVE` (0); populates `f-&gt;cpool.{r, n, m, p}`]
-  -&gt; L(GRAVITY_JSON_LABELTAG, 2) [overwrites `f-&gt;tag = 3` (`EXEC_TYPE_SPECIAL`) without clearing `f-&gt;cpool`]
-  -&gt; E: gravity_function_blacken / gravity_function_size (dereferences `f-&gt;special[0]` = `f-&gt;cpool.m` as `gravity_closure_t *`)
-
-I: JSON object with `&quot;bytecode&quot;` (length N1) and `&quot;lineno&quot;` (length N2 &gt; N1)
-  -&gt; L(GRAVITY_JSON_LABELLINENO, 1) [`gravity_bytecode_deserialize(..., &amp;f-&gt;ninsts)` overwrites `f-&gt;ninsts = N2`]
-  -&gt; E: gravity_function_bytecode_serialize (reads `(N2 - N1) * sizeof(uint32_t)` bytes past `f-&gt;bytecode` heap buffer)
-```
-
-#### 3. Assumption Register (`[A1..An]`) &amp; Concrete Falsification Probes
-
-| ID | Confidence | Mathematical / Structural Proposition | Concrete Verification / Falsification Probe |
-| :--- | :--- | :--- | :--- |
-| `[A1]` | `PROVEN` | In `gravity_function_t` (`src/shared/gravity_value.h:285-308`), the anonymous union overlays `cpool` (`m_array_t`: `size_t n, m; T* p`) with `struct { uint16_t index; void *special[2]; }` and `gravity_c_internal internal`. | Verify union layout in `src/shared/gravity_value.h:285-308`. |
-| `[A2]` | `PROVEN` | `gravity_function_deserialize()` is directly reachable from untrusted JSON via Gravity&#x27;s built-in `JSON.parse()` when an object contains `&quot;type&quot;: &quot;function&quot;`. | Inspect `src/runtime/gravity_core.c` (`JSON_parse`) and `gravity_value.c`. |
-| `[A3]` | `PROVEN` | Checking `lineno_parsed &amp;&amp; (!bytecode_parsed || nlineno &lt; f-&gt;ninsts)` after the key loop guarantees order-independent consistency between `f-&gt;bytecode` and `f-&gt;lineno`. | Trace both key orders (`bytecode`-then-`lineno` and `lineno`-then-`bytecode`) through `gravity_function_deserialize()`. |
-
-#### 4. Adversarial Review &amp; Self-Red-Team Quality Gates (`QG1–QG7`)
-
-- **`QG1` (Completeness):** `PASS` — Every root-cause sub-finding is paired with a complete, self-contained remediation diff hunk.
-- **`QG2` (No Placeholders):** `PASS` — Zero `TODO`, `FIXME`, or truncated `...` blocks in remediation patches.
-- **`QG3` (Type &amp; Width Exactness):** `PASS` — All integer widths, pointer offsets, and container bounds are explicitly checked against overflow/underflow.
-- **`QG4` (Structural &amp; Compile-Time Invariants):** `PASS` — Compile-time `static_assert` / `_Static_assert` and runtime guard invariants enforced.
-- **`QG5` (Falsifiability):** `PASS` — Every `[A1..A3]` entry includes a deterministic verification probe.
-- **`QG6` (Adversarial Personas — Saboteur / New Hire / Security Auditor):** `PASS` — Verified order-independence, multi-pass normalization, and error-path cleanup.
-- **`QG7` (Defensive CVD Compliance):** `PASS` — Strictly defensive source-level specification and remediation patch.
-
----
-
-### Defensive Remediation Patch
-
-```diff
---- a/src/shared/gravity_value.c
-+++ b/src/shared/gravity_value.c
-@@ -943,6 +943,9 @@
-     bool nupvalues_parsed = false;
-     bool nargs_parsed = false;
-     bool tag_parsed = false;
-+    bool lineno_parsed = false;
-+    bool native_fields_used = false;
-+    uint32_t nlineno = 0;
- 
-     uint32_t n = json-&gt;u.object.length;
-     for (uint32_t i=1; i&lt;n; ++i) { // from 1 to skip type
-@@ -966,7 +969,10 @@
-         if (string_casencmp(label, GRAVITY_JSON_LABELTAG, label_size) == 0) {
-             if (value-&gt;type != json_integer) goto abort_load;
-             if (tag_parsed) goto abort_load;
--            f-&gt;tag = (uint16_t)value-&gt;u.integer;
-+            uint16_t tag = (uint16_t)value-&gt;u.integer;
-+            if (tag != EXEC_TYPE_NATIVE &amp;&amp; tag != EXEC_TYPE_SPECIAL) goto abort_load;
-+            if (native_fields_used &amp;&amp; tag != EXEC_TYPE_NATIVE) goto abort_load;
-+            f-&gt;tag = tag;
-             tag_parsed = true;
-             continue;
-         }
-@@ -1051,14 +1057,16 @@
-         // bytecode
-         if (string_casencmp(label, GRAVITY_JSON_LABELBYTECODE, label_size) == 0) {
-             if (bytecode_parsed) goto abort_load;
-+            if (f-&gt;tag != EXEC_TYPE_NATIVE) goto abort_load;
-+            native_fields_used = true;
-             if (value-&gt;type == json_null) {
-                 // if function is empty then just one RET0 implicit bytecode instruction
-                 f-&gt;ninsts = 0;
-                 f-&gt;bytecode = (uint32_t *)mem_alloc(NULL, sizeof(uint32_t) * (f-&gt;ninsts + 1));
-             } else {
-                 if (value-&gt;type != json_string) goto abort_load;
--                if (f-&gt;tag != EXEC_TYPE_NATIVE) goto abort_load;
-                 f-&gt;bytecode = gravity_bytecode_deserialize(value-&gt;u.string.ptr, value-&gt;u.string.length, &amp;f-&gt;ninsts);
-+                if (!f-&gt;bytecode) goto abort_load;
-             }
-             bytecode_parsed = true;
-             continue;
-@@ -1066,13 +1074,21 @@
- 
-         // lineno debug info
-         if (string_casencmp(label, GRAVITY_JSON_LABELLINENO, label_size) == 0) {
--            if (value-&gt;type == json_string) f-&gt;lineno = gravity_bytecode_deserialize(value-&gt;u.string.ptr, value-&gt;u.string.length, &amp;f-&gt;ninsts);
-+            if (lineno_parsed) goto abort_load;
-+            if (f-&gt;tag != EXEC_TYPE_NATIVE) goto abort_load;
-+            if (value-&gt;type != json_string) goto abort_load;
-+            native_fields_used = true;
-+            f-&gt;lineno = gravity_bytecode_deserialize(value-&gt;u.string.ptr, value-&gt;u.string.length, &amp;nlineno);
-+            if (!f-&gt;lineno) goto abort_load;
-+            lineno_parsed = true;
-+            continue;
-         }
-         
-         // arguments names
-         if (string_casencmp(label, GRAVITY_JSON_LABELPNAMES, label_size) == 0) {
-             if (value-&gt;type != json_array) goto abort_load;
-             if (f-&gt;tag != EXEC_TYPE_NATIVE) goto abort_load;
-+            native_fields_used = true;
-             uint32_t m = value-&gt;u.array.length;
-             for (uint32_t j=0; j&lt;m; ++j) {
-                 json_value *r = value-&gt;u.array.values[j];
-@@ -1085,6 +1101,7 @@
-         if (string_casencmp(label, GRAVITY_JSON_LABELPVALUES, label_size) == 0) {
-             if (value-&gt;type != json_array) goto abort_load;
-             if (f-&gt;tag != EXEC_TYPE_NATIVE) goto abort_load;
-+            native_fields_used = true;
-             
-             uint32_t m = value-&gt;u.array.length;
-             for (uint32_t j=0; j&lt;m; ++j) {
-@@ -1128,6 +1145,7 @@
-             if (f-&gt;tag != EXEC_TYPE_NATIVE) goto abort_load;
-             if (cpool_parsed) goto abort_load;
-             cpool_parsed = true;
-+            native_fields_used = true;
- 
-             uint32_t m = value-&gt;u.array.length;
-             for (uint32_t j=0; j&lt;m; ++j) {
-@@ -1188,6 +1206,7 @@
-             }
-         }
-     }
-+    if (lineno_parsed &amp;&amp; (!bytecode_parsed || nlineno &lt; f-&gt;ninsts)) goto abort_load;
- 
-     return f;
- 
-```
-</code></pre>
   </div>
 </body>
 </html>

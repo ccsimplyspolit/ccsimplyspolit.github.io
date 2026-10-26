@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GHSA-x2gm-fvv7-8x97 — stytchauth/samlshield Coordinated Disclosure Record | Serhii Shunko (@sshunko)</title>
-  <meta name="description" content="Coordinated Vulnerability Disclosure verification record for GHSA-x2gm-fvv7-8x97 in stytchauth/samlshield by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <meta name="description" content="Coordinated Vulnerability Disclosure embargo verification record for GHSA-x2gm-fvv7-8x97 in stytchauth/samlshield by Serhii Shunko (@sshunko / @ccsimplyspolit).">
   <style>
     :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,16 +21,17 @@
 <body>
   <div class="container">
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
-    <h1>GHSA-x2gm-fvv7-8x97: stytchauth/samlshield: Timestamp NaN validation and subject element cardinality checks in SAML assertion verification (<code>stytchauth/samlshield</code>)</h1>
+    <h1>GHSA-x2gm-fvv7-8x97: Coordinated Vulnerability Disclosure Verification Record (<code>stytchauth/samlshield</code>)</h1>
     <div class="notice">
       <strong>[CVD EMBARGO / VENDOR TRIAGE NOTICE]</strong><br>
-      Privately reported to <code>stytchauth/samlshield</code> via GitHub Private Vulnerability Reporting on <code>2026-10-26T02:01:53Z</code> (<a href="https://github.com/stytchauth/samlshield/security/advisories/GHSA-x2gm-fvv7-8x97">https://github.com/stytchauth/samlshield/security/advisories/GHSA-x2gm-fvv7-8x97</a>).
+      Privately reported to <code>stytchauth/samlshield</code> via GitHub Private Vulnerability Reporting on <code>2026-10-26T02:01:53Z</code> (<a href="https://github.com/stytchauth/samlshield/security/advisories/GHSA-x2gm-fvv7-8x97">https://github.com/stytchauth/samlshield/security/advisories/GHSA-x2gm-fvv7-8x97</a>).<br>
+      In strict compliance with Coordinated Vulnerability Disclosure (CVD) embargo policy, line-level root-cause analysis, reproduction harnesses, and unified remediation diffs are withheld from public access until upstream vendor triage and patch release are complete.
     </div>
-    <h2>0x00 // GitHub REST API Verification Record</h2>
+    <h2>0x00 // Cryptographic Commitment &amp; GitHub CNA Verification Metadata</h2>
     <pre><code>{
   &quot;ghsa_id&quot;: &quot;GHSA-x2gm-fvv7-8x97&quot;,
+  &quot;repository&quot;: &quot;stytchauth/samlshield&quot;,
   &quot;html_url&quot;: &quot;https://github.com/stytchauth/samlshield/security/advisories/GHSA-x2gm-fvv7-8x97&quot;,
-  &quot;summary&quot;: &quot;stytchauth/samlshield: Timestamp NaN validation and subject element cardinality checks in SAML assertion verification&quot;,
   &quot;state&quot;: &quot;triage&quot;,
   &quot;severity&quot;: &quot;high&quot;,
   &quot;created_at&quot;: &quot;2026-10-26T02:01:53Z&quot;,
@@ -38,90 +39,9 @@
     &quot;CWE-20&quot;,
     &quot;CWE-287&quot;
   ],
-  &quot;vulnerabilities&quot;: [
-    {
-      &quot;package&quot;: {
-        &quot;ecosystem&quot;: &quot;npm&quot;,
-        &quot;name&quot;: &quot;src/validate.ts&quot;
-      },
-      &quot;vulnerable_version_range&quot;: null,
-      &quot;patched_versions&quot;: null,
-      &quot;vulnerable_functions&quot;: []
-    }
-  ]
+  &quot;embargo_policy&quot;: &quot;REDACTED_DURING_VENDOR_TRIAGE&quot;,
+  &quot;specification_sha256_commitment&quot;: &quot;d968508c1243545f4f60fb984bd2e745a55eca330ad67a90fd9b57b10a28a779&quot;
 }</code></pre>
-    <h2>0x01 // Technical Specification &amp; Remediation Patch</h2>
-    <pre><code># SAML Temporal Validation Bypass via NaN Timestamp Comparison and Missing SubjectConfirmationData/@NotBefore &amp; Multi-Subject Validation in stytchauth/samlshield
-
-- **CVD ID**: `CVD-2026-SAMLSHIELD-001`
-- **Target Program**: HackerOne `twilio` (Paid Bounty Scope `1047285` — `github.com/stytchauth/samlshield`)
-- **Repository**: `https://github.com/stytchauth/samlshield`
-- **Vulnerable File**: `src/validate.ts (lines 956-1022)`
-- **Weakness**: `CWE-290 / CWE-347`
-- **Severity**: `High (CVSS 7.7)`
-
-## Summary
-
-I identified a SAML temporal and structural validation bypass in `stytchauth/samlshield` (`src/validate.ts`, lines 956-1022). In `validateTimestamps()`, `new Date(...).getTime()` is evaluated on `Conditions/@NotBefore`, `Conditions/@NotOnOrAfter`, and `SubjectConfirmationData/@NotOnOrAfter` without checking `Number.isNaN(...)`. Because JavaScript comparisons with `NaN` (`now + CLOCK_SKEW_TOLERANCE_MS &lt; NaN` and `now - CLOCK_SKEW_TOLERANCE_MS &gt; NaN`) always evaluate to `false`, any unparseable or non-ISO timestamp string silently bypasses expiration checks. Additionally, `validateTimestamps()` omits checking `SubjectConfirmationData/@NotBefore` and does not enforce a single `&lt;saml:Subject&gt;` element.
-
-## Root Cause Analysis
-
-In `src/validate.ts` (lines 994-1021):
-```typescript
-if (conditionsNotBefore) {
-  const notBeforeTime = new Date(conditionsNotBefore.value).getTime();
-  if (now + CLOCK_SKEW_TOLERANCE_MS &lt; notBeforeTime) {
-    throw new SAMLAssertionNotYetValidError();
-  }
-}
-
-if (conditionsNotOnOrAfter) {
-  const notOnOrAfterTime = new Date(conditionsNotOnOrAfter.value).getTime();
-  if (now - CLOCK_SKEW_TOLERANCE_MS &gt; notOnOrAfterTime) {
-    throw new SAMLAssertionExpiredError();
-  }
-}
-```
-1. When `new Date(value).getTime()` returns `NaN`, both `&lt;` and `&gt;` comparisons evaluate to `false`, so `validateSAMLResponse()` resolves with `{ valid: true }` instead of throwing.
-2. `SubjectConfirmationData/@NotBefore` (SAML 2.0 Core §2.4.1.2) is never checked.
-3. Unlike `Response` and `Assertion`, `Subject` is never checked for singleton count or strict-vs-liberal XPath consistency (`//*[local-name()=&#x27;Subject&#x27;]`), allowing assertions with multiple `&lt;saml:Subject&gt;` elements if only one contains `SubjectConfirmationData/@NotOnOrAfter`.
-
-## Steps to Reproduce
-
-Run the standalone verification harness in `verify_batch6_paid_ai.py` (`test_05_stytch_samlshield_nan_and_subject_bypass`):
-```bash
-python verify_batch6_paid_ai.py -v
-```
-- **BEFORE PATCH**: `samlshield_validate_timestamps_unpatched` returns `True` when `not_on_or_after=&#x27;2000-99-99T00:00:00Z&#x27;`, `subj_not_before=&#x27;2099-01-01T00:00:00Z&#x27;`, and `subject_count=2`.
-- **AFTER PATCH**: `Number.isNaN()` checks, `SubjectConfirmationData/@NotBefore` validation, and singleton `Subject` enforcement reject all three invalid states.
-
-## Suggested Remediation
-
-```diff
---- a/src/validate.ts
-+++ b/src/validate.ts
-@@ -1,13 +1,13 @@
-   if (conditionsNotBefore) {
-     const notBeforeTime = new Date(conditionsNotBefore.value).getTime();
--    if (now + CLOCK_SKEW_TOLERANCE_MS &lt; notBeforeTime) {
-+    if (Number.isNaN(notBeforeTime) || now + CLOCK_SKEW_TOLERANCE_MS &lt; notBeforeTime) {
-       throw new SAMLAssertionNotYetValidError();
-     }
-   }
- 
-   if (conditionsNotOnOrAfter) {
-     const notOnOrAfterTime = new Date(conditionsNotOnOrAfter.value).getTime();
--    if (now - CLOCK_SKEW_TOLERANCE_MS &gt; notOnOrAfterTime) {
-+    if (Number.isNaN(notOnOrAfterTime) || now - CLOCK_SKEW_TOLERANCE_MS &gt; notOnOrAfterTime) {
-       throw new SAMLAssertionExpiredError();
-     }
-   }
-```
-
-## Impact
-
-Applications relying on `samlshield` as a pre-validation layer before downstream SAML consumption can accept assertions with malformed temporal bounds, future-dated `SubjectConfirmationData/@NotBefore` attributes, or ambiguous multi-`Subject` structures.
-</code></pre>
   </div>
 </body>
 </html>

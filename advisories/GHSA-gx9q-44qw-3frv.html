@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GHSA-gx9q-44qw-3frv — DeusData/codebase-memory-mcp Coordinated Disclosure Record | Serhii Shunko (@sshunko)</title>
-  <meta name="description" content="Coordinated Vulnerability Disclosure verification record for GHSA-gx9q-44qw-3frv in DeusData/codebase-memory-mcp by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <meta name="description" content="Coordinated Vulnerability Disclosure embargo verification record for GHSA-gx9q-44qw-3frv in DeusData/codebase-memory-mcp by Serhii Shunko (@sshunko / @ccsimplyspolit).">
   <style>
     :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,16 +21,17 @@
 <body>
   <div class="container">
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
-    <h1>GHSA-gx9q-44qw-3frv: Out-of-Bounds Stack Read via Non-Null-Terminated strncpy in emit_property() (CWE-170 / CWE-125) and Unchecked Pointer Subtraction in extract_attr() (internal/cbm/iris_export_xml.c) (<code>DeusData/codebase-memory-mcp</code>)</h1>
+    <h1>GHSA-gx9q-44qw-3frv: Coordinated Vulnerability Disclosure Verification Record (<code>DeusData/codebase-memory-mcp</code>)</h1>
     <div class="notice">
       <strong>[CVD EMBARGO / VENDOR TRIAGE NOTICE]</strong><br>
-      Privately reported to <code>DeusData/codebase-memory-mcp</code> via GitHub Private Vulnerability Reporting on <code>2026-10-25T13:32:20Z</code> (<a href="https://github.com/DeusData/codebase-memory-mcp/security/advisories/GHSA-gx9q-44qw-3frv">https://github.com/DeusData/codebase-memory-mcp/security/advisories/GHSA-gx9q-44qw-3frv</a>).
+      Privately reported to <code>DeusData/codebase-memory-mcp</code> via GitHub Private Vulnerability Reporting on <code>2026-10-25T13:32:20Z</code> (<a href="https://github.com/DeusData/codebase-memory-mcp/security/advisories/GHSA-gx9q-44qw-3frv">https://github.com/DeusData/codebase-memory-mcp/security/advisories/GHSA-gx9q-44qw-3frv</a>).<br>
+      In strict compliance with Coordinated Vulnerability Disclosure (CVD) embargo policy, line-level root-cause analysis, reproduction harnesses, and unified remediation diffs are withheld from public access until upstream vendor triage and patch release are complete.
     </div>
-    <h2>0x00 // GitHub REST API Verification Record</h2>
+    <h2>0x00 // Cryptographic Commitment &amp; GitHub CNA Verification Metadata</h2>
     <pre><code>{
   &quot;ghsa_id&quot;: &quot;GHSA-gx9q-44qw-3frv&quot;,
+  &quot;repository&quot;: &quot;DeusData/codebase-memory-mcp&quot;,
   &quot;html_url&quot;: &quot;https://github.com/DeusData/codebase-memory-mcp/security/advisories/GHSA-gx9q-44qw-3frv&quot;,
-  &quot;summary&quot;: &quot;Out-of-Bounds Stack Read via Non-Null-Terminated strncpy in emit_property() (CWE-170 / CWE-125) and Unchecked Pointer Subtraction in extract_attr() (internal/cbm/iris_export_xml.c)&quot;,
   &quot;state&quot;: &quot;triage&quot;,
   &quot;severity&quot;: &quot;high&quot;,
   &quot;created_at&quot;: &quot;2026-10-25T13:32:20Z&quot;,
@@ -38,118 +39,9 @@
     &quot;CWE-125&quot;,
     &quot;CWE-170&quot;
   ],
-  &quot;vulnerabilities&quot;: [
-    {
-      &quot;package&quot;: {
-        &quot;ecosystem&quot;: &quot;other&quot;,
-        &quot;name&quot;: &quot;codebase-memory-mcp&quot;
-      },
-      &quot;vulnerable_version_range&quot;: &quot;&lt;= 0.12.1&quot;,
-      &quot;patched_versions&quot;: null,
-      &quot;vulnerable_functions&quot;: []
-    }
-  ]
+  &quot;embargo_policy&quot;: &quot;REDACTED_DURING_VENDOR_TRIAGE&quot;,
+  &quot;specification_sha256_commitment&quot;: &quot;2bea9735031ca1c7fa2e0684996468518038f692e1a418bd9cd247cbca5d1e88&quot;
 }</code></pre>
-    <h2>0x01 // Technical Specification &amp; Remediation Patch</h2>
-    <pre><code>### Summary &amp; Root-Cause Static Analysis
-
-1. **Out-of-Bounds Stack Read via Non-Null-Terminated `strncpy` into Uninitialized Stack Array in `emit_property()` (`internal/cbm/iris_export_xml.c:217-256`, `CWE-170` / `CWE-125`):**
-   `PropParam params[MAX_PARAMS]` is declared on the stack without zero-initialization, and `strncpy(params[np].param_value, db, MAX_NAME - 1)` copies up to `255` bytes without writing a null terminator at index `MAX_NAME - 1` (`255`). When a `&lt;Parameter&gt;&lt;Default&gt;` element in an indexed InterSystems IRIS `.xml` file is `&gt;= 255` bytes long, `ub_app(b, params[i].param_value)` calls `strlen()` on an unterminated stack buffer, reading past `params[i].param_value` across uninitialized stack memory.
-
-2. **Unchecked Pointer Subtraction in `extract_attr()` (`internal/cbm/iris_export_xml.c:54-75`, `CWE-125`):**
-   `for (const char *p = ts; p &lt; te - an; p++)` subtracts `an = strlen(attr)` from `te` without verifying `(size_t)(te - ts) &gt;= an`, and advances `p += an + 1` without checking `vs &lt;= te` prior to `char q = *p`.
-
----
-
-### Formal Functional Specification (`re-source-reconstruction`)
-
-#### 1. Symbol &amp; Call-Graph Provenance Table
-
-| Function / Symbol | Source Location | Caller / Entry Vector | Sink / Impacted Resource |
-| :--- | :--- | :--- | :--- |
-| `cbm_unwrap_iris_xml` | `internal/cbm/iris_export_xml.c:302-360` | `CGo MCP indexer pipeline` | `emit_property(b, p, elem_end)` |
-| `emit_property` | `internal/cbm/iris_export_xml.c:207-262` | `cbm_unwrap_iris_xml()` | `strncpy(params[np].param_value, db, 255) -&gt; ub_app() -&gt; strlen()` |
-| `extract_attr` | `internal/cbm/iris_export_xml.c:54-75` | `emit_property() / cbm_unwrap_iris_xml()` | `p &lt; te - an / char q = *p` |
-
-#### 2. Formal PTN Data-Flow &amp; Taint Propagation
-
-```text
-I: Untrusted IRIS XML file bytes `&lt;Parameter name=&quot;X&quot;&gt;&lt;Default&gt;[&gt;=255 chars]&lt;/Default&gt;&lt;/Parameter&gt;`
-  -&gt; P(emit_property, 2) [const char *p, const char *elem_end]
-  -&gt; L(emit_property, 1) [PropParam params[64] uninitialized on stack; elem_content writes 255 chars + NUL to `db`]
-  -&gt; L(emit_property, 2) [strncpy(params[np].param_value, db, 255) writes 255 non-NUL bytes; index 255 remains uninitialized]
-  -&gt; E: ub_app(b, params[i].param_value) -&gt; strlen(s) (reads out-of-bounds past `param_value[255]` across stack frame)
-```
-
-#### 3. Assumption Register (`[A1..An]`) &amp; Concrete Falsification Probes
-
-| ID | Confidence | Mathematical / Structural Proposition | Concrete Verification / Falsification Probe |
-| :--- | :--- | :--- | :--- |
-| `[A1]` | `PROVEN` | `elem_content(..., db, sizeof(db))` returns a NUL-terminated string of length `255` (`MAX_NAME - 1`) when the XML element text is `&gt;= 255` bytes. | Inspect `internal/cbm/iris_export_xml.c:136-153`: `if (len &gt;= sz) len = sz - SKIP_ONE; memcpy(out, c, len); out[len] = &#x27;\0&#x27;;`. |
-| `[A2]` | `PROVEN` | `strncpy(dst, src, 255)` does not write a NUL byte when `strlen(src) == 255`, and `params[np].param_value[255]` is never initialized. | Verify ISO C11 §7.24.2.4p3 and lines 217–234 of `internal/cbm/iris_export_xml.c`. |
-| `[A3]` | `PROVEN` | `extract_attr()` computes `te - an` before verifying `(size_t)(te - ts) &gt;= an`. | Inspect `internal/cbm/iris_export_xml.c:54-60`. |
-
-#### 4. Adversarial Review &amp; Self-Red-Team Quality Gates (`QG1–QG7`)
-
-- **`QG1` (Completeness):** `PASS` — Every root-cause sub-finding is paired with a complete, self-contained remediation diff hunk.
-- **`QG2` (No Placeholders):** `PASS` — Zero `TODO`, `FIXME`, or truncated `...` blocks in remediation patches.
-- **`QG3` (Type &amp; Width Exactness):** `PASS` — All integer widths, pointer offsets, and container bounds are explicitly checked against overflow/underflow.
-- **`QG4` (Structural &amp; Compile-Time Invariants):** `PASS` — Compile-time `static_assert` / `_Static_assert` and runtime guard invariants enforced.
-- **`QG5` (Falsifiability):** `PASS` — Every `[A1..A3]` entry includes a deterministic verification probe.
-- **`QG6` (Adversarial Personas — Saboteur / New Hire / Security Auditor):** `PASS` — Verified order-independence, multi-pass normalization, and error-path cleanup.
-- **`QG7` (Defensive CVD Compliance):** `PASS` — Strictly defensive source-level specification and remediation patch.
-
----
-
-### Defensive Remediation Patch
-
-```diff
---- a/internal/cbm/iris_export_xml.c
-+++ b/internal/cbm/iris_export_xml.c
-@@ -8,6 +8,7 @@
- #define EXPORT_MARKER &quot;&lt;Export generator=&quot;
- #define MAX_NAME 256
- #define MAX_PARAMS 32
-+_Static_assert(MAX_NAME &gt; 1, &quot;MAX_NAME must exceed 1 for NUL termination&quot;);
- #define MAX_CLASSES 64
- #define BUF_CAP (1024 * 64)
- 
-@@ -54,9 +55,11 @@
- static void extract_attr(const char *ts, const char *te, const char *attr, char *out, size_t sz) {
-     out[0] = &#x27;\0&#x27;;
-     size_t an = strlen(attr);
--    for (const char *p = ts; p &lt; te - an; p++) {
-+    for (const char *p = ts; p &lt; te &amp;&amp; (size_t)(te - p) &gt; an; p++) {
-         if (memcmp(p, attr, an) == 0 &amp;&amp; p[an] == &#x27;=&#x27;) {
-             p += an + 1;
-+            if (p &gt;= te)
-+                return;
-             char q = *p;
-             if (q != &#x27;&quot;&#x27; &amp;&amp; q != &#x27;\&#x27;&#x27;)
-                 return;
-@@ -214,7 +217,7 @@
-         return;
-     char pt[MAX_NAME] = &quot;&quot;;
-     elem_content(ps, pe, &quot;Type&quot;, pt, sizeof(pt));
--    PropParam params[MAX_PARAMS];
-+    PropParam params[MAX_PARAMS] = {0};
-     int np = 0;
-     const char *pp = ps;
-     while (pp &lt; pe &amp;&amp; np &lt; MAX_PARAMS) {
-@@ -229,8 +232,10 @@
-         if (!params[np].param_value[0]) {
-             char db[MAX_NAME];
-             const char *a = elem_content(po, pe, &quot;Parameter&quot;, db, MAX_NAME);
--            if (a &amp;&amp; db[0])
-+            if (a &amp;&amp; db[0]) {
-                 strncpy(params[np].param_value, db, MAX_NAME - 1);
-+                params[np].param_value[MAX_NAME - 1] = &#x27;\0&#x27;;
-+            }
-         }
-         if (params[np].param_name[0])
-             np++;
-```
-</code></pre>
   </div>
 </body>
 </html>

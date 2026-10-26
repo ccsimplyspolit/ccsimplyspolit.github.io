@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GHSA-4xx2-wr42-gjg3 — meshcore-dev/MeshCore Coordinated Disclosure Record | Serhii Shunko (@sshunko)</title>
-  <meta name="description" content="Coordinated Vulnerability Disclosure verification record for GHSA-4xx2-wr42-gjg3 in meshcore-dev/MeshCore by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <meta name="description" content="Coordinated Vulnerability Disclosure embargo verification record for GHSA-4xx2-wr42-gjg3 in meshcore-dev/MeshCore by Serhii Shunko (@sshunko / @ccsimplyspolit).">
   <style>
     :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,16 +21,17 @@
 <body>
   <div class="container">
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
-    <h1>GHSA-4xx2-wr42-gjg3: Unsigned Integer Underflow (CWE-191) and Out-of-Bounds Read (CWE-125) in Mesh::onRecvPacket() and Packet::readFrom() (<code>meshcore-dev/MeshCore</code>)</h1>
+    <h1>GHSA-4xx2-wr42-gjg3: Coordinated Vulnerability Disclosure Verification Record (<code>meshcore-dev/MeshCore</code>)</h1>
     <div class="notice">
       <strong>[CVD EMBARGO / VENDOR TRIAGE NOTICE]</strong><br>
-      Privately reported to <code>meshcore-dev/MeshCore</code> via GitHub Private Vulnerability Reporting on <code>2026-10-25T11:24:04Z</code> (<a href="https://github.com/meshcore-dev/MeshCore/security/advisories/GHSA-4xx2-wr42-gjg3">https://github.com/meshcore-dev/MeshCore/security/advisories/GHSA-4xx2-wr42-gjg3</a>).
+      Privately reported to <code>meshcore-dev/MeshCore</code> via GitHub Private Vulnerability Reporting on <code>2026-10-25T11:24:04Z</code> (<a href="https://github.com/meshcore-dev/MeshCore/security/advisories/GHSA-4xx2-wr42-gjg3">https://github.com/meshcore-dev/MeshCore/security/advisories/GHSA-4xx2-wr42-gjg3</a>).<br>
+      In strict compliance with Coordinated Vulnerability Disclosure (CVD) embargo policy, line-level root-cause analysis, reproduction harnesses, and unified remediation diffs are withheld from public access until upstream vendor triage and patch release are complete.
     </div>
-    <h2>0x00 // GitHub REST API Verification Record</h2>
+    <h2>0x00 // Cryptographic Commitment &amp; GitHub CNA Verification Metadata</h2>
     <pre><code>{
   &quot;ghsa_id&quot;: &quot;GHSA-4xx2-wr42-gjg3&quot;,
+  &quot;repository&quot;: &quot;meshcore-dev/MeshCore&quot;,
   &quot;html_url&quot;: &quot;https://github.com/meshcore-dev/MeshCore/security/advisories/GHSA-4xx2-wr42-gjg3&quot;,
-  &quot;summary&quot;: &quot;Unsigned Integer Underflow (CWE-191) and Out-of-Bounds Read (CWE-125) in Mesh::onRecvPacket() and Packet::readFrom()&quot;,
   &quot;state&quot;: &quot;triage&quot;,
   &quot;severity&quot;: &quot;high&quot;,
   &quot;created_at&quot;: &quot;2026-10-25T11:24:04Z&quot;,
@@ -38,158 +39,9 @@
     &quot;CWE-125&quot;,
     &quot;CWE-191&quot;
   ],
-  &quot;vulnerabilities&quot;: [
-    {
-      &quot;package&quot;: {
-        &quot;ecosystem&quot;: &quot;other&quot;,
-        &quot;name&quot;: &quot;MeshCore&quot;
-      },
-      &quot;vulnerable_version_range&quot;: &quot;&lt;= 1.11.0&quot;,
-      &quot;patched_versions&quot;: null,
-      &quot;vulnerable_functions&quot;: []
-    }
-  ]
+  &quot;embargo_policy&quot;: &quot;REDACTED_DURING_VENDOR_TRIAGE&quot;,
+  &quot;specification_sha256_commitment&quot;: &quot;5a89ead7844cc28e1110bc7172fe81a786ecaa40d6013222b9506aee8ccb4240&quot;
 }</code></pre>
-    <h2>0x01 // Technical Specification &amp; Remediation Patch</h2>
-    <pre><code>### Summary &amp; Root-Cause Static Analysis
-
-1. **`PAYLOAD_TYPE_TRACE` Unchecked `payload_len` Underflow (`src/Mesh.cpp:42-66`, `CWE-191` / `CWE-125`):**
-   `Mesh::onRecvPacket()` reads 9 bytes (`trace_tag`, `auth_code`, `flags`) from `pkt-&gt;payload` without checking `pkt-&gt;payload_len &gt;= 9`, causing `uint8_t len = pkt-&gt;payload_len - i` to underflow modulo 256 to `247..255` and read past the 184-byte `Packet::payload` buffer. Additionally, when `offset &lt; len`, `self_id.isHashMatch(&amp;pkt-&gt;payload[i + offset], 1 &lt;&lt; path_sz)` does not verify `offset + (1 &lt;&lt; path_sz) &lt;= len`.
-
-2. **`PAYLOAD_TYPE_PATH` Unchecked Decrypted Frame Length (`src/Mesh.cpp:160-179`, `CWE-191` / `CWE-125`):**
-   `Packet::isValidPathLen(path_len)` verifies only `hash_count * hash_size &lt;= MAX_PATH_SIZE (64)` without verifying `k + hash_size * hash_count + 1 &lt;= len` (the actual decrypted payload length), causing `uint8_t extra_len = len - k` to underflow on short ciphertexts.
-
-3. **`Packet::readFrom()` Pre-Copy Bounds Check &amp; `Dispatcher::tryParsePacket()` Header Length Check (`src/Packet.cpp:65-85`, `src/Dispatcher.cpp:147-166`, `CWE-125`):**
-   `memcpy(path, &amp;src[i], bl)` executes prior to checking `(uint16_t)i + bl &lt;= len`, and `transport_codes` are read prior to checking `len &gt;= 6`.
-
----
-
-### Formal Functional Specification (`re-source-reconstruction`)
-
-#### 1. Symbol &amp; Call-Graph Provenance Table
-
-| Function / Symbol | Source Location | Caller / Entry Vector | Sink / Impacted Resource |
-| :--- | :--- | :--- | :--- |
-| `Dispatcher::tryParsePacket` | `src/Dispatcher.cpp:147-185` | `Dispatcher::checkRecv()` | `Mesh::onRecvPacket(pkt)` |
-| `Mesh::onRecvPacket` (`TRACE`) | `src/Mesh.cpp:42-66` | `Dispatcher::checkRecv()` | `uint8_t len = pkt-&gt;payload_len - 9 -&gt; onTraceRecv() / isHashMatch()` |
-| `Mesh::onRecvPacket` (`PATH`) | `src/Mesh.cpp:160-179` | `Dispatcher::checkRecv()` | `uint8_t extra_len = len - k -&gt; onPeerPathRecv()` |
-| `Packet::readFrom` | `src/Packet.cpp:65-85` | `Serial / Companion frame ingestion` | `memcpy(path, &amp;src[i], bl)` |
-
-#### 2. Formal PTN Data-Flow &amp; Taint Propagation
-
-```text
-I: Radio frame `raw[0..len]` with `PAYLOAD_TYPE_TRACE` and `pkt-&gt;payload_len &lt; 9`
-  -&gt; P(Dispatcher::tryParsePacket, 1) -&gt; P(Mesh::onRecvPacket, 1) [Packet *pkt]
-  -&gt; L(Mesh::onRecvPacket, 1) [reads 9 bytes from `pkt-&gt;payload[0..8]`; `i` becomes 9]
-  -&gt; L(Mesh::onRecvPacket, 2) [`uint8_t len = pkt-&gt;payload_len - i` wraps modulo 256 to `247..255`]
-  -&gt; E: onTraceRecv / self_id.isHashMatch (reads up to 255 bytes from `&amp;pkt-&gt;payload[9]`, overflowing 184-byte `Packet::payload`)
-```
-
-#### 3. Assumption Register (`[A1..An]`) &amp; Concrete Falsification Probes
-
-| ID | Confidence | Mathematical / Structural Proposition | Concrete Verification / Falsification Probe |
-| :--- | :--- | :--- | :--- |
-| `[A1]` | `PROVEN` | `Dispatcher::tryParsePacket()` accepts packets with `pkt-&gt;payload_len == 0..8` when `i + path_byte_len &lt;= len`. | Inspect `src/Dispatcher.cpp:173-185`. |
-| `[A2]` | `PROVEN` | `Packet::payload` is a fixed 184-byte array (`MAX_PACKET_PAYLOAD = 184`), so reading `247..255` bytes starting at `&amp;pkt-&gt;payload[9]` reads past the end of `Packet`. | Inspect `src/Packet.h` and `src/Mesh.cpp:42-66`. |
-| `[A3]` | `PROVEN` | In `Packet::readFrom()`, `memcpy(path, &amp;src[i], bl)` at line 78 executes before the bounds check at line 80. | Inspect `src/Packet.cpp:74-82`. |
-
-#### 4. Adversarial Review &amp; Self-Red-Team Quality Gates (`QG1–QG7`)
-
-- **`QG1` (Completeness):** `PASS` — Every root-cause sub-finding is paired with a complete, self-contained remediation diff hunk.
-- **`QG2` (No Placeholders):** `PASS` — Zero `TODO`, `FIXME`, or truncated `...` blocks in remediation patches.
-- **`QG3` (Type &amp; Width Exactness):** `PASS` — All integer widths, pointer offsets, and container bounds are explicitly checked against overflow/underflow.
-- **`QG4` (Structural &amp; Compile-Time Invariants):** `PASS` — Compile-time `static_assert` / `_Static_assert` and runtime guard invariants enforced.
-- **`QG5` (Falsifiability):** `PASS` — Every `[A1..A3]` entry includes a deterministic verification probe.
-- **`QG6` (Adversarial Personas — Saboteur / New Hire / Security Auditor):** `PASS` — Verified order-independence, multi-pass normalization, and error-path cleanup.
-- **`QG7` (Defensive CVD Compliance):** `PASS` — Strictly defensive source-level specification and remediation patch.
-
----
-
-### Defensive Remediation Patch
-
-```diff
---- a/src/Mesh.cpp
-+++ b/src/Mesh.cpp
-@@ -40,7 +40,7 @@
- 
- DispatcherAction Mesh::onRecvPacket(Packet* pkt) {
-   if (pkt-&gt;isRouteDirect() &amp;&amp; pkt-&gt;getPayloadType() == PAYLOAD_TYPE_TRACE) {
--    if (pkt-&gt;path_len &lt; MAX_PATH_SIZE) {
-+    if (pkt-&gt;path_len &lt; MAX_PATH_SIZE &amp;&amp; pkt-&gt;payload_len &gt;= 9) {
-       uint8_t i = 0;
-       uint32_t trace_tag;
-       memcpy(&amp;trace_tag, &amp;pkt-&gt;payload[i], 4); i += 4;
-@@ -52,10 +52,14 @@
-       uint8_t len = pkt-&gt;payload_len - i;
-       // path_len*entry_size can exceed 255 (path_len up to 63, entry_size up to 8);
-       // a uint8_t offset would wrap and steer the isHashMatch() read to the wrong place.
-+      uint8_t step_sz = 1 &lt;&lt; path_sz;
-       uint16_t offset = (uint16_t)pkt-&gt;path_len &lt;&lt; path_sz;
-+      if (step_sz &gt; PATH_HASH_SIZE) {
-+        return ACTION_RELEASE;
-+      }
-       if (offset &gt;= len) {   // TRACE has reached end of given path
-         onTraceRecv(pkt, trace_tag, auth_code, flags, pkt-&gt;path, &amp;pkt-&gt;payload[i], len);
--      } else if (self_id.isHashMatch(&amp;pkt-&gt;payload[i + offset], 1 &lt;&lt; path_sz) &amp;&amp; allowPacketForward(pkt) &amp;&amp; !_tables-&gt;wasSeen(pkt)) {
-+      } else if ((uint16_t)(len - offset) &gt;= step_sz &amp;&amp; self_id.isHashMatch(&amp;pkt-&gt;payload[i + offset], step_sz) &amp;&amp; allowPacketForward(pkt) &amp;&amp; !_tables-&gt;wasSeen(pkt)) {
-         _tables-&gt;markSeen(pkt);
-         // append SNR (Not hash!)
-         pkt-&gt;path[pkt-&gt;path_len++] = (int8_t) (pkt-&gt;getSNR()*4);
-@@ -166,7 +170,11 @@
-                 }
-                 uint8_t hash_size = (path_len &gt;&gt; 6) + 1;
-                 uint8_t hash_count = path_len &amp; 63;
--                uint8_t* path = &amp;data[k]; k += hash_size*hash_count;
-+                uint8_t path_bytes = hash_size * hash_count;
-+                if ((uint16_t)k + path_bytes + 1 &gt; len) {
-+                  break;
-+                }
-+                uint8_t* path = &amp;data[k]; k += path_bytes;
-                 uint8_t extra_type = data[k++] &amp; 0x0F;   // upper 4 bits reserved for future use
-                 uint8_t* extra = &amp;data[k];
-                 uint8_t extra_len = len - k;   // remainder of packet (may be padded with zeroes!)
---- a/src/Packet.cpp
-+++ b/src/Packet.cpp
-@@ -63,9 +63,11 @@
- }
- 
- bool Packet::readFrom(const uint8_t src[], uint8_t len) {
-+  if (len &lt; 2) return false;
-   uint8_t i = 0;
-   header = src[i++];
-   if (hasTransportCodes()) {
-+    if (len &lt; 6) return false;
-     memcpy(&amp;transport_codes[0], &amp;src[i], 2); i += 2;
-     memcpy(&amp;transport_codes[1], &amp;src[i], 2); i += 2;
-   } else {
-@@ -75,6 +77,7 @@
-   if (!isValidPathLen(path_len)) return false;   // bad encoding
- 
-   uint8_t bl = getPathByteLen();
-+  if ((uint16_t)i + bl &gt;= len) return false;   // bad encoding
-   memcpy(path, &amp;src[i], bl); i += bl;
- 
-   if (i &gt;= len) return false;   // bad encoding
---- a/src/Dispatcher.cpp
-+++ b/src/Dispatcher.cpp
-@@ -147,6 +147,7 @@
- }
- 
- bool Dispatcher::tryParsePacket(Packet* pkt, const uint8_t* raw, int len) {
-+  if (len &lt; 2) return false;
-   int i = 0;
- 
-   pkt-&gt;header = raw[i++];
-@@ -156,6 +157,7 @@
-   }
- 
-   if (pkt-&gt;hasTransportCodes()) {
-+    if (len &lt; 6) return false;
-     memcpy(&amp;pkt-&gt;transport_codes[0], &amp;raw[i], 2); i += 2;
-     memcpy(&amp;pkt-&gt;transport_codes[1], &amp;raw[i], 2); i += 2;
-   } else {
-```
-</code></pre>
   </div>
 </body>
 </html>

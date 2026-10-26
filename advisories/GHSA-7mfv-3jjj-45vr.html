@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GHSA-7mfv-3jjj-45vr — colbymchenry/codegraph Coordinated Disclosure Record | Serhii Shunko (@sshunko)</title>
-  <meta name="description" content="Coordinated Vulnerability Disclosure verification record for GHSA-7mfv-3jjj-45vr in colbymchenry/codegraph by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <meta name="description" content="Coordinated Vulnerability Disclosure embargo verification record for GHSA-7mfv-3jjj-45vr in colbymchenry/codegraph by Serhii Shunko (@sshunko / @ccsimplyspolit).">
   <style>
     :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,16 +21,17 @@
 <body>
   <div class="container">
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
-    <h1>GHSA-7mfv-3jjj-45vr: Unvalidated Version Tag Interpolation in PowerShell Upgrade Script and Windows cmd.exe Invocation in src/upgrade/index.ts (<code>colbymchenry/codegraph</code>)</h1>
+    <h1>GHSA-7mfv-3jjj-45vr: Coordinated Vulnerability Disclosure Verification Record (<code>colbymchenry/codegraph</code>)</h1>
     <div class="notice">
       <strong>[CVD EMBARGO / VENDOR TRIAGE NOTICE]</strong><br>
-      Privately reported to <code>colbymchenry/codegraph</code> via GitHub Private Vulnerability Reporting on <code>2026-10-26T02:01:12Z</code> (<a href="https://github.com/colbymchenry/codegraph/security/advisories/GHSA-7mfv-3jjj-45vr">https://github.com/colbymchenry/codegraph/security/advisories/GHSA-7mfv-3jjj-45vr</a>).
+      Privately reported to <code>colbymchenry/codegraph</code> via GitHub Private Vulnerability Reporting on <code>2026-10-26T02:01:12Z</code> (<a href="https://github.com/colbymchenry/codegraph/security/advisories/GHSA-7mfv-3jjj-45vr">https://github.com/colbymchenry/codegraph/security/advisories/GHSA-7mfv-3jjj-45vr</a>).<br>
+      In strict compliance with Coordinated Vulnerability Disclosure (CVD) embargo policy, line-level root-cause analysis, reproduction harnesses, and unified remediation diffs are withheld from public access until upstream vendor triage and patch release are complete.
     </div>
-    <h2>0x00 // GitHub REST API Verification Record</h2>
+    <h2>0x00 // Cryptographic Commitment &amp; GitHub CNA Verification Metadata</h2>
     <pre><code>{
   &quot;ghsa_id&quot;: &quot;GHSA-7mfv-3jjj-45vr&quot;,
+  &quot;repository&quot;: &quot;colbymchenry/codegraph&quot;,
   &quot;html_url&quot;: &quot;https://github.com/colbymchenry/codegraph/security/advisories/GHSA-7mfv-3jjj-45vr&quot;,
-  &quot;summary&quot;: &quot;Unvalidated Version Tag Interpolation in PowerShell Upgrade Script and Windows cmd.exe Invocation in src/upgrade/index.ts&quot;,
   &quot;state&quot;: &quot;triage&quot;,
   &quot;severity&quot;: &quot;medium&quot;,
   &quot;created_at&quot;: &quot;2026-10-26T02:01:12Z&quot;,
@@ -38,139 +39,9 @@
     &quot;CWE-20&quot;,
     &quot;CWE-78&quot;
   ],
-  &quot;vulnerabilities&quot;: [
-    {
-      &quot;package&quot;: {
-        &quot;ecosystem&quot;: &quot;npm&quot;,
-        &quot;name&quot;: &quot;@colbymchenry/codegraph&quot;
-      },
-      &quot;vulnerable_version_range&quot;: &quot;&lt;= 1.6.2&quot;,
-      &quot;patched_versions&quot;: null,
-      &quot;vulnerable_functions&quot;: []
-    }
-  ]
+  &quot;embargo_policy&quot;: &quot;REDACTED_DURING_VENDOR_TRIAGE&quot;,
+  &quot;specification_sha256_commitment&quot;: &quot;0e0b054fd6e31c0bb3441fa61f2e3867116fa040ee5c143b6e606e8e2d60da53&quot;
 }</code></pre>
-    <h2>0x01 // Technical Specification &amp; Remediation Patch</h2>
-    <pre><code>### Summary
-In `colbymchenry/codegraph` (`&lt;= 1.6.2`), `src/upgrade/index.ts` resolves or accepts a target version string via `normalizeVersion()` without validating that it conforms to a strict semantic version syntax (`parseSemver()`). This unvalidated `version` string is subsequently interpolated directly into:
-1. A double-quoted PowerShell command string (`Write-Host &quot;Installed CodeGraph ${version} to $dest&quot;`) inside `buildWindowsUpgradeScript()` (`src/upgrade/index.ts:807`), which is executed via `powershell.exe -NoProfile -ExecutionPolicy Bypass -File`.
-2. An unquoted command-line string (`[&#x27;npm&#x27;, ...npmArgs].join(&#x27; &#x27;)`) passed to `cmd.exe /d /s /c` inside `npmInvocation()` (`src/upgrade/index.ts:858-860`) on Windows.
-
-### Affected Code
-
-#### 1. Missing Semver Validation in `normalizeVersion()` and `parseLatestTagFromLocation()` (`src/upgrade/index.ts:273-292`)
-```ts
-export function normalizeVersion(v: string): string {
-  const t = v.trim();
-  return t.startsWith(&#x27;v&#x27;) ? t : `v${t}`;
-}
-
-export function parseLatestTagFromLocation(location: string | undefined): string | null {
-  if (!location) return null;
-  const m = /\/releases\/tag\/([^/?#]+)/.exec(location);
-  return m ? decodeURIComponent(m[1]!) : null;
-}
-```
-In `parseSemver(version)` (`src/upgrade/index.ts:236-245`), the regular expression `/^v?(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?/` is missing a trailing `$` end-of-string anchor, allowing any string with a valid semver prefix followed by arbitrary shell/PowerShell metacharacters (e.g., `v9.9.9$(...)` or `v9.9.9 &amp; ...`) to pass `parseSemver()` and `compareVersions()`. Furthermore, `normalizeVersion()` (`src/upgrade/index.ts:273-276`) does not validate `v` against an anchored semver regex.
-
-#### 2. Unescaped Interpolation into Double-Quoted PowerShell String (`src/upgrade/index.ts:781-815`)
-```ts
-export function buildWindowsUpgradeScript(
-  bundleRoot: string,
-  version: string,
-  arch = resolveWindowsArch()
-): string {
-  const asset = `codegraph-${version}-${arch}.zip`;
-  const url = `https://github.com/${REPO}/releases/download/${version}/${asset}`;
-  const psDest = bundleRoot.replace(/&#x27;/g, &quot;&#x27;&#x27;&quot;);
-  const psUrl = url.replace(/&#x27;/g, &quot;&#x27;&#x27;&quot;);
-  const psAsset = asset.replace(/&#x27;/g, &quot;&#x27;&#x27;&quot;);
-  return [
-    // ...
-    `Write-Host &quot;Installed CodeGraph ${version} to $dest&quot;`,
-    // ...
-  ].join(&#x27;\r\n&#x27;);
-}
-```
-While `psDest`, `psUrl`, and `psAsset` escape single quotes for single-quoted PowerShell literals, line 807 interpolates `${version}` directly inside a double-quoted PowerShell string (`&quot;Installed CodeGraph ${version} to $dest&quot;`), where PowerShell evaluates `$(...)` subexpressions, `$variable` expansions, backtick escapes, and double quotes.
-
-#### 3. Unquoted `cmd.exe /d /s /c` String Concatenation in `npmInvocation()` (`src/upgrade/index.ts:858-863`)
-```ts
-export function npmInvocation(npmArgs: string[], platform: NodeJS.Platform = process.platform): NpmInvocation {
-  if (platform === &#x27;win32&#x27;) {
-    return {
-      command: process.env.ComSpec || &#x27;cmd.exe&#x27;,
-      args: [&#x27;/d&#x27;, &#x27;/s&#x27;, &#x27;/c&#x27;, [&#x27;npm&#x27;, ...npmArgs].join(&#x27; &#x27;)],
-    };
-  }
-```
-When `runNpmInstall(version)` constructs `spec = &#x27;@colbymchenry/codegraph@&#x27; + stripV(version)`, `[&#x27;npm&#x27;, ...npmArgs].join(&#x27; &#x27;)` concatenates the version specifier into a raw `cmd.exe` command string without validating `version` or escaping `cmd.exe` metacharacters (`&amp;`, `|`, `;`, `^`, `&quot;`).
-
-### Impact
-If `runUpgrade({ version })` or `resolveLatestVersion()` receives an untrusted version string (for example via an automated wrapper, MCP/agent configuration, or a spoofed/redirected `Location` header decoded by `decodeURIComponent()`), arbitrary PowerShell subexpressions or `cmd.exe` commands can be injected during the upgrade workflow on Windows.
-
-### Recommended Fix
-1. Enforce strict semantic version validation (`parseSemver(v)`) inside `normalizeVersion(v)` (or at the entry of `runUpgrade()`, `buildWindowsUpgradeScript()`, and `runNpmInstall()`), throwing an error if `parseSemver(v)` fails.
-2. In `buildWindowsUpgradeScript()`, avoid interpolating `${version}` into a double-quoted PowerShell string (use single-quoted strings or validate `version` against `/^v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/`).
-
-```ts
-export function normalizeVersion(v: string): string {
-  const t = v.trim();
-  parseSemver(t); // Validate strict semver format before use in URLs or shell scripts
-  return t.startsWith(&#x27;v&#x27;) ? t : `v${t}`;
-}
-```
-
-### Formal Specification &amp; Taint Provenance (`re-source-reconstruction` / `PTN`)
-
-#### 1. Symbol &amp; Call-Graph Provenance Table
-| Source Location | Symbol / Function | Subsystem Role |
-|---|---|---|
-| `src/upgrade/index.ts:236-292, 781-863` | `parseSemver()` / `normalizeVersion()` / `buildWindowsUpgradeScript()` / `npmInvocation()` | Unanchored semver regex in `parseSemver()` and unescaped `${version}` interpolation into double-quoted PowerShell `Write-Host` and `cmd.exe /d /s /c` |
-
-#### 2. PTN Data-Flow &amp; Taint Propagation
-- **`I:HTTPS JSON response[&quot;tag_name&quot;]`** (`latestVersion`) → **`L(upgradeCommand, cmd)`** (unvalidated string interpolation into `powershell -Command &quot;... ${latestVersion} ...&quot;` / `sh -c`) → **`E:execSync(cmd)`**.
-
-#### 3. Assumption Register (`[A1]`) &amp; Falsification Probes (`QG1–QG7`)
-| ID | Assumption Statement | Confidence | Failure Impact if False | Concrete Falsification Probe |
-|---|---|---|---|---|
-| `A1` | `latestVersion` is interpolated into the shell command string without a strict SemVer regex check (`/^[0-9]+\.[0-9]+\.[0-9]+$/`). | `PROVEN` | Shell metacharacters in `tag_name` alter the executed command. | Inspect `src/upgrade/index.ts:236-292, 781-815, 858-863`. |
-
-### Defensive Remediation Patch
-
-```diff
---- a/src/upgrade/index.ts
-+++ b/src/upgrade/index.ts
-@@ -234,7 +234,7 @@
- }
- 
- export function parseSemver(version: string): Semver | null {
--  const m = /^v?(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?/.exec(version.trim());
-+  const m = /^v?(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?$/.exec(version.trim());
-   if (!m) return null;
-   return {
-     major: parseInt(m[1]!, 10),
-@@ -272,6 +272,9 @@
- /** `0.9.9` / `v0.9.9` → `v0.9.9` (release tags are v-prefixed). */
- export function normalizeVersion(v: string): string {
-   const t = v.trim();
-+  if (!parseSemver(t)) {
-+    throw new Error(`Invalid semantic version: ${v}`);
-+  }
-   return t.startsWith(&#x27;v&#x27;) ? t : `v${t}`;
- }
- 
-@@ -804,7 +807,7 @@
-     `  Expand-Archive -Path $zip -DestinationPath $stage -Force`,
-     `  $inner=Join-Path $stage &#x27;codegraph-${target}&#x27;`,
-     `  Install-CodeGraphFiles $(if(Test-Path $inner){$inner}else{$stage}) $dest`,
--    `  Write-Host &quot;Installed CodeGraph ${version} to $dest&quot;`,
-+    `  Write-Host (&quot;Installed CodeGraph &quot; + ${psQuote(version)} + &quot; to $dest&quot;)`,
-     `} catch {`,
-     `  [Console]::Error.WriteLine($_.Exception.Message)`,
-     `  $code=if($_.Exception.Data[&#x27;codegraphDamaged&#x27;]){${WINDOWS_UPGRADE_DAMAGED}}else{1}`,
-```
-</code></pre>
   </div>
 </body>
 </html>
