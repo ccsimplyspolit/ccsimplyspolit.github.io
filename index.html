@@ -275,7 +275,7 @@
       </div>
     </header>
 
-            <section id="disclosures">
+                <section id="disclosures">
       <h2>0x00 // Coordinated Vulnerability Disclosures &amp; Server Input Audits</h2>
       <div class="embargo-banner">
         <strong>[CVD EMBARGO POLICY]</strong> Active vulnerability reports currently in vendor triage (<code>GHSA-*</code> and <code>CVD-2026-*</code>) are listed in this public registry by identifier, CWE classification, cryptographic SHA-256 specification commitment, and affected component scope only. Full technical advisories, reproduction harnesses, and remediation diffs are strictly withheld from public access until upstream patches are released and coordinated embargoes are lifted.
@@ -284,11 +284,25 @@
         <article class="card">
           <div>
             <div class="card-header">
+              <span class="id-tag">GHSA-cr23-59mg-h2rc</span>
+              <span class="cwe-tag">CWE-125 / CWE-400 / CWE-787 / CWE-835</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html" style="color: inherit;">Pre-Auth Infinite Loop, Heap Exhaustion &amp; Out-of-Bounds Read in Calendar_Write_Property() (<code>bacnet-stack/bacnet-stack</code>)</a></h3>
+            <p>Accepted by upstream maintainer into GitHub Security Advisory Draft state; upstream remediation PR #1595 opened with regression unit tests.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html"><span class="embargo-tag">Accepted (GHSA Draft — Fix PR #1595) &rarr;</span></a>
+            <span class="target-tag">bacnet-stack/bacnet-stack</span>
+          </div>
+        </article>
+        <article class="card">
+          <div>
+            <div class="card-header">
               <span class="id-tag">GHSA-h3mc-v47q-wj82</span>
               <span class="cwe-tag">CWE-125 / CWE-190 / CWE-191</span>
             </div>
             <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-h3mc-v47q-wj82.html" style="color: inherit;">SNP Unreliable Framing 64-Bit Offset Bounds &amp; Encoder Length Invariants (<code>ValveSoftware/GameNetworkingSockets</code>)</a></h3>
-            <p>Coordinated vulnerability disclosure covering 64-bit unreliable message offset bounds, zero-length segment logging guards, and buffer string truncation seek offsets (GitHub CNA &amp; H1 #4145334).</p>
+            <p>Coordinated vulnerability disclosure covering 64-bit unreliable message offset bounds, zero-length segment logging guards, and buffer string truncation seek offsets (GitHub CNA).</p>
           </div>
           <div class="card-footer">
             <a href="https://ccsimplyspolit.github.io/advisories/GHSA-h3mc-v47q-wj82.html"><span class="embargo-tag">In Triage (GHSA-h3mc-v47q-wj82) &rarr;</span></a>
@@ -526,7 +540,7 @@
             <td><code>bacnet-stack/bacnet-stack</code></td>
             <td><code>CWE-125 / CWE-400 / CWE-787</code></td>
             <td>Pre-Auth Infinite Loop / Heap Exhaustion (CWE-835 / CWE-400) and Out-of-Bounds Read (CWE-125) in Calendar_Write_Property() and Notification_Class_Write_Property()</td>
-            <td><a href="/advisories/GHSA-cr23-59mg-h2rc.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
+            <td><a href="/advisories/GHSA-cr23-59mg-h2rc.html"><span class="embargo-tag">Accepted (GHSA Draft — Fix PR #1595)</span></a></td>
           </tr>
           <tr>
             <td><a href="/advisories/GHSA-7m49-w797-wqp6.html"><code>GHSA-7m49-w797-wqp6</code></a></td>
@@ -603,7 +617,7 @@
             <td><code>ValveSoftware/GameNetworkingSockets</code></td>
             <td><code>CWE-125 / CWE-190 / CWE-191</code></td>
             <td>Unbounded 64-Bit Unreliable Message Number Offset, Zero-Length Segment OOB Read, Base64EncodeMaxOutput(0) Underflow, and CUtlBuffer::GetString Seek Misalignment</td>
-            <td><a href="/advisories/GHSA-h3mc-v47q-wj82.html"><span class="embargo-tag">In Triage (GHSA &amp; H1 #4145334)</span></a></td>
+            <td><a href="/advisories/GHSA-h3mc-v47q-wj82.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
           </tr>
           <tr>
             <td><a href="/advisories/GHSA-rg4w-8g8x-2vhf.html"><code>GHSA-rg4w-8g8x-2vhf</code></a></td>
@@ -652,13 +666,6 @@
             <td><code>rundeck/rundeck</code></td>
             <td><code>CWE-22 / CWE-73 / CWE-639</code></td>
             <td>Storage reference path canonicalization and project ownership verification during job import (H1 #4145745).</td>
-            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
-          </tr>
-          <tr>
-            <td><code>CVD-2026-AWS-MCP-001</code></td>
-            <td><code>awslabs/aidlc-mcp-server</code></td>
-            <td><code>CWE-22 / CWE-78 / CWE-59</code></td>
-            <td>Archive extraction path containment and command argument validation in MCP workflow helpers (H1 #4145338).</td>
             <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
           </tr>
           <tr>
