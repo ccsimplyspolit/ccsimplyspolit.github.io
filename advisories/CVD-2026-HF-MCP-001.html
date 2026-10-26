@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CVD-2026-HF-MCP-001 — Authenticated Hugging Face API Path Traversal in parseGradioSpaceIds (gradio-utils.ts) &amp; Permissive HTTP Schema Fetch in proxy-tools-config.ts</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0d1117; color: #c9d1d9; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; line-height: 1.6; }
+    h1, h2, h3 { color: #f0f6fc; }
+    a { color: #58a6ff; text-decoration: none; }
+    pre { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; overflow-x: auto; font-size: 0.85rem; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; background: #1f6feb; color: #fff; font-size: 0.8rem; font-weight: 600; margin-right: 0.5rem; }
+    .meta { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  <p><a href="../index.html">&larr; Back to Security Research Portal</a></p>
+  <h1>CVD-2026-HF-MCP-001: Authenticated Hugging Face API Path Traversal in parseGradioSpaceIds (gradio-utils.ts) &amp; Permissive HTTP Schema Fetch in proxy-tools-config.ts</h1>
+  <div>
+    <span class="badge">High (CVSS 8.2)</span>
+    <span class="badge">CWE-22 / CWE-918 / CWE-200</span>
+    <span class="badge">GitHub CNA PVR + HackerOne: huggingface</span>
+  </div>
+  <div class="meta">
+    <strong>Target Repository:</strong> <code>huggingface/hf-mcp-server</code> (commit <code>299718b1ad</code>, <code>2026-10-24T10:20:50Z</code>)<br/>
+    <strong>Affected Component:</strong> <code>packages/app/src/server/utils/gradio-utils.ts (lines 122-135), gradio-discovery.ts (line 126), &amp; proxy-tools-config.ts (lines 46, 146-149)</code><br/>
+    <strong>Researcher:</strong> Serhii Shunko (<a href="https://hackerone.com/sshunko">@sshunko</a> / <a href="https://github.com/ccsimplyspolit">@ccsimplyspolit</a>, ORCID <a href="https://orcid.org/0009-0002-4183-0361">0009-0002-4183-0361</a>)
+  </div>
+
+  <h2>1. Summary</h2>
+  <p>During a defensive static source audit of `https://github.com/huggingface/hf-mcp-server` (`main` branch, commit `299718b1ad`, pushed `2026-10-24T10:20:50Z`), I identified two security defects in the Gradio Space discovery and Proxy Tools schema loader:
+1. **Authenticated Hugging Face API Path Traversal via Backslash / Dot-Segment in `parseGradioSpaceIds()` (`CWE-22` / `CWE-918`, `gradio-utils.ts:122-135` &amp; `gradio-discovery.ts:126`)**: `parseGradioSpaceIds()` validates each comma-separated entry from `X-HF-Gradio-Spaces` / query parameters only by checking `slashCount === 1 &amp;&amp; slashIndex &gt; 0 &amp;&amp; slashIndex &lt; entry.length - 1`. It does not reject backslashes (`\`), `..` segments, `?`, `#`, or `%`. When `gradio-discovery.ts` calls `fetch(\`https://huggingface.co/api/spaces/\${spaceName}\`, { headers: { Authorization: \`Bearer \${hfToken}\` } })`, WHATWG `fetch()` normalizes `\` to `/` and resolves `..` path segments (e.g., `..\whoami-v2/x` resolves to `https://huggingface.co/api/whoami-v2/x`), sending the user&#x27;s `Authorization: Bearer ${hfToken}` to arbitrary `/api/...` endpoints on `huggingface.co`.
+2. **Plaintext HTTP Allowance &amp; Missing `fetchWithProfile` Guard in `proxy-tools-config.ts` (`CWE-918` / `CWE-319`, `proxy-tools-config.ts:46, 146-149`)**: `csvRowSchema` validates upstream URLs with `httpOrHttpsPermissive()` (allowing `http://` URLs), and `fetchProxyToolSchemas()` calls `new StreamableHTTPClientTransport(new URL(config.url), { requestInit: headers ? { headers } : undefined })` with `Authorization: Bearer ${hfToken}` without passing `fetch: fetchWithProfile(&#x27;external_https_Closure&#x27;)`.</p>
+
+  <h2>2. Root Cause Analysis</h2>
+  <pre><code>- **`packages/app/src/server/utils/gradio-utils.ts:122-135`**:
+```typescript
+export function parseGradioSpaceIds(rawValue: string | undefined): string[] {
+	if (!rawValue) return [];
+	const seen = new Set&lt;string&gt;();
+	for (const part of rawValue.split(&#x27;,&#x27;)) {
+		const entry = part.trim();
+		const slashCount = (entry.match(/\//g) || []).length;
+		const slashIndex = entry.indexOf(&#x27;/&#x27;);
+		if (slashCount === 1 &amp;&amp; slashIndex &gt; 0 &amp;&amp; slashIndex &lt; entry.length - 1 &amp;&amp; !seen.has(entry)) {
+			seen.add(entry);
+		}
+	}
+	return [...seen];
+}
+```
+- **`packages/app/src/server/utils/gradio-discovery.ts:126`**:
+```typescript
+	const response = await fetch(`https://huggingface.co/api/spaces/${spaceName}`, {
+		headers: {
+			...(hfToken ? { Authorization: `Bearer ${hfToken}` } : {}),
+		},
+	});
+```</code></pre>
+
+  <h2>3. Steps to Reproduce (BEFORE PATCH vs. AFTER PATCH)</h2>
+  <pre><code>Run the standalone verification test suite in `verify_batch8_fresh_ai_cna.py` (`test_03_huggingface_hf_mcp_server_gradio_space_validation`):
+```bash
+uv run verify_batch8_fresh_ai_cna.py
+```
+- **BEFORE PATCH**: `parse_space_before(&#x27;..\\whoami-v2/x&#x27;)` passes the single-slash check and resolves `https://huggingface.co/api/spaces/..\whoami-v2/x` to `/api/whoami-v2/x`.
+- **AFTER PATCH**: Enforces `^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$`, rejects `\`, `?`, `#`, `%`, `.` and `..`, URL-encodes each path segment in `gradio-discovery.ts`, and enforces `httpsOnly()` + `fetchWithProfile(&#x27;external_https_Closure&#x27;)` in `proxy-tools-config.ts`.</code></pre>
+
+  <h2>4. Suggested Remediation (Unified Diff)</h2>
+  <pre><code>--- a/packages/app/src/server/utils/gradio-utils.ts
++++ b/packages/app/src/server/utils/gradio-utils.ts
+@@ -124,7 +124,9 @@ export function parseGradioSpaceIds(gradioParam: string): ParsedGradioSpace[] {
+ 		// Validate exactly one slash in the middle (username/space-name format)
+ 		const slashCount = (entry.match(/\//g) || []).length;
+ 		const slashIndex = entry.indexOf(&#x27;/&#x27;);
+-		const isValidFormat = slashCount === 1 &amp;&amp; slashIndex &gt; 0 &amp;&amp; slashIndex &lt; entry.length - 1;
++		const hasSafeSegments =
++			!/[\\?#%]/.test(entry) &amp;&amp;
++			/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(entry) &amp;&amp;
++			!entry.split(&#x27;/&#x27;).some((seg) =&gt; seg === &#x27;.&#x27; || seg === &#x27;..&#x27;);
++		const isValidFormat = slashCount === 1 &amp;&amp; slashIndex &gt; 0 &amp;&amp; slashIndex &lt; entry.length - 1 &amp;&amp; hasSafeSegments;
+ 
+ 		if (!isValidFormat) {
+ 			logger.warn(
+--- a/packages/app/src/server/utils/proxy-tools-config.ts
++++ b/packages/app/src/server/utils/proxy-tools-config.ts
+@@ -43,7 +43,7 @@ const VALID_RESPONSE_TYPES = new Set&lt;ProxyToolResponseType&gt;([&#x27;JSON&#x27;, &#x27;SSE&#x27;]);
+ const PROXY_SCHEMA_TIMEOUT_MS = 10_000;
+ 
+ const PROXY_CSV_SOURCE_PROFILE = NETWORK_FETCH_PROFILES.externalHttps();
+-const PROXY_TOOL_URL_POLICY = NETWORK_FETCH_PROFILES.httpOrHttpsPermissive().urlPolicy;
++const PROXY_STREAMABLE_PROFILE = NETWORK_FETCH_PROFILES.streamableProxy();
++const PROXY_TOOL_URL_POLICY = PROXY_STREAMABLE_PROFILE.urlPolicy;
+ 
+ let cachedTools: ProxyToolDefinition[] | null = null;
+ let cachedConfigPromise: Promise&lt;ProxyToolDefinition[]&gt; | null = null;
+@@ -144,9 +144,15 @@ async function fetchProxyToolSchemas(
+ 	);
+ 
+ 	const headers = buildAuthHeaders(hfToken);
+-	const transport = new StreamableHTTPClientTransport(new URL(source.url), {
++	const validatedUrl = parseAndValidateUrl(source.url, PROXY_TOOL_URL_POLICY);
++	const transport = new StreamableHTTPClientTransport(validatedUrl, {
+ 		requestInit: headers ? { headers } : undefined,
++		fetch: async (url, init) =&gt; {
++			const { response } = await fetchWithProfile(url.toString(), PROXY_STREAMABLE_PROFILE, {
++				requestInit: init,
++			});
++			return response;
++		},
+ 	});
+ 
+ 	try {</code></pre>
+
+  <h2>5. Security Impact</h2>
+  <p>An attacker supplying a crafted Gradio Space ID via query parameters or headers can traverse out of `/api/spaces/` into arbitrary authenticated `huggingface.co/api/...` endpoints using the victim&#x27;s `hfToken`, and `proxy-tools-config.ts` can transmit `Authorization: Bearer ${hfToken}` over plaintext HTTP without the `external_https_Closure` SSRF profile.</p>
+</body>
+</html>

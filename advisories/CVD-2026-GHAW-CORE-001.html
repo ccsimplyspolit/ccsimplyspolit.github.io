@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CVD-2026-GHAW-CORE-001 — Predictable Non-Exclusive .tmp File Write &amp; Permissive Mode Retention in writeCompileProgressFile (pkg/cli/compile_pipeline.go)</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0d1117; color: #c9d1d9; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; line-height: 1.6; }
+    h1, h2, h3 { color: #f0f6fc; }
+    a { color: #58a6ff; text-decoration: none; }
+    pre { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; overflow-x: auto; font-size: 0.85rem; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; background: #1f6feb; color: #fff; font-size: 0.8rem; font-weight: 600; margin-right: 0.5rem; }
+    .meta { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  <p><a href="../index.html">&larr; Back to Security Research Portal</a></p>
+  <h1>CVD-2026-GHAW-CORE-001: Predictable Non-Exclusive .tmp File Write &amp; Permissive Mode Retention in writeCompileProgressFile (pkg/cli/compile_pipeline.go)</h1>
+  <div>
+    <span class="badge">High (CVSS 7.8)</span>
+    <span class="badge">CWE-377 / CWE-59 / CWE-732</span>
+    <span class="badge">GitHub CNA PVR + HackerOne: github</span>
+  </div>
+  <div class="meta">
+    <strong>Target Repository:</strong> <code>github/gh-aw</code> (commit <code>6f802cae59</code>, <code>2026-10-25T23:47:20Z</code>)<br/>
+    <strong>Affected Component:</strong> <code>pkg/cli/compile_pipeline.go (lines 555-566)</code><br/>
+    <strong>Researcher:</strong> Serhii Shunko (<a href="https://hackerone.com/sshunko">@sshunko</a> / <a href="https://github.com/ccsimplyspolit">@ccsimplyspolit</a>, ORCID <a href="https://orcid.org/0009-0002-4183-0361">0009-0002-4183-0361</a>)
+  </div>
+
+  <h2>1. Summary</h2>
+  <p>During a defensive static source audit of `https://github.com/github/gh-aw` (`main` branch, commit `6f802cae59` / `9f68f4923f`, pushed `2026-10-25T23:47:20Z`), I identified an incomplete fix in `writeCompileProgressFile()` (`pkg/cli/compile_pipeline.go:555-566`). Commit `9f68f4923f` (*&#x27;Fix compile progress file permissions policy regression (#71947)&#x27;*) replaced `0o600` with `constants.FilePermSensitive` in `os.WriteFile(temporaryPath, []byte(output), constants.FilePermSensitive)` where `temporaryPath := progressPath + &quot;.tmp&quot;`. Because Go&#x27;s `os.WriteFile` calls `os.OpenFile(name, O_WRONLY|O_CREAT|O_TRUNC, perm)` without `O_EXCL`, `O_NOFOLLOW`, or an explicit `Chmod`, the `perm` argument (`constants.FilePermSensitive`) is ignored by the kernel whenever `temporaryPath` already exists. A pre-existing `progressPath + &quot;.tmp&quot;` file with permissive mode (e.g., `0o644`) retains its world-readable permissions across `os.WriteFile` and `os.Rename(temporaryPath, progressPath)`, and a pre-existing symlink at `temporaryPath` is followed during `os.WriteFile`.</p>
+
+  <h2>2. Root Cause Analysis</h2>
+  <pre><code>- **`pkg/cli/compile_pipeline.go:555-566`**:
+```go
+func writeCompileProgressFile(progressPath string, output string) error {
+	if err := os.MkdirAll(filepath.Dir(progressPath), 0o750); err != nil {
+		return fmt.Errorf(&quot;creating progress directory: %w&quot;, err)
+	}
+
+	temporaryPath := progressPath + &quot;.tmp&quot;
+	if err := os.WriteFile(temporaryPath, []byte(output), constants.FilePermSensitive); err != nil {
+		return fmt.Errorf(&quot;writing progress temp file: %w&quot;, err)
+	}
+	if err := os.Rename(temporaryPath, progressPath); err != nil {
+		return fmt.Errorf(&quot;renaming progress temp file: %w&quot;, err)
+	}
+	return nil
+}
+```</code></pre>
+
+  <h2>3. Steps to Reproduce (BEFORE PATCH vs. AFTER PATCH)</h2>
+  <pre><code>Run the standalone verification test suite in `verify_batch8_fresh_ai_cna.py` (`test_02_github_gh_aw_compile_progress_tempfile`):
+```bash
+uv run verify_batch8_fresh_ai_cna.py
+```
+- **BEFORE PATCH**: When `progressPath + &quot;.tmp&quot;` already exists with mode `0o644`, `os.WriteFile(..., 0o600)` truncates and writes without changing the mode, and `os.Rename` publishes `progressPath` with mode `0o644` instead of `0o600`.
+- **AFTER PATCH**: Uses `os.CreateTemp(filepath.Dir(progressPath), filepath.Base(progressPath)+&quot;.*.tmp&quot;)` (which opens exclusively with `O_CREAT|O_EXCL`) and calls `tempFile.Chmod(constants.FilePermSensitive)` before `os.Rename`.</code></pre>
+
+  <h2>4. Suggested Remediation (Unified Diff)</h2>
+  <pre><code>--- a/pkg/cli/compile_pipeline.go
++++ b/pkg/cli/compile_pipeline.go
+@@ -555,12 +555,28 @@ func writeMCPCompileProgress(progressPath string, results []ValidationResult) {
+ 		compileOrchestrationLog.Printf(&quot;Failed to format MCP compile progress: %v&quot;, err)
+ 		return
+ 	}
+-	temporaryPath := progressPath + &quot;.tmp&quot;
+-	if err := os.WriteFile(temporaryPath, []byte(output), constants.FilePermSensitive); err != nil {
++	if info, err := os.Lstat(progressPath); err == nil &amp;&amp; info.Mode()&amp;os.ModeSymlink != 0 {
++		compileOrchestrationLog.Printf(&quot;Refusing to write MCP compile progress to symlink: %s&quot;, progressPath)
++		return
++	}
++	tempFile, err := os.CreateTemp(filepath.Dir(progressPath), filepath.Base(progressPath)+&quot;.*.tmp&quot;)
++	if err != nil {
++		compileOrchestrationLog.Printf(&quot;Failed to create temporary MCP compile progress file: %v&quot;, err)
++		return
++	}
++	temporaryPath := tempFile.Name()
++	if err := tempFile.Chmod(constants.FilePermSensitive); err != nil {
++		_ = tempFile.Close()
++		_ = os.Remove(temporaryPath)
++		return
++	}
++	if _, err := tempFile.Write([]byte(output)); err != nil {
++		_ = tempFile.Close()
++		_ = os.Remove(temporaryPath)
+ 		compileOrchestrationLog.Printf(&quot;Failed to write MCP compile progress: %v&quot;, err)
+ 		return
+ 	}
++	_ = tempFile.Close()
+ 	if err := os.Rename(temporaryPath, progressPath); err != nil {
+ 		_ = os.Remove(temporaryPath)
+ 		compileOrchestrationLog.Printf(&quot;Failed to publish MCP compile progress: %v&quot;, err)</code></pre>
+
+  <h2>5. Security Impact</h2>
+  <p>Sensitive workflow compilation progress data intended to be restricted to `constants.FilePermSensitive` (`0o600`) remains world-readable (`0o644`) if the predictable `.tmp` file pre-exists, or overwrites arbitrary files via a pre-staged `.tmp` symlink.</p>
+</body>
+</html>

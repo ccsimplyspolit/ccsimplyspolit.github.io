@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CVD-2026-CF-MCP-UNIFIED-001 — Cross-Principal Unsubscribe Bypass, Unscoped accountId Access, Cursor Parameter Injection in EventService (src/events/service.ts) &amp; Internal TLD Bypass in ans-bridge.ts</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0d1117; color: #c9d1d9; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; line-height: 1.6; }
+    h1, h2, h3 { color: #f0f6fc; }
+    a { color: #58a6ff; text-decoration: none; }
+    pre { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; overflow-x: auto; font-size: 0.85rem; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; background: #1f6feb; color: #fff; font-size: 0.8rem; font-weight: 600; margin-right: 0.5rem; }
+    .meta { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  <p><a href="../index.html">&larr; Back to Security Research Portal</a></p>
+  <h1>CVD-2026-CF-MCP-UNIFIED-001: Cross-Principal Unsubscribe Bypass, Unscoped accountId Access, Cursor Parameter Injection in EventService (src/events/service.ts) &amp; Internal TLD Bypass in ans-bridge.ts</h1>
+  <div>
+    <span class="badge">High (CVSS 8.1)</span>
+    <span class="badge">CWE-639 / CWE-918 / CWE-20</span>
+    <span class="badge">GitHub CNA PVR + HackerOne: cloudflare</span>
+  </div>
+  <div class="meta">
+    <strong>Target Repository:</strong> <code>cloudflare/mcp</code> (commit <code>550e1be82b</code>, <code>2026-10-22T15:50:50Z</code>)<br/>
+    <strong>Affected Component:</strong> <code>src/events/service.ts (lines 132-164, 331-352) &amp; src/events/ans-bridge.ts (lines 8-26)</code><br/>
+    <strong>Researcher:</strong> Serhii Shunko (<a href="https://hackerone.com/sshunko">@sshunko</a> / <a href="https://github.com/ccsimplyspolit">@ccsimplyspolit</a>, ORCID <a href="https://orcid.org/0009-0002-4183-0361">0009-0002-4183-0361</a>)
+  </div>
+
+  <h2>1. Summary</h2>
+  <p>During a defensive static source audit of `https://github.com/cloudflare/mcp` (`main` branch, commit `550e1be82b`, pushed `2026-10-22T15:50:50Z`), I identified four security defects in the newly added Events (`cw_events` / ANS bridge) subsystem:
+1. **Principal Ownership Check Bypassed When `policyId` Is Absent in `EventService.unsubscribe()` (`CWE-639`, `src/events/service.ts:132-164`)**: `unsubscribe(accountId, subscriptionId, policyId?)` only checks `state.principal !== this.principal` inside `if (policyId) { ... }`. When a caller invokes `unsubscribe(accountId, subscriptionId)` without `policyId` (or when `getState(subscriptionId)` returns `null`), `unsubscribe()` skips ownership verification and directly deletes the Cloudflare Event Subscription (`DELETE /accounts/${accountId}/event_subscriptions/subscriptions/${subscriptionId}`) and associated webhook.
+2. **Missing Account Scope Check for `user_token` in `EventService.api()` (`CWE-639`, `src/events/service.ts:340-352`)**: `api(accountId)` only checks `if (this.props.type === &#x27;account_token&#x27; &amp;&amp; this.props.accountId !== accountId)` and fails to verify `this.props.accounts` when `this.props.type === &#x27;user_token&#x27;`.
+3. **Unvalidated `cursor` Query String Interpolation in `EventService.list()` (`CWE-20` / `CWE-88`, `src/events/service.ts:331-338`)**: `list(cursor)` computes `const page = cursor ? Number(cursor) : 1`, checks only `if (page &gt; MAX_PAGES)`, and interpolates raw `${cursor}` into `/accounts?page=${cursor}&amp;per_page=20`. When `cursor` is `&#x27;1&amp;direction=asc&#x27;` (`Number(cursor)` is `NaN`, so `NaN &gt; MAX_PAGES` is `false`), arbitrary query parameters are injected into the Cloudflare API path.
+4. **Incomplete Internal Hostname Filtering in `CallbackUrl` (`CWE-918`, `src/events/ans-bridge.ts:8-26`)**: `CallbackUrl` only blocks `localhost` and `.local`, allowing RFC 6762 / RFC 8375 internal domains such as `.arpa` (`1.168.192.in-addr.arpa`), `.intranet`, `.internal`, `.corp`, `.lan`, and `.home`.</p>
+
+  <h2>2. Root Cause Analysis</h2>
+  <pre><code>- **`src/events/service.ts:132-164`**:
+```typescript
+	async unsubscribe(
+		accountId: string,
+		subscriptionId: string,
+		policyId?: string,
+	): Promise&lt;{ deleted: string; warning?: string }&gt; {
+		if (policyId) {
+			const state = await this.getState(subscriptionId);
+			if (state &amp;&amp; state.principal !== this.principal) {
+				throw new Error(&quot;Subscription owned by another principal&quot;);
+			}
+...
+		}
+
+		const sub = await this.api(accountId, `/event_subscriptions/subscriptions/${subscriptionId}`);
+		await this.api(accountId, `/event_subscriptions/subscriptions/${subscriptionId}`, { method: &quot;DELETE&quot; });
+```
+- **`src/events/service.ts:331-338`**:
+```typescript
+	private async list(cursor?: string): Promise&lt;AccountListResponse&gt; {
+		const page = cursor ? Number(cursor) : 1;
+		if (page &gt; MAX_PAGES) {
+			throw new Error(`Pagination limit exceeded (max ${MAX_PAGES} pages)`);
+		}
+		const params = cursor ? `?page=${cursor}&amp;per_page=20` : &quot;?per_page=20&quot;;
+```</code></pre>
+
+  <h2>3. Steps to Reproduce (BEFORE PATCH vs. AFTER PATCH)</h2>
+  <pre><code>Run the standalone verification test suite in `verify_batch8_fresh_ai_cna.py` (`test_04_cloudflare_mcp_events_validation`):
+```bash
+uv run verify_batch8_fresh_ai_cna.py
+```
+- **BEFORE PATCH**: `unsubscribe_before(&#x27;user:attacker&#x27;, &#x27;user:victim&#x27;, None)` returns `&#x27;DELETED&#x27;` because `policyId` is omitted; `list_cursor_before(&#x27;1&amp;direction=asc&#x27;)` injects `&amp;direction=asc` into `/accounts?page=1&amp;direction=asc&amp;per_page=20`.
+- **AFTER PATCH**: Enforces `state.principal === this.principal` unconditionally on `unsubscribe()`, verifies `Number.isInteger(page) &amp;&amp; page &gt;= 1`, validates `accountId` format and `user_token` account membership, and blocks `.arpa`, `.intranet`, `.internal`, `.corp`, `.lan`, and `.home` in `CallbackUrl`.</code></pre>
+
+  <h2>4. Suggested Remediation (Unified Diff)</h2>
+  <pre><code>--- a/src/events/service.ts
++++ b/src/events/service.ts
+@@ -131,6 +131,9 @@ export class EventService {
+ 
+   private api(accountId: string) {
+     if (this.props.type === &#x27;account_token&#x27; &amp;&amp; this.props.account.id !== accountId)
+       throw new EventApiError(403)
++    if (this.props.type === &#x27;user_token&#x27; &amp;&amp; this.props.accounts.length &gt; 0 &amp;&amp; !this.props.accounts.some((a) =&gt; a.id === accountId))
++      throw new EventApiError(403)
+     return new EventApi(this.env.CLOUDFLARE_API_BASE, this.props.accessToken, accountId)
+   }
+ 
+@@ -142,6 +145,8 @@ export class EventService {
+       accounts = [this.props.account]
+     } else {
+       const page = Number(cursor ?? &#x27;1&#x27;)
++      if (!Number.isInteger(page) || page &lt; 1)
++        throw new EventApiError(400)
+       const response = await fetchWithRetry(
+         `${this.env.CLOUDFLARE_API_BASE}/accounts?page=${page}&amp;per_page=20`,
+         {
+@@ -345,6 +350,10 @@ export class EventService {
+         // record, and it expires on its own.
+         await deleteSubscriptionRecord(this.env, id)
++      } else {
++        const record = await readSubscriptionRecord(this.env, id)
++        if (!record || record.accountId !== params.arguments.account_id)
++          throw new SubscriptionForbidden()
+       }
+       const automationId = await api.find(AUTOMATIONS, name, AUTOMATIONS_LISTING)
+       if (automationId) await api.remove(`${AUTOMATIONS}/${encodeURIComponent(automationId)}`)
+--- a/src/events/ans-bridge.ts
++++ b/src/events/ans-bridge.ts
+@@ -20,7 +20,7 @@ export const CallbackUrl = z
+       url.hostname.includes(&#x27;.&#x27;) &amp;&amp;
+       !/^[\d.]+$/.test(url.hostname) &amp;&amp;
+       !url.hostname.includes(&#x27;:&#x27;) &amp;&amp;
+-      !/(^|\.)(localhost|local|internal|test|invalid|onion)\.?$/.test(url.hostname)
++      !/(^|\.)(localhost|local|internal|test|invalid|onion|arpa|intranet|corp|home|lan|example)\.?$/i.test(url.hostname)
+     )
+   }, &#x27;Callback must use HTTPS on port 443 with a public hostname, without credentials or a fragment&#x27;)</code></pre>
+
+  <h2>5. Security Impact</h2>
+  <p>Any authenticated principal can delete event subscriptions and webhooks belonging to another principal simply by omitting `policyId`, inject arbitrary query parameters into `/accounts` pagination requests via `cursor`, and register internal `.arpa`/`.corp`/`.lan` webhook callback URLs.</p>
+</body>
+</html>
