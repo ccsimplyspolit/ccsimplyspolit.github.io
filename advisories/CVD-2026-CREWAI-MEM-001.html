@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CVD-2026-CREWAI-MEM-001 — 8-Byte Prefix Point ID Collision in _uuid_to_point_id, Cross-Scope Deletion Bypass in _delete_from_shard, and Symlink Shard Cleanup in QdrantEdgeStorage (qdrant_edge_storage.py)</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0d1117; color: #c9d1d9; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; line-height: 1.6; }
+    h1, h2, h3 { color: #f0f6fc; }
+    a { color: #58a6ff; text-decoration: none; }
+    pre { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; overflow-x: auto; font-size: 0.85rem; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; background: #1f6feb; color: #fff; font-size: 0.8rem; font-weight: 600; margin-right: 0.5rem; }
+    .meta { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  <p><a href="../index.html">&larr; Back to Security Research Portal</a></p>
+  <h1>CVD-2026-CREWAI-MEM-001: 8-Byte Prefix Point ID Collision in _uuid_to_point_id, Cross-Scope Deletion Bypass in _delete_from_shard, and Symlink Shard Cleanup in QdrantEdgeStorage (qdrant_edge_storage.py)</h1>
+  <div>
+    <span class="badge">High (CVSS 8.0)</span>
+    <span class="badge">CWE-328 / CWE-639 / CWE-59</span>
+    <span class="badge">GitHub CNA PVR: crewAIInc/crewAI</span>
+  </div>
+  <div class="meta">
+    <strong>Target Repository:</strong> <code>crewAIInc/crewAI</code> (commit <code>aed2a7ea93</code>, <code>2026-10-26T07:30:47Z</code>)<br/>
+    <strong>Affected Component:</strong> <code>lib/crewai/src/crewai/memory/storage/qdrant_edge_storage.py (lines 53-64, 460-465, 818-873)</code><br/>
+    <strong>Researcher:</strong> Serhii Shunko (<a href="https://hackerone.com/sshunko">@sshunko</a> / <a href="https://github.com/ccsimplyspolit">@ccsimplyspolit</a>, ORCID <a href="https://orcid.org/0009-0002-4183-0361">0009-0002-4183-0361</a>)
+  </div>
+
+  <h2>1. Summary</h2>
+  <p>During a defensive static source audit of `https://github.com/crewAIInc/crewAI` (`main` branch, commit `aed2a7ea93` / `d29a4a0ac1`, pushed `2026-10-26T07:30:47Z`), I identified three security defects in `QdrantEdgeStorage` (`lib/crewai/src/crewai/memory/storage/qdrant_edge_storage.py`):
+1. **Deterministic 8-Byte Prefix Collision on Non-UUID Record IDs in `_uuid_to_point_id()` (`CWE-328`, `qdrant_edge_storage.py:53-64`)**: When `uuid_str` is not a standard UUID, `_uuid_to_point_id()` computes `int.from_bytes(uuid_str.encode()[:8].ljust(8, b&#x27;\x00&#x27;), &#x27;big&#x27;) % (2**63 - 1)` — truncating `uuid_str` to its **first 8 UTF-8 bytes** instead of hashing the full string! Any two custom record IDs sharing an 8-byte prefix (such as `&#x27;tenant_a:record_1&#x27;` and `&#x27;tenant_a:record_2&#x27;`, or `&#x27;agent_01_secret&#x27;` and `&#x27;agent_01_public&#x27;`) collide to the exact same Qdrant integer point ID, causing `save()` / `update()` to overwrite existing memories and `get_record()` / `delete()` to access or delete the wrong record.
+2. **Cross-Scope Record Deletion Bypass in `_delete_from_shard()` (`CWE-639`, `qdrant_edge_storage.py:460-465`)**: When `delete(scope_prefix=&#x27;/crew/agent_a&#x27;, record_ids=[...])` is called without `categories`, `metadata_filter`, or `older_than`, the fast-path `if record_ids and not (categories or metadata_filter or older_than):` immediately deletes `point_ids` via `UpdateOperation.delete_points(point_ids)` **without checking `scope_prefix`**, allowing any scoped caller to delete records belonging to other scopes/tenants by ID.
+3. **Symlink Traversal &amp; Arbitrary Directory Deletion in `_cleanup_orphaned_shards()` (`CWE-59`, `qdrant_edge_storage.py:818-873`)**: `_cleanup_orphaned_shards()` checks `entry.is_dir()` (which is `True` for symlinks to directories) without checking `entry.is_symlink()`, upserting attacker-controlled shard points into central storage and running `shutil.rmtree(entry, ignore_errors=True)`.</p>
+
+  <h2>2. Root Cause Analysis</h2>
+  <pre><code>- **`lib/crewai/src/crewai/memory/storage/qdrant_edge_storage.py:53-64, 460-465`**:
+```python
+def _uuid_to_point_id(uuid_str: str) -&gt; int:
+    try:
+        return uuid.UUID(uuid_str).int % (2**63 - 1)
+    except ValueError:
+        return int.from_bytes(uuid_str.encode()[:8].ljust(8, b&quot;\x00&quot;), &quot;big&quot;) % (
+            2**63 - 1
+        )
+...
+        if record_ids and not (categories or metadata_filter or older_than):
+            point_ids: list[int | uuid.UUID | str] = [
+                _uuid_to_point_id(rid) for rid in record_ids
+            ]
+            shard.update(UpdateOperation.delete_points(point_ids))
+            return before - shard.count(CountRequest())
+```</code></pre>
+
+  <h2>3. Steps to Reproduce (BEFORE PATCH vs. AFTER PATCH)</h2>
+  <pre><code>Run the standalone verification test suite in `verify_batch9_fresh_ai_cna.py` (`test_04_crewai_qdrant_edge_8byte_prefix_collision_and_scope_delete`):
+```bash
+uv run verify_batch9_fresh_ai_cna.py
+```
+- **BEFORE PATCH**: `uuid_to_point_id_before(&#x27;tenant_a:secret_record_001&#x27;) == uuid_to_point_id_before(&#x27;tenant_a:public_record_999&#x27;)` (`8386658668167945825`), causing silent cross-record overwrite and deletion.
+- **AFTER PATCH**: Uses `hashlib.sha256(uuid_str.encode(&#x27;utf-8&#x27;)).digest()[:8]`, enforces `scope_prefix` filtering when `record_ids` is provided, and skips symlinks in `_cleanup_orphaned_shards()`.</code></pre>
+
+  <h2>4. Suggested Remediation (Unified Diff)</h2>
+  <pre><code>--- a/lib/crewai/src/crewai/memory/storage/qdrant_edge_storage.py
++++ b/lib/crewai/src/crewai/memory/storage/qdrant_edge_storage.py
+@@ -51,13 +51,12 @@ _SCROLL_BATCH: Final[int] = 256
+ 
+ def _uuid_to_point_id(uuid_str: str) -&gt; int:
+     &quot;&quot;&quot;Convert a UUID string to a stable Qdrant point ID.
+ 
+-    Falls back to hashing for non-UUID strings.
++    Falls back to SHA-256 hashing for non-UUID strings to prevent 8-byte prefix collisions.
+     &quot;&quot;&quot;
+     try:
+         return uuid.UUID(uuid_str).int % (2**63 - 1)
+     except ValueError:
+-        return int.from_bytes(uuid_str.encode()[:8].ljust(8, b&quot;\x00&quot;), &quot;big&quot;) % (
+-            2**63 - 1
+-        )
++        digest = hashlib.sha256(uuid_str.encode(&quot;utf-8&quot;)).digest()[:8]
++        return int.from_bytes(digest, &quot;big&quot;) % (2**63 - 1)
+ 
+@@ -457,7 +456,7 @@ class QdrantEdgeStorage:
+         &quot;&quot;&quot;Delete matching records from a single shard, returning count deleted.&quot;&quot;&quot;
+         before = shard.count(CountRequest())
+ 
+-        if record_ids and not (categories or metadata_filter or older_than):
++        if record_ids and not (scope_prefix or categories or metadata_filter or older_than):
+             point_ids: list[int | uuid.UUID | str] = [
+                 _uuid_to_point_id(rid) for rid in record_ids
+             ]
+             shard.update(UpdateOperation.delete_points(point_ids))
+             return before - shard.count(CountRequest())
+ 
+-        if categories or metadata_filter or older_than:
++        if (record_ids and scope_prefix) or categories or metadata_filter or older_than:
+             scope_filter = self._build_scope_filter(scope_prefix)
+             points = self._scroll_all(shard, filt=scope_filter)
+@@ -820,7 +819,7 @@ class QdrantEdgeStorage:
+         if not self._base_path.exists():
+             return
+         for entry in self._base_path.iterdir():
+-            if not entry.is_dir() or not entry.name.startswith(&quot;worker-&quot;):
++            if entry.is_symlink() or not entry.is_dir() or not entry.name.startswith(&quot;worker-&quot;):
+                 continue</code></pre>
+
+  <h2>5. Security Impact</h2>
+  <p>Any non-UUID `MemoryRecord.id` values sharing an 8-byte prefix collide in Qdrant Edge storage (overwriting or exposing another agent/tenant&#x27;s memory records), and scoped `delete(scope_prefix=..., record_ids=...)` calls bypass scope isolation to delete arbitrary records across scopes.</p>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CVD-2026-APIFY-MCP-001 — Unredacted Token Leakage via traceId &amp; Case-Sensitive / OAuth Token Redaction Bypass in resolveStoreSearchTracking (src/utils/mcp_clients.ts)</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0d1117; color: #c9d1d9; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; line-height: 1.6; }
+    h1, h2, h3 { color: #f0f6fc; }
+    a { color: #58a6ff; text-decoration: none; }
+    pre { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; overflow-x: auto; font-size: 0.85rem; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; background: #1f6feb; color: #fff; font-size: 0.8rem; font-weight: 600; margin-right: 0.5rem; }
+    .meta { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  <p><a href="../index.html">&larr; Back to Security Research Portal</a></p>
+  <h1>CVD-2026-APIFY-MCP-001: Unredacted Token Leakage via traceId &amp; Case-Sensitive / OAuth Token Redaction Bypass in resolveStoreSearchTracking (src/utils/mcp_clients.ts)</h1>
+  <div>
+    <span class="badge">High (CVSS 7.6)</span>
+    <span class="badge">CWE-200 / CWE-290</span>
+    <span class="badge">GitHub CNA PVR: apify/apify-mcp-server</span>
+  </div>
+  <div class="meta">
+    <strong>Target Repository:</strong> <code>apify/apify-mcp-server</code> (commit <code>d3bee2ec2c</code>, <code>2026-10-25T08:17:15Z</code>)<br/>
+    <strong>Affected Component:</strong> <code>src/utils/mcp_clients.ts (lines 11-47)</code><br/>
+    <strong>Researcher:</strong> Serhii Shunko (<a href="https://hackerone.com/sshunko">@sshunko</a> / <a href="https://github.com/ccsimplyspolit">@ccsimplyspolit</a>, ORCID <a href="https://orcid.org/0009-0002-4183-0361">0009-0002-4183-0361</a>)
+  </div>
+
+  <h2>1. Summary</h2>
+  <p>During a defensive static source audit of `https://github.com/apify/apify-mcp-server` (`main` branch, commit `d3bee2ec2c` / `826e128e55`, pushed `2026-10-25T08:17:15Z`), I identified token redaction and origin-spoofing defects in `resolveStoreSearchTracking()` (`src/utils/mcp_clients.ts:11-47`), introduced in commit `826e128e55` (*&#x27;feat: Send trace id and use case with Apify Store searches (#1650)&#x27;*):
+1. **Missing Token Redaction and Format Validation on `traceId` (`CWE-200`, `src/utils/mcp_clients.ts:36, 44`)**: Any MCP client that declares `clientInfo: { name: &#x27;apify-ai&#x27; }` in `initialize` is granted `REQUEST_ORIGIN.APIFY_AI` (`getRequestOriginForClient()`, line 22). In `resolveStoreSearchTracking()`, `traceId` is read from `meta?.[&#x27;com.apify/traceId&#x27;]` or `mcpSessionId` (`line 36`) and forwarded directly into `GET /v2/store?_traceId=...` URL query parameters (which land in API access logs) and telemetry `trace_id` **without any token redaction or character-set validation**.
+2. **Case-Sensitive `APIFY_API_TOKEN_REGEX` &amp; Unredacted `apify_mcp_` / `Bearer` Tokens in `useCase` (`CWE-200`, `src/utils/mcp_clients.ts:11, 38-41`)**: `APIFY_API_TOKEN_REGEX = /apify_api_[A-Za-z0-9]+/g` (`line 11`) lacks the case-insensitive `/i` flag and only matches `apify_api_`, failing to redact uppercase/mixed-case `APIFY_API_...` tokens, `apify_mcp_...` OAuth/MCP tokens, or `Bearer ...` authorization tokens before sending `_useCase` in plaintext `GET /v2/store` URL query strings.</p>
+
+  <h2>2. Root Cause Analysis</h2>
+  <pre><code>- **`src/utils/mcp_clients.ts:11-47`**:
+```typescript
+const APIFY_API_TOKEN_REGEX = /apify_api_[A-Za-z0-9]+/g;
+...
+export function resolveStoreSearchTracking(
+    requestOrigin: REQUEST_ORIGIN,
+    meta: Record&lt;string, unknown&gt; | undefined,
+    mcpSessionId: string | undefined,
+): NonNullable&lt;ApifyClient[&#x27;storeSearchTracking&#x27;]&gt; {
+    const asString = (value: unknown) =&gt; (typeof value === &#x27;string&#x27; ? value.trim() : &#x27;&#x27;);
+    const isApifyAi = requestOrigin === REQUEST_ORIGIN.APIFY_AI;
+    const traceId = (isApifyAi &amp;&amp; asString(meta?.[APIFY_TRACE_ID_META_KEY])) || asString(mcpSessionId);
+    let useCase = isApifyAi
+        ? asString(meta?.[APIFY_USE_CASE_META_KEY])
+              .replace(APIFY_API_TOKEN_REGEX, &#x27;apify_api_***&#x27;)
+              .slice(0, STORE_USE_CASE_MAX_LENGTH)
+        : &#x27;&#x27;;
+```</code></pre>
+
+  <h2>3. Steps to Reproduce (BEFORE PATCH vs. AFTER PATCH)</h2>
+  <pre><code>Run the standalone verification test suite in `verify_batch9_fresh_ai_cna.py` (`test_05_apify_mcp_server_tracking_redaction_bypass`):
+```bash
+uv run verify_batch9_fresh_ai_cna.py
+```
+- **BEFORE PATCH**: `tracking_before(&#x27;apify_api_SecretInTrace123&#x27;, &#x27;Using APIFY_API_UpperSecret999 and apify_mcp_OAuthSecret777&#x27;)` leaves all three tokens unredacted in `_traceId` and `_useCase`.
+- **AFTER PATCH**: Redacts `apify_api_*`, `apify_mcp_*`, and `Bearer *` case-insensitively across both `traceId` and `useCase`, and enforces `SAFE_TRACE_ID_REGEX` (`^[A-Za-z0-9._:-]{1,256}$`) on `traceId`.</code></pre>
+
+  <h2>4. Suggested Remediation (Unified Diff)</h2>
+  <pre><code>--- a/src/utils/mcp_clients.ts
++++ b/src/utils/mcp_clients.ts
+@@ -8,7 +8,7 @@ import {
+ import type { McpClientContext } from &#x27;../mcp/client_context.js&#x27;;
+ import { APIFY_TRACE_ID_META_KEY, APIFY_USE_CASE_META_KEY } from &#x27;./mcp.js&#x27;;
+ 
+-const APIFY_API_TOKEN_REGEX = /apify_api_[A-Za-z0-9]+/g;
++const APIFY_SECRET_TOKEN_REGEX = /(?:apify_api_|apify_mcp_)[A-Za-z0-9._-]+|Bearer\s+[A-Za-z0-9._~+/-]+=*/gi;
++const SAFE_TRACE_ID_REGEX = /^[A-Za-z0-9._:-]{1,256}$/;
+ 
+ /** True when `report-problem` is blocklisted for the connecting client (substring match on {@link REPORT_PROBLEM_BLOCKED_CLIENTS}). */
+ export function isReportProblemBlockedForClient(context: McpClientContext | undefined): boolean {
+@@ -31,14 +31,17 @@ export function resolveStoreSearchTracking(
+     mcpSessionId: string | undefined,
+ ): NonNullable&lt;ApifyClient[&#x27;storeSearchTracking&#x27;]&gt; {
+     const asString = (value: unknown) =&gt; (typeof value === &#x27;string&#x27; ? value.trim() : &#x27;&#x27;);
++    const redactSecrets = (value: string) =&gt; value.replace(APIFY_SECRET_TOKEN_REGEX, &#x27;apify_api_***&#x27;);
+     const isApifyAi = requestOrigin === REQUEST_ORIGIN.APIFY_AI;
+-    const traceId = (isApifyAi &amp;&amp; asString(meta?.[APIFY_TRACE_ID_META_KEY])) || asString(mcpSessionId);
++    const rawTraceId = redactSecrets((isApifyAi &amp;&amp; asString(meta?.[APIFY_TRACE_ID_META_KEY])) || asString(mcpSessionId));
++    const traceId = SAFE_TRACE_ID_REGEX.test(rawTraceId) &amp;&amp; !rawTraceId.includes(&#x27;apify_api_***&#x27;) ? rawTraceId : &#x27;&#x27;;
+     let useCase = isApifyAi
+-        ? asString(meta?.[APIFY_USE_CASE_META_KEY])
+-              .replace(APIFY_API_TOKEN_REGEX, &#x27;apify_api_***&#x27;)
++        ? redactSecrets(asString(meta?.[APIFY_USE_CASE_META_KEY]))
+               .slice(0, STORE_USE_CASE_MAX_LENGTH)
+         : &#x27;&#x27;;
+     if (/[\uD800-\uDBFF]$/.test(useCase)) useCase = useCase.slice(0, -1);
+     return {
+         traceId: traceId &amp;&amp; traceId.length &lt;= STORE_TRACE_ID_MAX_LENGTH ? traceId : undefined,
+         useCase: useCase || undefined,
+     };
+ }</code></pre>
+
+  <h2>5. Security Impact</h2>
+  <p>Sensitive `apify_mcp_*` OAuth tokens, `Bearer` tokens, uppercase `APIFY_API_*` tokens in `_meta[&#x27;com.apify/useCase&#x27;]`, or any token accidentally passed in `_meta[&#x27;com.apify/traceId&#x27;]` / `mcpSessionId` are leaked unredacted into `GET /v2/store` URL query strings, HTTP access logs, and telemetry events.</p>
+</body>
+</html>

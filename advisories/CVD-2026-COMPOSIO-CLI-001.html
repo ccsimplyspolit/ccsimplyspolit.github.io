@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CVD-2026-COMPOSIO-CLI-001 — Fail-Open Consumer Permission Gate on Config Fetch Error / Expired Cache &amp; Case-Sensitive Override Bypass in @composio/cli (tool-permissions.ts)</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0d1117; color: #c9d1d9; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; line-height: 1.6; }
+    h1, h2, h3 { color: #f0f6fc; }
+    a { color: #58a6ff; text-decoration: none; }
+    pre { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; overflow-x: auto; font-size: 0.85rem; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; background: #1f6feb; color: #fff; font-size: 0.8rem; font-weight: 600; margin-right: 0.5rem; }
+    .meta { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  <p><a href="../index.html">&larr; Back to Security Research Portal</a></p>
+  <h1>CVD-2026-COMPOSIO-CLI-001: Fail-Open Consumer Permission Gate on Config Fetch Error / Expired Cache &amp; Case-Sensitive Override Bypass in @composio/cli (tool-permissions.ts)</h1>
+  <div>
+    <span class="badge">High (CVSS 8.1)</span>
+    <span class="badge">CWE-285 / CWE-636 / CWE-178</span>
+    <span class="badge">GitHub CNA PVR: ComposioHQ/composio</span>
+  </div>
+  <div class="meta">
+    <strong>Target Repository:</strong> <code>ComposioHQ/composio</code> (commit <code>d8f8204806</code>, <code>2026-10-24T01:03:07Z</code>)<br/>
+    <strong>Affected Component:</strong> <code>ts/packages/cli/src/services/tool-permissions.ts (lines 401-567) &amp; ts/packages/cli/src/commands/proxy.cmd.ts (lines 315, 521-527)</code><br/>
+    <strong>Researcher:</strong> Serhii Shunko (<a href="https://hackerone.com/sshunko">@sshunko</a> / <a href="https://github.com/ccsimplyspolit">@ccsimplyspolit</a>, ORCID <a href="https://orcid.org/0009-0002-4183-0361">0009-0002-4183-0361</a>)
+  </div>
+
+  <h2>1. Summary</h2>
+  <p>During a defensive static source audit of `https://github.com/ComposioHQ/composio` (`main` branch, commit `d8f8204806` / `1239853a93`, pushed `2026-10-24T01:03:07Z`), I identified three security defects in the consumer permission gate introduced/updated in commit `1239853a93` (*&#x27;fix(cli): enforce the consumer permission gate on composio proxy (#5093)&#x27;*):
+1. **Fail-Open Permission Gate on `fetchConsumerConfig` Failure &amp; Expired Cache Fallback (`CWE-636`, `tool-permissions.ts:463-496, 561-567`)**: When `refreshConsumerPermissionSnapshot()` fails to fetch `ORG_CONSUMER_CONFIG_PATH` (`/api/v3.1/org/consumer/config`), its `Effect.catchTag(&#x27;services/ToolPermissionsRequestError&#x27;)` handler (`lines 463-469`) returns `undefined` instead of failing closed to `ask_every_call`. Then `getConsumerPermissionSnapshot()` (`line 496`) executes `return refreshed ?? cached;`, returning an expired `cached` snapshot (even when `Date.now() - cached.fetchedAt &gt; PERMISSION_SNAPSHOT_CACHE_TTL_MS` and the organization has since enabled `enhanced_controls` or `always_deny`), or `undefined` when no cache exists — which `resolveGateState()` (`line 564`: `if (params.snapshot === undefined) return &#x27;skip&#x27;;`) treats as `&#x27;skip&#x27;` (allowing execution without prompting).
+2. **Empty `connectedAccountIds` Bypasses `enhancedControlsEnabled` (`CWE-285`, `tool-permissions.ts:404-435, 565`)**: When `enhancedControlsEnabled === true` and `connectedAccountIds.length === 0`, lines 404-435 skip `CONSUMER_PERMISSIONS_RESOLVE_PATH` and set `permissions: undefined`, causing `resolveGateState()` (`line 565`: `if (!params.snapshot.enhancedControlsEnabled || !params.snapshot.permissions) return &#x27;skip&#x27;;`) to return `&#x27;skip&#x27;`.
+3. **Case-Sensitive Override Key Lookup (`CWE-178`, `tool-permissions.ts:499-502, 548-556` &amp; `proxy.cmd.ts:315, 521`)**: `proxy.cmd.ts` lowercases `normalizedToolkit = toolkit.toLowerCase()`, whereas `resolvePermissionState()` looks up `permissions?.overrides?.[permissionField(params.toolSlug, params.connectedAccountId)]` case-sensitively without normalizing override keys.</p>
+
+  <h2>2. Root Cause Analysis</h2>
+  <pre><code>- **`ts/packages/cli/src/services/tool-permissions.ts:463-502`**:
+```typescript
+  }).pipe(
+    Effect.catchTag(&#x27;services/ToolPermissionsRequestError&#x27;, error =&gt;
+      Effect.gen(function* () {
+        yield* Effect.logDebug(&#x27;Failed to refresh consumer permission cache&#x27;, error);
+        return undefined;
+      })
+    )
+  );
+...
+    const refreshed = yield* refreshConsumerPermissionSnapshot({ ...params, connectedAccountIds });
+    return refreshed ?? cached;
+  });
+```</code></pre>
+
+  <h2>3. Steps to Reproduce (BEFORE PATCH vs. AFTER PATCH)</h2>
+  <pre><code>Run the standalone verification test suite in `verify_batch9_fresh_ai_cna.py` (`test_01_composio_cli_permission_gate_fail_open_and_case`):
+```bash
+uv run verify_batch9_fresh_ai_cna.py
+```
+- **BEFORE PATCH**: When `refreshConsumerPermissionSnapshot()` fails (`refresh_ok=False`), `getConsumerPermissionSnapshot()` falls back to the expired `allow_all` cache or `undefined` (`&#x27;skip&#x27;`), and case-mismatched override keys (`&#x27;GMAIL:con_1&#x27;: &#x27;always_deny&#x27;` vs `&#x27;gmail:con_1&#x27;`) evaluate to `&#x27;allow_all&#x27;`.
+- **AFTER PATCH**: Fails closed to `&#x27;ask_every_call&#x27;` on refresh failure, never returns expired cache entries, and normalizes override keys to lowercase.</code></pre>
+
+  <h2>4. Suggested Remediation (Unified Diff)</h2>
+  <pre><code>--- a/ts/packages/cli/src/services/tool-permissions.ts
++++ b/ts/packages/cli/src/services/tool-permissions.ts
+@@ -401,7 +401,7 @@ export const refreshConsumerPermissionSnapshot = (params: {
+     const enhancedControlsEnabled =
+       remoteEnhancedControlsEnabled &amp;&amp; platformSupportsEnhancedControls;
+     const resolved =
+-      enhancedControlsEnabled &amp;&amp; connectedAccountIds.length &gt; 0
++      enhancedControlsEnabled
+         ? yield* requestJson(PermissionResolveResponseSchema, {
+             client,
+             path: CONSUMER_PERMISSIONS_RESOLVE_PATH,
+@@ -463,8 +463,16 @@ export const refreshConsumerPermissionSnapshot = (params: {
+   }).pipe(
+     Effect.catchTag(&#x27;services/ToolPermissionsRequestError&#x27;, error =&gt;
+       Effect.gen(function* () {
+-        yield* Effect.logDebug(&#x27;Failed to refresh consumer permission cache&#x27;, error);
+-        return undefined;
++        yield* Effect.logDebug(&#x27;Failed to refresh consumer permission cache; failing closed&#x27;, error);
++        return {
++          orgId: params.orgId,
++          projectId: params.projectId,
++          consumerUserId: params.consumerUserId,
++          enhancedControlsEnabled: isEnhancedControlsPlatformSupported(),
++          permissions: { default: &#x27;ask_every_call&#x27; } as ToolRouterPermissionsConfig,
++          connectedAccountIds: uniq(params.connectedAccountIds ?? []),
++          fetchedAt: Date.now(),
++        } satisfies ConsumerPermissionSnapshot;
+       })
+     )
+   );
+@@ -493,12 +501,12 @@ export const getConsumerPermissionSnapshot = (params: {
+     }
+ 
+     const refreshed = yield* refreshConsumerPermissionSnapshot({ ...params, connectedAccountIds });
+-    return refreshed ?? cached;
++    return refreshed;
+   });
+ 
+ const permissionField = (toolSlug: string, connectedAccountId?: string) =&gt;
+-  `${toolSlug.toLowerCase()}:${(connectedAccountId ?? NO_CONNECTED_ACCOUNT).toLowerCase()}`;
++  `${toolSlug.toLowerCase()}:${(connectedAccountId ?? NO_CONNECTED_ACCOUNT).toLowerCase()}`;
+ const accountPermissionField = (connectedAccountId?: string) =&gt;
+-  `*:${connectedAccountId ?? NO_CONNECTED_ACCOUNT}`;
++  `*:${(connectedAccountId ?? NO_CONNECTED_ACCOUNT).toLowerCase()}`;
+ 
+ export const getOrgEnhancedControlsStatus = (params: {
+@@ -549,9 +557,13 @@ const resolvePermissionState = (
+   params: GateParams &amp; { readonly snapshot: ConsumerPermissionSnapshot }
+ ): PermissionOverrideState | PermissionDefaultMode =&gt; {
+   const permissions = params.snapshot.permissions;
++  const normalizedOverrides = Object.fromEntries(
++    Object.entries(permissions?.overrides ?? {}).map(([k, v]) =&gt; [k.toLowerCase(), v])
++  );
+   const override =
+-    permissions?.overrides?.[permissionField(params.toolSlug, params.connectedAccountId)] ??
+-    permissions?.overrides?.[accountPermissionField(params.connectedAccountId)];
++    normalizedOverrides[permissionField(params.toolSlug, params.connectedAccountId)] ??
++    normalizedOverrides[accountPermissionField(params.connectedAccountId)];
+   return override ?? permissions?.default ?? &#x27;allow_all&#x27;;
+ };</code></pre>
+
+  <h2>5. Security Impact</h2>
+  <p>On consumer projects with `enhanced_controls` enabled, transient failure or blocking of `/api/v3.1/org/consumer/config`, an expired local cache entry, or uppercase toolkit override keys (`GMAIL:&lt;account&gt;`) allows `composio proxy` and `composio execute` calls to bypass `always_deny` and `ask_every_call` policies.</p>
+</body>
+</html>
