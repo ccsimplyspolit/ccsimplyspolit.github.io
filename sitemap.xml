@@ -5,14 +5,14 @@
   <url><loc>https://ccsimplyspolit.github.io/writeups/libprotobuf-mutator-subtick-invariants.html</loc></url>
   <url><loc>https://ccsimplyspolit.github.io/writeups/vm-deserialization-union-type-confusion.html</loc></url>
   <url><loc>https://ccsimplyspolit.github.io/writeups/snapshot-fuzzing-binary-parsers.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/CVD-2026-APIFY-MCP-001.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/CVD-2026-ARCADE-MCP-001.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/CVD-2026-CREWAI-MEM-001.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/CVD-2026-FAST-AGENT-001.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/CVD-2026-GHAW-CORE-001.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/CVD-2026-GHAW-FW-001.html</loc></url>
+  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-qxvg-wc96-c9hg.html</loc></url>
+  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-66qg-3qqj-frhp.html</loc></url>
+  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-w9vr-vppr-7473.html</loc></url>
+  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-4gxr-rmq4-gf3g.html</loc></url>
+  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-796w-fvw2-ccmp.html</loc></url>
+  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-79pm-w9c4-x743.html</loc></url>
   <url><loc>https://ccsimplyspolit.github.io/advisories/CVD-2026-HF-MCP-001.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/CVD-2026-MONGODB-MCP-001.html</loc></url>
+  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-pj28-99w2-cmmr.html</loc></url>
   <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-29j7-mxxj-g9hg.html</loc></url>
   <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-2qf6-94w7-mjcq.html</loc></url>
   <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-48q7-428c-jmfw.html</loc></url>
@@ -33,4 +33,7 @@
   <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-rg4w-8g8x-2vhf.html</loc></url>
   <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-wf26-5m35-vf27.html</loc></url>
   <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-x2gm-fvv7-8x97.html</loc></url>
+  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-v72p-99r9-27ff.html</loc></url>
+  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-93r3-hqxp-7955.html</loc></url>
+  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-mp5c-mhfh-vrqc.html</loc></url>
 </urlset>
