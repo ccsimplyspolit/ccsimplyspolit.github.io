@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GHSA-rg4w-8g8x-2vhf — github/github-mcp-server Coordinated Disclosure Record | Serhii Shunko (@sshunko)</title>
+  <meta name="description" content="Coordinated Vulnerability Disclosure verification record for GHSA-rg4w-8g8x-2vhf in github/github-mcp-server by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <style>
+    :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.65; padding: 2rem 1.25rem 4rem; }
+    .container { max-width: 960px; margin: 0 auto; }
+    a { color: var(--accent); text-decoration: none; }
+    .back { font-family: var(--mono); font-size: 0.88rem; display: inline-block; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    h2 { font-family: var(--mono); font-size: 1.05rem; color: var(--accent); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+    .notice { background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.35); border-radius: 6px; padding: 1rem 1.2rem; margin: 1.25rem 0; font-size: 0.92rem; }
+    pre { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.5; margin: 0.75rem 0; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
+    <h1>GHSA-rg4w-8g8x-2vhf: OAuth PKCE Callback Server Single-Shot Channel Exhaustion Before state Validation in internal/oauth/callback.go (<code>github/github-mcp-server</code>)</h1>
+    <div class="notice">
+      <strong>[CVD EMBARGO / VENDOR TRIAGE NOTICE]</strong><br>
+      Privately reported to <code>github/github-mcp-server</code> via GitHub Private Vulnerability Reporting on <code>2026-10-26T02:01:33Z</code> (<a href="https://github.com/github/github-mcp-server/security/advisories/GHSA-rg4w-8g8x-2vhf">https://github.com/github/github-mcp-server/security/advisories/GHSA-rg4w-8g8x-2vhf</a>).
+    </div>
+    <h2>0x00 // GitHub REST API Verification Record</h2>
+    <pre><code>{
+  &quot;ghsa_id&quot;: &quot;GHSA-rg4w-8g8x-2vhf&quot;,
+  &quot;html_url&quot;: &quot;https://github.com/github/github-mcp-server/security/advisories/GHSA-rg4w-8g8x-2vhf&quot;,
+  &quot;summary&quot;: &quot;OAuth PKCE Callback Server Single-Shot Channel Exhaustion Before state Validation in internal/oauth/callback.go&quot;,
+  &quot;state&quot;: &quot;triage&quot;,
+  &quot;severity&quot;: &quot;medium&quot;,
+  &quot;created_at&quot;: &quot;2026-10-26T02:01:33Z&quot;,
+  &quot;cwe_ids&quot;: [
+    &quot;CWE-352&quot;,
+    &quot;CWE-400&quot;
+  ],
+  &quot;vulnerabilities&quot;: [
+    {
+      &quot;package&quot;: {
+        &quot;ecosystem&quot;: &quot;go&quot;,
+        &quot;name&quot;: &quot;github.com/github/github-mcp-server/internal/oauth&quot;
+      },
+      &quot;vulnerable_version_range&quot;: &quot;&lt;= 0.32.0&quot;,
+      &quot;patched_versions&quot;: null,
+      &quot;vulnerable_functions&quot;: []
+    }
+  ]
+}</code></pre>
+    <h2>0x01 // Technical Specification &amp; Remediation Patch</h2>
+    <pre><code>## Summary
+
+During a defensive static source audit of `https://github.com/github/github-mcp-server` (`main` branch, `internal/oauth/callback.go` blob `1e643e207d`), I identified a single-shot channel exhaustion defect in `callbackServer.handler(expectedState string)` (`lines 66, 83-122`):
+
+- `newCallbackServer()` (`line 66`) allocates a capacity-1 channel `results: make(chan callbackResult, 1)`, and `cs.report()` (`line 117`) writes only the first `callbackResult` into `cs.results`, causing `cs.wait(ctx)` (`line 126`) to return immediately and shut down the callback HTTP server (`defer cs.close()`).
+- In `callbackServer.handler(expectedState string)` (`lines 86-107`), requests containing `error != &quot;&quot;` are reported via `cs.report(...)` **before** checking `q.Get(&quot;state&quot;) != expectedState`, and requests with a mismatched `state` or missing `code` also call `cs.report(...)` instead of being ignored while keeping the listener alive for the legitimate callback carrying `expectedState`.
+
+Public Verification &amp; Patch Advisory: `https://ccsimplyspolit.github.io/advisories/CVD-2026-GHMCP-001.html`
+
+---
+
+## Root Cause Analysis (Exact Upstream Source Lines)
+
+- **`internal/oauth/callback.go:83-111`**:
+  ```go
+  q := r.URL.Query()
+  if errCode := q.Get(&quot;error&quot;); errCode != &quot;&quot; {
+      desc := q.Get(&quot;error_description&quot;)
+      http.Error(w, &quot;OAuth authorization failed: &quot;+errCode, http.StatusBadRequest)
+      cs.report(callbackResult{err: fmt.Errorf(&quot;oauth error %s: %s&quot;, errCode, desc)})
+      return
+  }
+
+  if q.Get(&quot;state&quot;) != expectedState {
+      http.Error(w, &quot;Invalid OAuth state&quot;, http.StatusBadRequest)
+      cs.report(callbackResult{err: fmt.Errorf(&quot;oauth callback state mismatch&quot;)})
+      return
+  }
+  ```
+
+---
+
+## Steps to Reproduce (Defensive Verification Harness)
+
+```bash
+python verify_batch5_ai.py TestBatch5AISecurity.test_2_github_mcp_oauth_callback -v
+```
+
+---
+
+## Suggested Remediation (`difflib.unified_diff`)
+
+```diff
+
+```
+
+## Impact
+
+- **Pre-Authentication OAuth PKCE Flow Termination (`CWE-352` / `CWE-400`)**: Any unauthenticated request to `/callback` without the secret `expectedState` parameter (including over the network in container mode where `listenCallback` binds `0.0.0.0:&lt;port&gt;` at line 48) consumes the single-shot result channel and aborts the user&#x27;s in-progress OAuth authorization flow.
+</code></pre>
+  </div>
+</body>
+</html>

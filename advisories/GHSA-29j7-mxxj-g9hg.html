@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GHSA-29j7-mxxj-g9hg — cloudflare/mcp-server-cloudflare Coordinated Disclosure Record | Serhii Shunko (@sshunko)</title>
+  <meta name="description" content="Coordinated Vulnerability Disclosure verification record for GHSA-29j7-mxxj-g9hg in cloudflare/mcp-server-cloudflare by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <style>
+    :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.65; padding: 2rem 1.25rem 4rem; }
+    .container { max-width: 960px; margin: 0 auto; }
+    a { color: var(--accent); text-decoration: none; }
+    .back { font-family: var(--mono); font-size: 0.88rem; display: inline-block; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    h2 { font-family: var(--mono); font-size: 1.05rem; color: var(--accent); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+    .notice { background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.35); border-radius: 6px; padding: 1rem 1.2rem; margin: 1.25rem 0; font-size: 0.92rem; }
+    pre { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.5; margin: 0.75rem 0; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
+    <h1>GHSA-29j7-mxxj-g9hg: Unvalidated clientUri Scheme in OAuth Approval Dialog and Fail-Open Consent Decision Parsing in workers-oauth-utils.ts (<code>cloudflare/mcp-server-cloudflare</code>)</h1>
+    <div class="notice">
+      <strong>[CVD EMBARGO / VENDOR TRIAGE NOTICE]</strong><br>
+      Privately reported to <code>cloudflare/mcp-server-cloudflare</code> via GitHub Private Vulnerability Reporting on <code>2026-10-26T02:01:39Z</code> (<a href="https://github.com/cloudflare/mcp-server-cloudflare/security/advisories/GHSA-29j7-mxxj-g9hg">https://github.com/cloudflare/mcp-server-cloudflare/security/advisories/GHSA-29j7-mxxj-g9hg</a>).
+    </div>
+    <h2>0x00 // GitHub REST API Verification Record</h2>
+    <pre><code>{
+  &quot;ghsa_id&quot;: &quot;GHSA-29j7-mxxj-g9hg&quot;,
+  &quot;html_url&quot;: &quot;https://github.com/cloudflare/mcp-server-cloudflare/security/advisories/GHSA-29j7-mxxj-g9hg&quot;,
+  &quot;summary&quot;: &quot;Unvalidated clientUri Scheme in OAuth Approval Dialog and Fail-Open Consent Decision Parsing in workers-oauth-utils.ts&quot;,
+  &quot;state&quot;: &quot;triage&quot;,
+  &quot;severity&quot;: &quot;medium&quot;,
+  &quot;created_at&quot;: &quot;2026-10-26T02:01:39Z&quot;,
+  &quot;cwe_ids&quot;: [
+    &quot;CWE-20&quot;,
+    &quot;CWE-79&quot;,
+    &quot;CWE-863&quot;
+  ],
+  &quot;vulnerabilities&quot;: [
+    {
+      &quot;package&quot;: {
+        &quot;ecosystem&quot;: &quot;npm&quot;,
+        &quot;name&quot;: &quot;@repo/mcp-common&quot;
+      },
+      &quot;vulnerable_version_range&quot;: &quot;&gt;= 0.1.0&quot;,
+      &quot;patched_versions&quot;: null,
+      &quot;vulnerable_functions&quot;: []
+    }
+  ]
+}</code></pre>
+    <h2>0x01 // Technical Specification &amp; Remediation Patch</h2>
+    <pre><code>## Summary
+
+During a defensive static source audit of `https://github.com/cloudflare/mcp-server-cloudflare` (`main` branch, `packages/mcp-common/src/workers-oauth-utils.ts` blob `85c0f096e9`), I identified two input validation defects in the OAuth 2.1 consent workflow:
+
+1. **Unvalidated URL Scheme on Client-Supplied `consent.clientUri` in `renderApprovalDialog()` (`CWE-79`, `packages/mcp-common/src/workers-oauth-utils.ts:62, 281`)**:
+   - `renderApprovalDialog()` passes client-supplied `consent.clientUri` through `sanitizeHtml()` (`line 62`) and interpolates it into `&lt;a href=&quot;${clientUri}&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;${clientUri}&lt;/a&gt;` (`line 281`) without validating that its URL scheme is `http:` or `https:`.
+   - Because `sanitizeHtml()` only escapes HTML metacharacters (`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&#x27;`), a dynamically registered OAuth client with `client_uri: &quot;javascript:...&quot;` renders an executable `javascript:` link on the `/oauth/authorize` consent origin.
+2. **Fail-Open Consent Decision Parsing in `parseRedirectApproval()` (`CWE-20` / `CWE-863`, `packages/mcp-common/src/workers-oauth-utils.ts:336`)**:
+   - Line 336 evaluates `decision: formData.get(&#x27;decision&#x27;) === &#x27;deny&#x27; ? &#x27;deny&#x27; : &#x27;approve&#x27;`, defaulting any missing or malformed `decision` parameter to `&#x27;approve&#x27;` instead of requiring an explicit `&#x27;approve&#x27;` or `&#x27;deny&#x27;` value.
+
+Public Verification &amp; Patch Advisory: `https://ccsimplyspolit.github.io/advisories/CVD-2026-CLOUDFLARE-MCP-001.html`
+
+---
+
+## Root Cause Analysis (Exact Upstream Source Lines)
+
+- **`packages/mcp-common/src/workers-oauth-utils.ts:62, 281 &amp; 336`**:
+  ```ts
+  const clientUri = consent.clientUri ? sanitizeHtml(consent.clientUri) : &#x27;&#x27;
+  ...
+  ${clientUri ? detail(&#x27;Website&#x27;, `&lt;a href=&quot;${clientUri}&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;${clientUri}&lt;/a&gt;`) : &#x27;&#x27;}
+  ...
+  return { handle, decision: formData.get(&#x27;decision&#x27;) === &#x27;deny&#x27; ? &#x27;deny&#x27; : &#x27;approve&#x27; }
+  ```
+
+---
+
+## Steps to Reproduce (Defensive Verification Harness)
+
+```bash
+python verify_batch5_ai.py TestBatch5AISecurity.test_4_cloudflare_mcp_oauth_utils -v
+```
+
+---
+
+## Suggested Remediation (`difflib.unified_diff`)
+
+```diff
+--- a/packages/mcp-common/src/workers-oauth-utils.ts
++++ b/packages/mcp-common/src/workers-oauth-utils.ts
+@@ -59,7 +59,7 @@
+ 	const clientName = sanitizeHtml(consent.clientName)
+ 	const serverDescription = server.description ? sanitizeHtml(server.description) : &#x27;&#x27;
+ 	const logoUrl = server.logo ? sanitizeHtml(server.logo) : &#x27;&#x27;
+-	const clientUri = consent.clientUri ? sanitizeHtml(consent.clientUri) : &#x27;&#x27;
++	const clientUri = consent.clientUri &amp;&amp; isSafeHttpUrl(consent.clientUri) ? sanitizeHtml(consent.clientUri) : &#x27;&#x27;
+ 	// Only a Client ID Metadata Document client&#x27;s ID names a domain it controls; a registered
+ 	// client&#x27;s name is self-asserted.
+ 	const clientDomain = consent.clientDomain ? sanitizeHtml(consent.clientDomain) : &#x27;&#x27;
+@@ -333,7 +333,11 @@
+ 		throw new OAuthError(&#x27;invalid_request&#x27;, &#x27;Missing consent handle&#x27;, 400)
+ 	}
+ 
+-	return { handle, decision: formData.get(&#x27;decision&#x27;) === &#x27;deny&#x27; ? &#x27;deny&#x27; : &#x27;approve&#x27; }
++	const rawDecision = formData.get(&#x27;decision&#x27;)
++	if (rawDecision !== &#x27;approve&#x27; &amp;&amp; rawDecision !== &#x27;deny&#x27;) {
++		throw new OAuthError(&#x27;invalid_request&#x27;, &#x27;Invalid or missing consent decision&#x27;, 400)
++	}
++	return { handle, decision: rawDecision }
+ }
+ 
+ /**
+@@ -356,6 +360,15 @@
+  * @param unsafe - The unsafe string that might contain HTML
+  * @returns A safe string with HTML special characters escaped
+  */
++function isSafeHttpUrl(rawUrl: string): boolean {
++	try {
++		const parsed = new URL(rawUrl)
++		return parsed.protocol === &#x27;http:&#x27; || parsed.protocol === &#x27;https:&#x27;
++	} catch {
++		return false
++	}
++}
++
+ function sanitizeHtml(unsafe: string): string {
+ 	return unsafe
+ 		.replace(/&amp;/g, &#x27;&amp;amp;&#x27;)
+
+```
+
+## Impact
+
+- **Cross-Site Scripting via `javascript:` `client_uri` on OAuth Consent Origin &amp; Fail-Open Consent Decision (`CWE-79` / `CWE-863`)**: Clicking the Website link on the `/oauth/authorize` consent dialog executes script in the Cloudflare MCP Worker origin when a dynamically registered client supplies a `javascript:` `client_uri`.
+</code></pre>
+  </div>
+</body>
+</html>

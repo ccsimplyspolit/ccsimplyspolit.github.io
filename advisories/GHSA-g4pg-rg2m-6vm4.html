@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GHSA-g4pg-rg2m-6vm4 — paypal/agent-toolkit Coordinated Disclosure Record | Serhii Shunko (@sshunko)</title>
+  <meta name="description" content="Coordinated Vulnerability Disclosure verification record for GHSA-g4pg-rg2m-6vm4 in paypal/agent-toolkit by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <style>
+    :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.65; padding: 2rem 1.25rem 4rem; }
+    .container { max-width: 960px; margin: 0 auto; }
+    a { color: var(--accent); text-decoration: none; }
+    .back { font-family: var(--mono); font-size: 0.88rem; display: inline-block; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    h2 { font-family: var(--mono); font-size: 1.05rem; color: var(--accent); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+    .notice { background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.35); border-radius: 6px; padding: 1rem 1.2rem; margin: 1.25rem 0; font-size: 0.92rem; }
+    pre { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.5; margin: 0.75rem 0; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
+    <h1>GHSA-g4pg-rg2m-6vm4: paypal/agent-toolkit: Resource identifier validation and URL path segment encoding in REST tool handlers (<code>paypal/agent-toolkit</code>)</h1>
+    <div class="notice">
+      <strong>[CVD EMBARGO / VENDOR TRIAGE NOTICE]</strong><br>
+      Privately reported to <code>paypal/agent-toolkit</code> via GitHub Private Vulnerability Reporting on <code>2026-10-26T02:01:46Z</code> (<a href="https://github.com/paypal/agent-toolkit/security/advisories/GHSA-g4pg-rg2m-6vm4">https://github.com/paypal/agent-toolkit/security/advisories/GHSA-g4pg-rg2m-6vm4</a>).
+    </div>
+    <h2>0x00 // GitHub REST API Verification Record</h2>
+    <pre><code>{
+  &quot;ghsa_id&quot;: &quot;GHSA-g4pg-rg2m-6vm4&quot;,
+  &quot;html_url&quot;: &quot;https://github.com/paypal/agent-toolkit/security/advisories/GHSA-g4pg-rg2m-6vm4&quot;,
+  &quot;summary&quot;: &quot;paypal/agent-toolkit: Resource identifier validation and URL path segment encoding in REST tool handlers&quot;,
+  &quot;state&quot;: &quot;triage&quot;,
+  &quot;severity&quot;: &quot;high&quot;,
+  &quot;created_at&quot;: &quot;2026-10-26T02:01:46Z&quot;,
+  &quot;cwe_ids&quot;: [
+    &quot;CWE-20&quot;,
+    &quot;CWE-22&quot;,
+    &quot;CWE-285&quot;
+  ],
+  &quot;vulnerabilities&quot;: [
+    {
+      &quot;package&quot;: {
+        &quot;ecosystem&quot;: &quot;npm&quot;,
+        &quot;name&quot;: &quot;typescript/src/shared/parameters.ts &amp; python/paypal_agent_toolkit/shared/&quot;
+      },
+      &quot;vulnerable_version_range&quot;: null,
+      &quot;patched_versions&quot;: null,
+      &quot;vulnerable_functions&quot;: []
+    }
+  ]
+}</code></pre>
+    <h2>0x01 // Technical Specification &amp; Remediation Patch</h2>
+    <pre><code># Missing Resource ID Validation and Cross-Endpoint REST Path Traversal in acceptDisputeClaim, updateInvoiceAutoReminder, and updateShipmentTracking in paypal/agent-toolkit
+
+- **CVD ID**: `CVD-2026-PAYPAL-AGENT-001`
+- **Target Program**: HackerOne `paypal` (Paid Bounty Scope `638296` — `PayPal SDK (paypal/agent-toolkit)`)
+- **Repository**: `https://github.com/paypal/agent-toolkit`
+- **Vulnerable File**: `typescript/src/shared/parameters.ts (lines 342, 502, 574), typescript/src/shared/functions.ts (lines 454, 1205-1209, 1280-1285), python/paypal_agent_toolkit/shared/invoices/parameters.py (line 282), python/paypal_agent_toolkit/shared/tracking/parameters.py (line 48)`
+- **Weakness**: `CWE-20 / CWE-22 / CWE-285`
+- **Severity**: `High (CVSS 8.1)`
+
+## Summary
+
+I identified an input validation and REST path-traversal vulnerability across both the TypeScript and Python implementations of `paypal/agent-toolkit`. While other resource identifiers in the toolkit are constrained by strict regular expressions in `regex.ts` / `regex.py`, three mutating tool handlers—`acceptDisputeClaim` (`dispute_id` in TypeScript), `updateInvoiceAutoReminder` (`reminder_configuration_id` in TypeScript and Python), and `updateShipmentTracking` (`tracking_number` in TypeScript and Python)—interpolate unvalidated, unencoded strings directly into authenticated PayPal REST API URLs (`POST` and `PUT`). In `acceptDisputeClaimParameters` (`typescript/src/shared/parameters.ts`, lines 573-576), `.regex(DISPUTE_ID_REGEX)` was mistakenly attached to `note` instead of `dispute_id`.
+
+## Root Cause Analysis
+
+1. **Misplaced Regex on `acceptDisputeClaimParameters` (`typescript/src/shared/parameters.ts`, lines 573-576)**:
+```typescript
+export const acceptDisputeClaimParameters = (context: Context) =&gt; z.object({
+  dispute_id: z.string(),
+  note: z.string().regex(DISPUTE_ID_REGEX, &quot;Invalid PayPal Dispute ID&quot;).describe(&quot;A note about why the seller is accepting the claim&quot;),
+});
+```
+And in `typescript/src/shared/functions.ts` (lines 1280-1285):
+```typescript
+const url = `${client.getBaseUrl()}/v1/customer/disputes/${params.dispute_id}/accept-claim`;
+const response = await axios.post(url, { note: params.note }, { headers, params });
+```
+2. **Missing Regex &amp; URL Encoding on `reminder_configuration_id` and `tracking_number`**:
+In `updateInvoiceAutoReminder` (`PUT /v2/invoicing/reminders/${reminder_configuration_id}`) and `updateShipmentTracking` (`PUT /v1/shipping/trackers/${transaction_id}-${tracking_number}`), neither Python nor TypeScript validates or URL-encodes the path parameter before issuing an authenticated `PUT` request with the merchant&#x27;s OAuth2 `Bearer` token.
+
+## Steps to Reproduce
+
+Run the standalone verification harness in `verify_batch6_paid_ai.py` (`test_02_paypal_agent_toolkit_path_traversal`):
+```bash
+python verify_batch6_paid_ai.py -v
+```
+- **BEFORE PATCH**: Passing `dispute_id = &#x27;../../../v2/checkout/orders/8XY12345678901234/capture#&#x27;` resolves the `POST` target URL to `https://api.paypal.com/v2/checkout/orders/8XY12345678901234/capture`.
+- **AFTER PATCH**: `DISPUTE_ID_REGEX`, `REMINDER_ID_REGEX`, and `TRACKING_NUMBER_REGEX` plus `encodeURIComponent` / `urllib.parse.quote` reject any traversal characters.
+
+## Suggested Remediation
+
+```diff
+--- a/typescript/src/shared/parameters.ts
++++ b/typescript/src/shared/parameters.ts
+@@ -1,4 +1,4 @@
+ export const updateInvoiceAutoReminderParameters = (context: Context) =&gt;
+   z.object({
+-    reminder_configuration_id: z.string().describe(&#x27;The ID of the auto reminder configuration to update.&#x27;),
++    reminder_configuration_id: z.string().regex(INVOICE_ID_REGEX, &quot;Invalid PayPal Reminder Configuration ID&quot;).describe(&#x27;The ID of the auto reminder configuration to update.&#x27;),
+     type: z.enum([&#x27;BEFORE_DUE&#x27;, &#x27;AFTER_DUE&#x27;]),
+```
+
+## Impact
+
+A prompt-injected LLM agent restricted via `configuration.actions` (e.g., granted only `disputes.update`, `invoicing.reminders.update`, or `shipping.tracking.update`) can traverse out of the intended endpoint path and issue authenticated `POST` or `PUT` requests to arbitrary PayPal REST API endpoints using the merchant&#x27;s live OAuth2 access token.
+</code></pre>
+  </div>
+</body>
+</html>
