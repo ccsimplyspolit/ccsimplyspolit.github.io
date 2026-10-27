@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GHSA-6hh9-gpj4-cr69 — moonlight-stream/moonlight-common-c Coordinated Disclosure Record | Serhii Shunko (@sshunko)</title>
+  <meta name="description" content="Coordinated Vulnerability Disclosure verification record for GHSA-6hh9-gpj4-cr69 in moonlight-stream/moonlight-common-c (Merged Upstream Fix PR #168) by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <style>
+    :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.65; padding: 2rem 1.25rem 4rem; }
+    .container { max-width: 960px; margin: 0 auto; }
+    a { color: var(--accent); text-decoration: none; }
+    .back { font-family: var(--mono); font-size: 0.88rem; display: inline-block; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    h2 { font-family: var(--mono); font-size: 1.05rem; color: var(--accent); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+    .notice { background: rgba(52, 211, 153, 0.08); border: 1px solid rgba(52, 211, 153, 0.35); border-radius: 6px; padding: 1rem 1.2rem; margin: 1.25rem 0; font-size: 0.92rem; }
+    pre { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.5; margin: 0.75rem 0; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
+    <h1>GHSA-6hh9-gpj4-cr69: Coordinated Vulnerability Disclosure Verification Record (<code>moonlight-stream/moonlight-common-c</code>)</h1>
+    <div class="notice">
+      <strong>[CONFIRMED &amp; PATCHED UPSTREAM / FIX PR #168 MERGED INTO MASTER]</strong><br>
+      Reported to <code>moonlight-stream/moonlight-common-c</code> via GitHub Security Advisory (<a href="https://github.com/moonlight-stream/moonlight-common-c/security/advisories/GHSA-6hh9-gpj4-cr69">GHSA-6hh9-gpj4-cr69</a>) and patched upstream in Pull Request <a href="https://github.com/moonlight-stream/moonlight-common-c/pull/168"><code>moonlight-stream/moonlight-common-c#168</code></a> (<em>Fix missing IDX_DS_ADAPTIVE_TRIGGERS sentinel in packetTypesGen3..7</em> in <code>src/Input.c</code>).<br>
+      Reviewed and merged into <code>master</code> by lead maintainer Cameron Gutman (<code>@cgutman</code>) on <code>2026-10-27T00:47:19Z</code> (commit <a href="https://github.com/moonlight-stream/moonlight-common-c/commit/6a2f158e882a23f040b913bc96a718df7688d656"><code>6a2f158e88</code></a>).
+    </div>
+    <h2>0x00 // GitHub CNA &amp; Upstream Patch Metadata</h2>
+    <pre><code>{
+  "ghsa_id": "GHSA-6hh9-gpj4-cr69",
+  "repository": "moonlight-stream/moonlight-common-c",
+  "html_url": "https://github.com/moonlight-stream/moonlight-common-c/security/advisories/GHSA-6hh9-gpj4-cr69",
+  "upstream_fix_pr": "https://github.com/moonlight-stream/moonlight-common-c/pull/168",
+  "upstream_merge_commit": "https://github.com/moonlight-stream/moonlight-common-c/commit/6a2f158e882a23f040b913bc96a718df7688d656",
+  "merged_by": "cgutman (Cameron Gutman)",
+  "merged_at": "2026-10-27T00:47:19Z",
+  "status": "Confirmed &amp; Patched Upstream in master (PR #168)",
+  "credits": [
+    {
+      "login": "ccsimplyspolit",
+      "type": "reporter",
+      "state": "accepted"
+    }
+  ],
+  "cwe_ids": [
+    "CWE-125",
+    "CWE-787"
+  ]
+}</code></pre>
+  </div>
+</body>
+</html>

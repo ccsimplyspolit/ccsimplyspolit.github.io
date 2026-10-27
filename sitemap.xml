@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://ccsimplyspolit.github.io/</loc></url>
+  <url><loc>https://ccsimplyspolit.github.io/Serhii_Shunko_CVP_Verification_Dossier_Oct2026.pdf</loc></url>
   <url><loc>https://ccsimplyspolit.github.io/writeups/integer-underflow-packet-parsers.html</loc></url>
   <url><loc>https://ccsimplyspolit.github.io/writeups/libprotobuf-mutator-subtick-invariants.html</loc></url>
   <url><loc>https://ccsimplyspolit.github.io/writeups/vm-deserialization-union-type-confusion.html</loc></url>
   <url><loc>https://ccsimplyspolit.github.io/writeups/snapshot-fuzzing-binary-parsers.html</loc></url>
   <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html</loc></url>
   <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-qm7x-j9xp-x3gv.html</loc></url>
+  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-6hh9-gpj4-cr69.html</loc></url>
   <url><loc>https://ccsimplyspolit.github.io/advisories/H1-4148578.html</loc></url>
 </urlset>

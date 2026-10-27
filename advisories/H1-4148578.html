@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>H1-4148578 — brave/ai-gateway Coordinated Disclosure Record | Serhii Shunko (@sshunko)</title>
-  <meta name="description" content="Coordinated Vulnerability Disclosure verification record for HackerOne #4148578 in brave/ai-gateway by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <meta name="description" content="Coordinated Vulnerability Disclosure verification record for HackerOne #4148578 in brave/ai-gateway (Confirmed & Bounty Awarded) by Serhii Shunko (@sshunko / @ccsimplyspolit).">
   <style>
     :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,16 +23,19 @@
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
     <h1>H1-4148578: Coordinated Vulnerability Disclosure Verification Record (<code>brave/ai-gateway</code>)</h1>
     <div class="notice">
-      <strong>[CONFIRMED BY VENDOR / BOUNTY AWARDED]</strong><br>
-      Privately reported to Brave Software (<code>brave/ai-gateway</code>) via HackerOne Report <code>#4148578</code>. Confirmed by upstream maintainers with a bug bounty award while the upstream fix is being applied.<br>
-      In compliance with Coordinated Vulnerability Disclosure (CVD) policy, line-level reproduction details remain withheld until the upstream patch is merged.
+      <strong>[CONFIRMED BY VENDOR / BOUNTY AWARDED ($50.00 USD)]</strong><br>
+      Privately reported to Brave Software (<code>brave/ai-gateway</code>) via HackerOne Report <code>#4148578</code> covering <em>Streaming Tool-Call Alignment Check Bypass on Multi-Tool Turns and Attachment-First User Message Extraction Failure in OpenAIAdapter</em>.<br>
+      Confirmed by Brave Software security engineer <code>@artem_chaikin</code> on <code>2026-10-27T02:02:21Z</code> and awarded a <code>$50.00 USD</code> bug bounty while the upstream fix is being applied. In compliance with Coordinated Vulnerability Disclosure (CVD) policy, exploit payloads remain withheld until the upstream patch is merged.
     </div>
     <h2>0x00 // Cryptographic Commitment &amp; Verification Metadata</h2>
     <pre><code>{
   "report_id": "4148578",
-  "program": "brave",
+  "program": "brave (Brave Software Bug Bounty Program)",
   "repository": "brave/ai-gateway",
-  "status": "Confirmed by Vendor / Bounty Awarded ($50.00)",
+  "title": "Streaming Tool-Call Alignment Check Bypass on Multi-Tool Turns and Attachment-First User Message Extraction Failure in OpenAIAdapter",
+  "reporter": "sshunko (Serhii Shunko)",
+  "status": "Confirmed by Vendor (@artem_chaikin) / Bounty Awarded ($50.00 USD)",
+  "bounty_awarded_at": "2026-10-27T02:02:21Z",
   "severity": "medium",
   "cwe_ids": [
     "CWE-20",

@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Serhii Shunko (@sshunko / @ccsimplyspolit) — Application &amp; Binary Security Research</title>
-  <meta name="description" content="Independent security research portal of Serhii Shunko (@sshunko / @ccsimplyspolit). Coordinated vulnerability disclosures (CVD), Protocol Buffers input validation audits, static x86_64 binary analysis, and defensive security tooling.">
+  <meta name="description" content="Independent security research portal of Serhii Shunko (@sshunko / @ccsimplyspolit). Coordinated vulnerability disclosures (CVD), C/C++ network &amp; media parser audits, Protocol Buffers input validation, and AI/MCP security.">
   <meta name="author" content="Serhii Shunko">
-  <meta name="keywords" content="Serhii Shunko, sshunko, ccsimplyspolit, Binary Security, Reverse Engineering, Vulnerability Research, Protocol Buffers, CWE-20, CWE-1284, CWE-125, CWE-787, Static Analysis, ORCID 0009-0002-4183-0361">
+  <meta name="keywords" content="Serhii Shunko, sshunko, ccsimplyspolit, Binary Security, Vulnerability Research, Coordinated Vulnerability Disclosure, Protocol Buffers, CWE-20, CWE-1284, CWE-125, CWE-787, Static Analysis, ORCID 0009-0002-4183-0361">
   <link rel="canonical" href="https://ccsimplyspolit.github.io/">
   <script type="application/ld+json">
   {
@@ -15,7 +15,7 @@
     "name": "Serhii Shunko",
     "alternateName": ["sshunko", "ccsimplyspolit"],
     "url": "https://ccsimplyspolit.github.io/",
-    "jobTitle": "Independent Application & Binary Security Researcher",
+    "jobTitle": "Independent Systems & Binary Security Researcher",
     "alumniOf": {
       "@type": "CollegeOrUniversity",
       "name": "Oles Honchar Dnipro National University"
@@ -24,6 +24,9 @@
       "https://ccsimplyspolit.github.io/",
       "https://github.com/ccsimplyspolit",
       "https://orcid.org/0009-0002-4183-0361",
+      "https://doi.org/10.5281/zenodo.23641037",
+      "https://doi.org/10.5281/zenodo.23640494",
+      "https://doi.org/10.5281/zenodo.23640496",
       "https://hackerone.com/sshunko",
       "https://bugcrowd.com/h/sshunko",
       "https://app.intigriti.com/profile/sshunko",
@@ -84,7 +87,7 @@
     .subtitle {
       color: var(--muted);
       font-size: 1.05rem;
-      max-width: 780px;
+      max-width: 820px;
       margin-bottom: 1.25rem;
     }
     .badges {
@@ -149,17 +152,17 @@
     }
     .embargo-tag {
       display: inline-block;
-      background: rgba(251, 191, 36, 0.12);
-      color: var(--accent-amber);
-      border: 1px solid rgba(251, 191, 36, 0.35);
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--accent-green);
+      border: 1px solid rgba(52, 211, 153, 0.35);
       padding: 0.12rem 0.5rem;
       border-radius: 3px;
       font-family: var(--mono);
       font-size: 0.76rem;
     }
     .embargo-banner {
-      background: rgba(251, 191, 36, 0.08);
-      border: 1px solid rgba(251, 191, 36, 0.35);
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.35);
       border-radius: 6px;
       padding: 0.9rem 1.15rem;
       margin-bottom: 1.25rem;
@@ -167,7 +170,7 @@
       color: var(--text);
     }
     .embargo-banner strong {
-      color: var(--accent-amber);
+      color: var(--accent);
       font-family: var(--mono);
     }
     .tool-tag {
@@ -252,12 +255,14 @@
       <div class="prompt">sshunko@research:~$ whoami --verbose</div>
       <h1>Serhii Shunko (@sshunko / @ccsimplyspolit)</h1>
       <p class="subtitle">
-        Independent Application &amp; Binary Security Researcher. Focusing on server-side protocol input validation (Protocol Buffers / RPC / Embedded Telemetry), static <code>x86_64</code> binary auditing, memory-safety vulnerability discovery, and deterministic simulation state verification. B.Sc. in Applied Mathematics &amp; Software Engineering (Oles Honchar Dnipro National University).
+        Independent Systems &amp; Binary Security Researcher. Focusing on C/C++ network &amp; media parser memory safety (<code>libFuzzer</code> / <code>libprotobuf-mutator</code> / ASan), Protocol Buffers wire input validation, embeddable VM deserialization auditing, and AI/MCP server infrastructure security. B.Sc. in Applied Mathematics &amp; Software Engineering (Oles Honchar Dnipro National University).
       </p>
       <div class="badges">
         <a class="badge" href="https://github.com/ccsimplyspolit" rel="me">GitHub: @ccsimplyspolit</a>
         <a class="badge" href="https://orcid.org/0009-0002-4183-0361" rel="me">ORCID: 0009-0002-4183-0361</a>
-        <a class="badge" href="https://hackerone.com/sshunko" rel="me">HackerOne: @sshunko (ID Verified)</a>
+        <a class="badge" href="https://doi.org/10.5281/zenodo.23641037">Zenodo DOI: 10.5281/zenodo.23641037</a>
+        <a class="badge" href="https://hackerone.com/sshunko" rel="me">HackerOne: @sshunko (ID Verified &bull; Bounty Awarded)</a>
+        <a class="badge" href="https://ccsimplyspolit.github.io/Serhii_Shunko_CVP_Verification_Dossier_Oct2026.pdf">CVP Verification Dossier (PDF)</a>
         <a class="badge" href="https://bugcrowd.com/h/sshunko" rel="me">Bugcrowd: @sshunko</a>
         <a class="badge" href="https://app.intigriti.com/profile/sshunko" rel="me">Intigriti: @sshunko</a>
         <a class="badge" href="https://bughunters.google.com/profile/4da21a09-550c-43fe-9b62-e3e86dab4b9c" rel="me">Google VRP: @sshunko</a>
@@ -275,20 +280,20 @@
     <section id="disclosures">
       <h2>0x00 // Confirmed Coordinated Vulnerability Disclosures</h2>
       <div class="embargo-banner">
-        <strong>[CVD POLICY]</strong> Only vendor-accepted advisories and bounty-awarded disclosures are listed in this public registry. Active reports still undergoing initial maintainer triage remain strictly private until upstream confirmation.
+        <strong>[CVD POLICY]</strong> Only vendor-accepted advisories, upstream-merged security patches, and bounty-awarded disclosures are listed in this public registry. Active reports still undergoing initial maintainer triage remain strictly private until upstream confirmation.
       </div>
       <div class="grid">
         <article class="card">
           <div>
             <div class="card-header">
-              <span class="id-tag">GHSA-cr23-59mg-h2rc</span>
-              <span class="cwe-tag">CWE-125 / CWE-787 / CWE-400 / CWE-835</span>
+              <span class="id-tag">H1-4148578</span>
+              <span class="cwe-tag">CWE-20 / CWE-755</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html" style="color: inherit;">Out-of-Bounds Read, Unbounded Allocation &amp; Infinite Loop in <code>src/bacnet/lighting.c</code> &amp; <code>bactext.c</code> (<code>bacnet-stack/bacnet-stack</code>)</a></h3>
-            <p>Accepted by upstream maintainer into GitHub Security Advisory <code>draft</code> state (<a href="https://github.com/bacnet-stack/bacnet-stack/security/advisories/GHSA-cr23-59mg-h2rc">GHSA-cr23-59mg-h2rc</a>); upstream remediation PR <a href="https://github.com/bacnet-stack/bacnet-stack/pull/1595">#1595</a> opened.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/H1-4148578.html" style="color: inherit;">Streaming Tool-Call Alignment Check Bypass on Multi-Tool Turns &amp; Attachment-First User Message Extraction Failure in <code>OpenAIAdapter</code> (<code>brave/ai-gateway</code>)</a></h3>
+            <p>Confirmed by Brave Software security engineering (<code>@artem_chaikin</code>) via HackerOne Report <code>#4148578</code> on <code>2026-10-27</code> and awarded a <code>$50.00 USD</code> bug bounty.</p>
           </div>
           <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html"><span class="embargo-tag">Accepted by Vendor (draft GHSA) &bull; Upstream Fix PR #1595 &rarr;</span></a>
+            <a href="https://ccsimplyspolit.github.io/advisories/H1-4148578.html"><span class="embargo-tag">Confirmed by Vendor (HackerOne #4148578) &bull; Bounty Awarded ($50.00) &rarr;</span></a>
           </div>
         </article>
         <article class="card">
@@ -298,7 +303,7 @@
               <span class="cwe-tag">CWE-918 / CWE-184</span>
             </div>
             <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-qm7x-j9xp-x3gv.html" style="color: inherit;">Hostname checks in SSRF protection skipped trailing-dot and <code>*.localhost</code> names (<code>czlonkowski/n8n-mcp</code>)</a></h3>
-            <p>Confirmed and patched upstream in <code>n8n-mcp v2.99.2</code> (<a href="https://github.com/czlonkowski/n8n-mcp/commit/a49dfb4">commit <code>a49dfb4</code></a>) with official reporter credit.</p>
+            <p>Accepted into GitHub Security Advisory <code>draft</code> state (<a href="https://github.com/czlonkowski/n8n-mcp/security/advisories/GHSA-qm7x-j9xp-x3gv">GHSA-qm7x-j9xp-x3gv</a>) and patched upstream in <code>n8n-mcp v2.99.2</code> (<a href="https://github.com/czlonkowski/n8n-mcp/commit/a49dfb4">commit <code>a49dfb4</code></a>) with official reporter credit.</p>
           </div>
           <div class="card-footer">
             <a href="https://ccsimplyspolit.github.io/advisories/GHSA-qm7x-j9xp-x3gv.html"><span class="embargo-tag">Confirmed &amp; Patched in v2.99.2 (commit a49dfb4) &rarr;</span></a>
@@ -307,14 +312,27 @@
         <article class="card">
           <div>
             <div class="card-header">
-              <span class="id-tag">H1-4148578</span>
-              <span class="cwe-tag">CWE-20 / CWE-755</span>
+              <span class="id-tag">GHSA-cr23-59mg-h2rc</span>
+              <span class="cwe-tag">CWE-125 / CWE-787 / CWE-400 / CWE-835</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/H1-4148578.html" style="color: inherit;">Unhandled Exception &amp; Input Validation Flaw in Model Request Validation Pipeline (<code>brave/ai-gateway</code>)</a></h3>
-            <p>Confirmed by Brave Software security team via HackerOne (<code>#4148578</code>) and awarded a $50.00 bug bounty.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html" style="color: inherit;">Out-of-Bounds Read, Unbounded Allocation &amp; Infinite Loop in <code>src/bacnet/lighting.c</code> &amp; <code>bactext.c</code> (<code>bacnet-stack/bacnet-stack</code>)</a></h3>
+            <p>Accepted by lead maintainer Steve Karg (<code>@skarg</code>) into GitHub Security Advisory <code>draft</code> state (<a href="https://github.com/bacnet-stack/bacnet-stack/security/advisories/GHSA-cr23-59mg-h2rc">GHSA-cr23-59mg-h2rc</a>); upstream remediation PR <a href="https://github.com/bacnet-stack/bacnet-stack/pull/1595">#1595</a> opened.</p>
           </div>
           <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/H1-4148578.html"><span class="embargo-tag">Confirmed by Vendor (HackerOne #4148578) &bull; Bounty Awarded ($50.00) &rarr;</span></a>
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html"><span class="embargo-tag">Accepted by Vendor (draft GHSA) &bull; Upstream Fix PR #1595 &rarr;</span></a>
+          </div>
+        </article>
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-6hh9-gpj4-cr69</span>
+              <span class="cwe-tag">CWE-125 / CWE-787</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-6hh9-gpj4-cr69.html" style="color: inherit;">Missing <code>IDX_DS_ADAPTIVE_TRIGGERS</code> Sentinel in <code>packetTypesGen3..7</code> in <code>src/Input.c</code> (<code>moonlight-stream/moonlight-common-c</code>)</a></h3>
+            <p>Reported via <a href="https://github.com/moonlight-stream/moonlight-common-c/security/advisories/GHSA-6hh9-gpj4-cr69">GHSA-6hh9-gpj4-cr69</a>; upstream remediation Pull Request <a href="https://github.com/moonlight-stream/moonlight-common-c/pull/168">#168</a> reviewed and merged into <code>master</code> by lead maintainer Cameron Gutman (<code>@cgutman</code>).</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-6hh9-gpj4-cr69.html"><span class="embargo-tag">Patched Upstream &bull; Fix PR #168 Merged into master &rarr;</span></a>
           </div>
         </article>
       </div>
@@ -334,6 +352,20 @@
         </thead>
         <tbody>
           <tr>
+            <td><a href="/advisories/H1-4148578.html"><code>H1-4148578</code></a></td>
+            <td><code>brave/ai-gateway</code> (Brave Software)</td>
+            <td><code>CWE-20 / CWE-755</code></td>
+            <td>Streaming Tool-Call Alignment Check Bypass on Multi-Tool Turns &amp; Attachment-First User Message Extraction Failure in <code>OpenAIAdapter</code></td>
+            <td><a href="/advisories/H1-4148578.html"><span class="embargo-tag">Confirmed by Vendor (HackerOne #4148578) &bull; Bounty Awarded ($50.00)</span></a></td>
+          </tr>
+          <tr>
+            <td><a href="/advisories/GHSA-qm7x-j9xp-x3gv.html"><code>GHSA-qm7x-j9xp-x3gv</code></a></td>
+            <td><code>czlonkowski/n8n-mcp</code> (<a href="https://github.com/czlonkowski/n8n-mcp/security/advisories/GHSA-qm7x-j9xp-x3gv">GHSA</a>)</td>
+            <td><code>CWE-918 / CWE-184</code></td>
+            <td>Hostname checks in SSRF protection skipped trailing-dot and <code>*.localhost</code> names (<code>CVSS 3.1 Low</code>, Defense-in-Depth)</td>
+            <td><a href="https://github.com/czlonkowski/n8n-mcp/commit/a49dfb4"><span class="embargo-tag">Confirmed &amp; Patched in v2.99.2 (commit a49dfb4)</span></a></td>
+          </tr>
+          <tr>
             <td><a href="/advisories/GHSA-cr23-59mg-h2rc.html"><code>GHSA-cr23-59mg-h2rc</code></a></td>
             <td><code>bacnet-stack/bacnet-stack</code> (<a href="https://github.com/bacnet-stack/bacnet-stack/security/advisories/GHSA-cr23-59mg-h2rc">GHSA</a>)</td>
             <td><code>CWE-125 / CWE-787 / CWE-400 / CWE-835</code></td>
@@ -341,65 +373,58 @@
             <td><a href="https://github.com/bacnet-stack/bacnet-stack/pull/1595"><span class="embargo-tag">Accepted by Vendor (draft GHSA) &bull; Upstream Fix PR #1595</span></a></td>
           </tr>
           <tr>
-            <td><a href="/advisories/GHSA-qm7x-j9xp-x3gv.html"><code>GHSA-qm7x-j9xp-x3gv</code></a></td>
-            <td><code>czlonkowski/n8n-mcp</code></td>
-            <td><code>CWE-918 / CWE-184</code></td>
-            <td>Hostname checks in SSRF protection skipped trailing-dot and <code>*.localhost</code> names (<code>CVSS 3.1 Low</code>, Defense-in-Depth)</td>
-            <td><a href="https://github.com/czlonkowski/n8n-mcp/commit/a49dfb4"><span class="embargo-tag">Confirmed &amp; Patched in v2.99.2 (commit a49dfb4)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/H1-4148578.html"><code>H1-4148578</code></a></td>
-            <td><code>brave/ai-gateway</code> (Brave Software)</td>
-            <td><code>CWE-20 / CWE-755</code></td>
-            <td>Unhandled Exception &amp; Input Validation Flaw in Model Request Validation Pipeline</td>
-            <td><a href="/advisories/H1-4148578.html"><span class="embargo-tag">Confirmed by Vendor (HackerOne #4148578) &bull; Bounty Awarded ($50.00)</span></a></td>
+            <td><a href="/advisories/GHSA-6hh9-gpj4-cr69.html"><code>GHSA-6hh9-gpj4-cr69</code></a></td>
+            <td><code>moonlight-stream/moonlight-common-c</code> (<a href="https://github.com/moonlight-stream/moonlight-common-c/security/advisories/GHSA-6hh9-gpj4-cr69">GHSA</a>)</td>
+            <td><code>CWE-125 / CWE-787</code></td>
+            <td>Missing <code>IDX_DS_ADAPTIVE_TRIGGERS</code> Sentinel in <code>packetTypesGen3..7</code> (<code>src/Input.c</code>)</td>
+            <td><a href="https://github.com/moonlight-stream/moonlight-common-c/pull/168"><span class="embargo-tag">Patched Upstream &bull; Fix PR #168 Merged into master</span></a></td>
           </tr>
         </tbody>
       </table>
     </section>
 
     <section id="binary-research">
-      <h2>0x02 // Open-Source Security Tooling &amp; Research Repositories</h2>
+      <h2>0x02 // Open-Source Security Tooling &amp; Published Zenodo DOIs</h2>
       <div class="grid">
         <article class="card">
           <div>
             <div class="card-header">
-              <span class="id-tag">TOOL // STATIC ANALYSIS</span>
+              <span class="id-tag">DOI: 10.5281/zenodo.23641037</span>
               <span class="tool-tag">Python / SARIF v2.1.0 (5/5 PASS)</span>
             </div>
             <h3><a href="https://github.com/ccsimplyspolit/protobuf-bounds-auditor">protobuf-bounds-auditor</a></h3>
             <p>Static security analyzer for Protocol Buffers (<code>.proto</code>) schemas detecting unbounded <code>repeated</code> sub-messages (<code>CWE-1284</code>), unvalidated IEEE-754 <code>float</code>/<code>double</code> wire fields (<code>CWE-20</code>), and untrusted allocation lengths (<code>CWE-400</code>), with <code>DEFINE_PROTO_FUZZER</code> harness emission.</p>
           </div>
           <div class="card-footer">
-            <a href="https://github.com/ccsimplyspolit/protobuf-bounds-auditor">View GitHub Repository &rarr;</a>
+            <a href="https://doi.org/10.5281/zenodo.23641037">Zenodo DOI: 10.5281/zenodo.23641037 &rarr;</a>
           </div>
         </article>
 
         <article class="card">
           <div>
             <div class="card-header">
-              <span class="id-tag">TOOL &amp; WHITEPAPERS // TELEMETRY</span>
-              <span class="tool-tag">Windows x64 / IDAPython (3/3 PASS)</span>
+              <span class="id-tag">DOI: 10.5281/zenodo.23640494</span>
+              <span class="tool-tag">Protobuf / PE32+ (3/3 PASS)</span>
             </div>
             <h3><a href="https://github.com/ccsimplyspolit/cs-telemetry-internals">cs-telemetry-internals</a></h3>
-            <p>Six technical whitepapers and dual-mode IDAPython/CLI analyzer (<code>tools/vac_module_analyzer.py</code>) examining virtual address space traversal (<code>NtQueryVirtualMemory</code>), relocation-masked <code>.text</code> section hashing, and subtick protobuf telemetry.</p>
+            <p>Six technical whitepapers and static analyzer covering server-side Protocol Buffers wire input validation disclosures (<code>CVD-2026-CS2-001..003</code>), IEEE-754 <code>NaN</code>/<code>Inf</code> sanitization, and relocation-masked PE32+ <code>.text</code> section integrity verification.</p>
           </div>
           <div class="card-footer">
-            <a href="https://github.com/ccsimplyspolit/cs-telemetry-internals">View GitHub Repository &rarr;</a>
+            <a href="https://doi.org/10.5281/zenodo.23640494">Zenodo DOI: 10.5281/zenodo.23640494 &rarr;</a>
           </div>
         </article>
 
         <article class="card">
           <div>
             <div class="card-header">
-              <span class="id-tag">TOOL &amp; WHITEPAPERS // PE64 AUDIT</span>
+              <span class="id-tag">DOI: 10.5281/zenodo.23640496</span>
               <span class="tool-tag">PE32+ / Lockstep (3/3 PASS)</span>
             </div>
             <h3><a href="https://github.com/ccsimplyspolit/cardinal-engine-integrity">cardinal-engine-integrity</a></h3>
-            <p>Four architectural whitepapers and zero-dependency PE32+ auditor (<code>tools/cardinal_iat_audit.py</code>) covering relocation-normalized section hashing, IAT boundary validation, and classification of 4,423 deterministic simulation functions.</p>
+            <p>Four architectural whitepapers and zero-dependency PE32+ static auditor covering relocation-normalized section hashing, Import Address Table (IAT) boundary validation, and classification of 4,423 deterministic simulation functions.</p>
           </div>
           <div class="card-footer">
-            <a href="https://github.com/ccsimplyspolit/cardinal-engine-integrity">View GitHub Repository &rarr;</a>
+            <a href="https://doi.org/10.5281/zenodo.23640496">Zenodo DOI: 10.5281/zenodo.23640496 &rarr;</a>
           </div>
         </article>
       </div>

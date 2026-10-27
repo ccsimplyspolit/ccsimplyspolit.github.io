@@ -30,7 +30,7 @@ BT
 (GitHub Profile:       https://github.com/ccsimplyspolit) Tj T*
 (HackerOne Profile:    https://hackerone.com/sshunko) Tj T*
 (ORCID iD:             https://orcid.org/0009-0002-4183-0361) Tj T*
-(CERN / Zenodo DOIs:   https://doi.org/10.5281/zenodo.19661913 | 19664345 | 19664415) Tj T*
+(CERN / Zenodo DOIs:   https://doi.org/10.5281/zenodo.23641037 | 23640494 | 23640496) Tj T*
 () Tj T*
 (1. QUALIFICATION UNDER BOTH 'BOUNTY' AND 'ADVISORY' CVP TRACKS \(UPDATED OCT 27, 2026\)) Tj T*
 (----------------------------------------------------------------------------) Tj T*
@@ -56,25 +56,25 @@ BT
 () Tj T*
 (B. TRACK: ADVISORY \(Upstream-Accepted & Patched GitHub Security Advisories\)) Tj T*
 (----------------------------------------------------------------------------) Tj T*
-(1\) GHSA-qm7x-j9xp-x3gv ? czlonkowski/n8n-mcp \(23,100+ GitHub Stars\)) Tj T*
+(1\) GHSA-qm7x-j9xp-x3gv - czlonkowski/n8n-mcp \(23,100+ GitHub Stars\)) Tj T*
 (   * Status:   ACCEPTED INTO DRAFT & PATCHED IN RELEASE v2.99.2 \(2026-10-27T10:19:43Z\)) Tj T*
 (   * Credit:   Official Reporter Credit Granted & Accepted \(@ccsimplyspolit\)) Tj T*
 (   * Fix:      Patched by maintainer Romuald Czlonkowski in commit a49dfb4 \(v2.99.2\)) Tj T*
 (   * URL:      https://github.com/czlonkowski/n8n-mcp/security/advisories/GHSA-qm7x-j9xp-x3gv) Tj T*
 () Tj T*
-(2\) GHSA-cr23-59mg-h2rc ? bacnet-stack/bacnet-stack \(High Severity, CVSS 8.2\)) Tj T*
+(2\) GHSA-cr23-59mg-h2rc - bacnet-stack/bacnet-stack \(High Severity, CVSS 8.2\)) Tj T*
 (   * Status:   ACCEPTED INTO DRAFT BY LEAD MAINTAINER STEVE KARG \(@skarg, 2026-10-26\)) Tj T*
 (   * Credit:   Official Reporter Credit Granted & Accepted \(@ccsimplyspolit\)) Tj T*
 (   * Fix PR:   https://github.com/bacnet-stack/bacnet-stack/pull/1595 \(commit 76091b35a8\)) Tj T*
 (   * URL:      https://github.com/bacnet-stack/bacnet-stack/security/advisories/GHSA-cr23-59mg-h2rc) Tj T*
 () Tj T*
-(3\) GHSA-6hh9-gpj4-cr69 ? moonlight-stream/moonlight-common-c \(Merged Fix PR #168\)) Tj T*
+(3\) GHSA-6hh9-gpj4-cr69 - moonlight-stream/moonlight-common-c \(Merged Fix PR #168\)) Tj T*
 (   * Status:   PATCH MERGED INTO MASTER BY LEAD MAINTAINER CAMERON GUTMAN \(@cgutman\)) Tj T*
 (   * Credit:   Official Reporter Credit Granted & Accepted \(@ccsimplyspolit\)) Tj T*
 (   * Fix PR:   https://github.com/moonlight-stream/moonlight-common-c/pull/168 \(2026-10-27\)) Tj T*
 (   * URL:      https://github.com/moonlight-stream/moonlight-common-c/security/advisories/GHSA-6hh9-gpj4-cr69) Tj T*
 () Tj T*
-(4\) Evil0ctal/Douyin_TikTok_Download_API ? Merged Upstream PR #800 \(commit 59aadd6\)) Tj T*
+(4\) Evil0ctal/Douyin_TikTok_Download_API - Merged Upstream PR #800 \(commit 59aadd6\)) Tj T*
 (   * URL:      https://github.com/Evil0ctal/Douyin_TikTok_Download_API/pull/800) Tj T*
 () Tj T*
 (5\) Active Threat Intelligence & Malware Takedown Confirmed by Netlify \(Case #1155047\)) Tj T*
@@ -86,7 +86,7 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 7 0 R >>
 endobj
 7 0 obj
-<< /Length 4808 >>
+<< /Length 4980 >>
 stream
 BT
 /F1 8.4 Tf
@@ -138,12 +138,12 @@ BT
 (39. GHSA-fc5w-j5vw-fvvg | pipeshub-ai/pipeshub-ai             | Triage \(credit=accepted\)) Tj T*
 (40. GHSA-qxvg-wc96-c9hg | apify/apify-mcp-server              | Closed \(credit=accepted\)) Tj T*
 () Tj T*
-(PUBLICATIONS & IDENTITY VERIFICATION LINKS:) Tj T*
-(* Zenodo DOI 1: https://doi.org/10.5281/zenodo.19661913) Tj T*
-(* Zenodo DOI 2: https://doi.org/10.5281/zenodo.19664345) Tj T*
-(* Zenodo DOI 3: https://doi.org/10.5281/zenodo.19664415) Tj T*
-(* ORCID Record: https://orcid.org/0009-0002-4183-0361) Tj T*
-(* CVD Registry: https://ccsimplyspolit.github.io/) Tj T*
+(VERIFIED PUBLICATIONS & IDENTITY LINKS \(ORCID 0009-0002-4183-0361\):) Tj T*
+(* Zenodo DOI 1 \(protobuf-bounds-auditor\):   https://doi.org/10.5281/zenodo.23641037) Tj T*
+(* Zenodo DOI 2 \(cs-telemetry-internals\):    https://doi.org/10.5281/zenodo.23640494) Tj T*
+(* Zenodo DOI 3 \(cardinal-engine-integrity\): https://doi.org/10.5281/zenodo.23640496) Tj T*
+(* ORCID Record:                             https://orcid.org/0009-0002-4183-0361) Tj T*
+(* Public CVD Verification Registry:         https://ccsimplyspolit.github.io/) Tj T*
 ET
 endstream
 endobj
@@ -160,5 +160,5 @@ xref
 trailer
 << /Size 8 /Root 1 0 R >>
 startxref
-10265
+10437
 %%EOF
