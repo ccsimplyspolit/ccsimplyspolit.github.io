@@ -46,7 +46,7 @@
 
     <h2>0x01 // Pattern 1: Unsigned Remainder Wraparound (<code>uint8_t rem = len - i</code>, <code>CWE-191</code>)</h2>
     <p>
-      In embedded packet routers (see embargoed disclosure <code>GHSA-4xx2-wr42-gjg3</code>), outer frame parsers verify that the variable-length routing path fits inside the received radio frame:
+      In embedded packet routers, outer frame parsers verify that the variable-length routing path fits inside the received radio frame:
     </p>
     <pre><code>// Pass 1 (Frame Demux): Accepts any packet where i + path_byte_len &lt;= len
 // Consequently, pkt-&gt;payload_len = len - i can legitimately be 0..8 bytes.
@@ -70,7 +70,7 @@ pkt-&gt;payload_len = len - i;</code></pre>
 
     <h2>0x02 // Pattern 2: Cross-Record Sticky State Desynchronization (<code>CWE-121</code>)</h2>
     <p>
-      In stream-oriented KLV telemetry parsers (see embargoed disclosure <code>GHSA-j47j-8qq9-628m</code>), calibration metadata records persist in the parser context across subsequent data records. Even if each KLV record is 32-bit aligned and fits within the file buffer, a state-dependent transformation in Pass 2 that computes a Cartesian product <code>strlen(orin) * strlen(orio)</code> into a fixed 64-element stack matrix <code>double mtrx_buffer[64]</code> must enforce:
+      In stream-oriented KLV telemetry parsers, calibration metadata records persist in the parser context across subsequent data records. Even if each KLV record is 32-bit aligned and fits within the file buffer, a state-dependent transformation in Pass 2 that computes a Cartesian product <code>strlen(orin) * strlen(orio)</code> into a fixed 64-element stack matrix <code>double mtrx_buffer[64]</code> must enforce:
     </p>
     <pre><code>if (in_len != out_len || in_len == 0 || in_len &gt; 8 || in_len * out_len &gt; 64) {
     return GPMF_ERROR_BAD_STRUCTURE;

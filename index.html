@@ -6,7 +6,7 @@
   <title>Serhii Shunko (@sshunko / @ccsimplyspolit) — Application &amp; Binary Security Research</title>
   <meta name="description" content="Independent security research portal of Serhii Shunko (@sshunko / @ccsimplyspolit). Coordinated vulnerability disclosures (CVD), Protocol Buffers input validation audits, static x86_64 binary analysis, and defensive security tooling.">
   <meta name="author" content="Serhii Shunko">
-  <meta name="keywords" content="Serhii Shunko, sshunko, ccsimplyspolit, Binary Security, Reverse Engineering, Vulnerability Research, Protocol Buffers, CWE-20, CWE-1284, CWE-918, Source 2, Static Analysis, ORCID 0009-0002-4183-0361">
+  <meta name="keywords" content="Serhii Shunko, sshunko, ccsimplyspolit, Binary Security, Reverse Engineering, Vulnerability Research, Protocol Buffers, CWE-20, CWE-1284, CWE-125, CWE-787, Static Analysis, ORCID 0009-0002-4183-0361">
   <link rel="canonical" href="https://ccsimplyspolit.github.io/">
   <script type="application/ld+json">
   {
@@ -252,7 +252,7 @@
       <div class="prompt">sshunko@research:~$ whoami --verbose</div>
       <h1>Serhii Shunko (@sshunko / @ccsimplyspolit)</h1>
       <p class="subtitle">
-        Independent Application &amp; Binary Security Researcher. Focusing on server-side protocol input validation (Protocol Buffers / RPC / VDF), static <code>x86_64</code> binary auditing, memory-safety vulnerability discovery, and deterministic simulation state verification. B.Sc. in Applied Mathematics &amp; Software Engineering (Oles Honchar Dnipro National University).
+        Independent Application &amp; Binary Security Researcher. Focusing on server-side protocol input validation (Protocol Buffers / RPC / Embedded Telemetry), static <code>x86_64</code> binary auditing, memory-safety vulnerability discovery, and deterministic simulation state verification. B.Sc. in Applied Mathematics &amp; Software Engineering (Oles Honchar Dnipro National University).
       </p>
       <div class="badges">
         <a class="badge" href="https://github.com/ccsimplyspolit" rel="me">GitHub: @ccsimplyspolit</a>
@@ -268,32 +268,27 @@
         <a class="badge" href="https://ctftime.org/user/277345" rel="me">CTFtime: @sshunko (#277345)</a>
         <a class="badge" href="https://huntr.com/users/ccsimplyspolit" rel="me">Huntr: @ccsimplyspolit</a>
         <a class="badge" href="https://www.linkedin.com/in/sshunko" rel="me">LinkedIn: @sshunko</a>
-        <a class="badge" href="https://doi.org/10.5281/zenodo.23640494">DOI: 10.5281/zenodo.23640494</a>
-        <a class="badge" href="https://doi.org/10.5281/zenodo.23640496">DOI: 10.5281/zenodo.23640496</a>
-        <a class="badge" href="https://doi.org/10.5281/zenodo.23640498">DOI: 10.5281/zenodo.23640498</a>
         <a class="badge" href="mailto:cc.simply.spolit@gmail.com">Contact: cc.simply.spolit@gmail.com</a>
       </div>
     </header>
 
-
     <section id="disclosures">
       <h2>0x00 // Confirmed Coordinated Vulnerability Disclosures</h2>
       <div class="embargo-banner">
-        <strong>[CVD POLICY]</strong> Only vendor-accepted advisories, bounty-awarded disclosures, and published specifications are listed in this public registry. Active reports still undergoing initial maintainer triage remain strictly private until upstream confirmation.
+        <strong>[CVD POLICY]</strong> Only vendor-accepted advisories and bounty-awarded disclosures are listed in this public registry. Active reports still undergoing initial maintainer triage remain strictly private until upstream confirmation.
       </div>
       <div class="grid">
         <article class="card">
           <div>
             <div class="card-header">
               <span class="id-tag">GHSA-cr23-59mg-h2rc</span>
-              <span class="cwe-tag">CWE-125 / CWE-400 / CWE-787 / CWE-835</span>
+              <span class="cwe-tag">CWE-125 / CWE-787 / CWE-400 / CWE-835</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html" style="color: inherit;">Pre-Auth Infinite Loop, Heap Exhaustion &amp; Out-of-Bounds Read in Calendar_Write_Property() (<code>bacnet-stack/bacnet-stack</code>)</a></h3>
-            <p>Accepted by upstream maintainer into GitHub Security Advisory Draft state; upstream remediation PR #1595 opened with regression unit tests.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html" style="color: inherit;">Out-of-Bounds Read, Unbounded Allocation &amp; Infinite Loop in <code>src/bacnet/lighting.c</code> &amp; <code>bactext.c</code> (<code>bacnet-stack/bacnet-stack</code>)</a></h3>
+            <p>Accepted by upstream maintainer into GitHub Security Advisory <code>draft</code> state; upstream remediation PR <a href="https://github.com/bacnet-stack/bacnet-stack/pull/1595">#1595</a> opened.</p>
           </div>
           <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html"><span class="embargo-tag">Accepted (GHSA Draft — Fix PR #1595) &rarr;</span></a>
-            <span class="target-tag">bacnet-stack/bacnet-stack</span>
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html"><span class="embargo-tag">Accepted by Vendor (draft GHSA) &bull; Upstream Fix PR #1595 &rarr;</span></a>
           </div>
         </article>
         <article class="card">
@@ -302,19 +297,18 @@
               <span class="id-tag">H1-4148578</span>
               <span class="cwe-tag">CWE-20 / CWE-755</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/H1-4148578.html" style="color: inherit;">Multi-Tool Call Buffer State Desynchronization &amp; Validation Exception Handling (<code>brave/ai-gateway</code>)</a></h3>
-            <p>Confirmed by Brave Software security team via HackerOne (#4148578) and awarded a bug bounty; upstream fix scheduled by maintainers.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/H1-4148578.html" style="color: inherit;">Unhandled Exception &amp; Input Validation Flaw in Model Request Validation Pipeline (<code>brave/ai-gateway</code>)</a></h3>
+            <p>Confirmed by Brave Software security team via HackerOne (<code>#4148578</code>) and awarded a $50.00 bug bounty.</p>
           </div>
           <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/H1-4148578.html"><span class="embargo-tag">Confirmed &amp; Bounty Awarded (H1 #4148578) &rarr;</span></a>
-            <span class="target-tag">brave/ai-gateway</span>
+            <a href="https://ccsimplyspolit.github.io/advisories/H1-4148578.html"><span class="embargo-tag">Confirmed by Vendor (HackerOne #4148578) &bull; Bounty Awarded ($50.00) &rarr;</span></a>
           </div>
         </article>
       </div>
     </section>
 
     <section id="api-audits">
-      <h2>0x01 // Confirmed Advisories &amp; Published Security Specifications</h2>
+      <h2>0x01 // Confirmed Vulnerability Disclosures (CVD)</h2>
       <table>
         <thead>
           <tr>
@@ -329,90 +323,69 @@
           <tr>
             <td><a href="/advisories/GHSA-cr23-59mg-h2rc.html"><code>GHSA-cr23-59mg-h2rc</code></a></td>
             <td><code>bacnet-stack/bacnet-stack</code></td>
-            <td><code>CWE-125 / CWE-400 / CWE-787</code></td>
-            <td>Pre-Auth Infinite Loop / Heap Exhaustion and Out-of-Bounds Read/Write via Unchecked Negative Decode Lengths in Calendar_Write_Property() and Notification_Class_Write_Property()</td>
-            <td><a href="/advisories/GHSA-cr23-59mg-h2rc.html"><span class="embargo-tag">Accepted (GHSA Draft — Fix PR #1595)</span></a></td>
+            <td><code>CWE-125 / CWE-787 / CWE-400 / CWE-835</code></td>
+            <td>Out-of-Bounds Read, Unbounded Allocation &amp; Infinite Loop in <code>src/bacnet/lighting.c</code> &amp; <code>bactext.c</code></td>
+            <td><a href="https://github.com/bacnet-stack/bacnet-stack/pull/1595"><span class="embargo-tag">Accepted by Vendor (draft GHSA) &bull; Upstream Fix PR #1595</span></a></td>
           </tr>
           <tr>
             <td><a href="/advisories/H1-4148578.html"><code>H1-4148578</code></a></td>
-            <td><code>brave/ai-gateway</code></td>
+            <td><code>brave/ai-gateway</code> (Brave Software)</td>
             <td><code>CWE-20 / CWE-755</code></td>
-            <td>Multi-Tool Call Buffer State Desynchronization and Unhandled Validation Exceptions in OpenAIAdapter Streaming Tool Parser</td>
-            <td><a href="/advisories/H1-4148578.html"><span class="embargo-tag">Confirmed &amp; Bounty Awarded (H1 #4148578)</span></a></td>
-          </tr>
-          <tr>
-            <td><code>ADV-2026-003</code></td>
-            <td><code>Replay Ingestion Workers</code></td>
-            <td><code>CWE-918</code></td>
-            <td>Post-resolution IP allowlisting and DNS-rebinding defenses for asynchronous replay-ingestion pipelines.</td>
-            <td><a href="https://github.com/ccsimplyspolit/cs-telemetry-internals/blob/main/advisories/api_security_audits/ADV-2026-003_ssrf_case_url_audit.md">Published Specification</a></td>
-          </tr>
-          <tr>
-            <td><code>ADV-2026-004</code></td>
-            <td><code>VDF / KeyValues Parsers</code></td>
-            <td><code>CWE-943 / CWE-674</code></td>
-            <td>Delimiter breakout, stack exhaustion, and Unicode digit normalization in VDF/KeyValues deserializers.</td>
-            <td><a href="https://github.com/ccsimplyspolit/cs-telemetry-internals/blob/main/advisories/api_security_audits/ADV-2026-004_key_value_injection_audit.md">Published Specification</a></td>
-          </tr>
-          <tr>
-            <td><code>ADV-2026-005</code></td>
-            <td><code>OpenID 2.0 Relying Parties</code></td>
-            <td><code>CWE-290 / CWE-294</code></td>
-            <td>Strict <code>openid.op_endpoint</code> pinning and cryptographic nonce consumption in stateless Relying Parties.</td>
-            <td><a href="https://github.com/ccsimplyspolit/cs-telemetry-internals/blob/main/advisories/api_security_audits/ADV-2026-005_openid_replay_mitigation.md">Published Specification</a></td>
+            <td>Unhandled Exception &amp; Input Validation Flaw in Model Request Validation Pipeline</td>
+            <td><a href="/advisories/H1-4148578.html"><span class="embargo-tag">Confirmed by Vendor (HackerOne #4148578) &bull; Bounty Awarded ($50.00)</span></a></td>
           </tr>
         </tbody>
       </table>
     </section>
 
     <section id="binary-research">
-      <h2>0x02 // Binary Integrity, Reverse Engineering &amp; Defensive Tooling</h2>
+      <h2>0x02 // Open-Source Security Tooling &amp; Research Repositories</h2>
       <div class="grid">
         <article class="card">
           <div>
             <div class="card-header">
               <span class="id-tag">TOOL // STATIC ANALYSIS</span>
-              <span class="tool-tag">Python / SARIF v2.1.0</span>
+              <span class="tool-tag">Python / SARIF v2.1.0 (5/5 PASS)</span>
             </div>
             <h3><a href="https://github.com/ccsimplyspolit/protobuf-bounds-auditor">protobuf-bounds-auditor</a></h3>
-            <p>Static security analyzer for Protocol Buffers (<code>.proto</code>) schemas detecting unbounded <code>repeated</code> sub-messages (<code>CWE-1284</code>), unvalidated IEEE-754 <code>float</code>/<code>double</code> wire fields (<code>CWE-20</code>), and untrusted allocation lengths (<code>CWE-400</code>).</p>
+            <p>Static security analyzer for Protocol Buffers (<code>.proto</code>) schemas detecting unbounded <code>repeated</code> sub-messages (<code>CWE-1284</code>), unvalidated IEEE-754 <code>float</code>/<code>double</code> wire fields (<code>CWE-20</code>), and untrusted allocation lengths (<code>CWE-400</code>), with <code>DEFINE_PROTO_FUZZER</code> harness emission.</p>
           </div>
           <div class="card-footer">
-            <a href="https://github.com/ccsimplyspolit/protobuf-bounds-auditor">View Repository &rarr;</a>
+            <a href="https://github.com/ccsimplyspolit/protobuf-bounds-auditor">View GitHub Repository &rarr;</a>
           </div>
         </article>
 
         <article class="card">
           <div>
             <div class="card-header">
-              <span class="id-tag">ADV-2026-001</span>
-              <span class="tool-tag">Windows x64 / IDAPython</span>
+              <span class="id-tag">TOOL &amp; WHITEPAPERS // TELEMETRY</span>
+              <span class="tool-tag">Windows x64 / IDAPython (3/3 PASS)</span>
             </div>
-            <h3><a href="https://github.com/ccsimplyspolit/cs-telemetry-internals/blob/main/advisories/ADV-2026-001_memory_scanning_telemetry.md">Client-Side Memory Page Validation &amp; Heuristic Telemetry</a></h3>
-            <p>Architectural specification of virtual address space traversal (<code>NtQueryVirtualMemory</code>), relocation-masked <code>.text</code> section hashing, and unbacked executable page detection.</p>
+            <h3><a href="https://github.com/ccsimplyspolit/cs-telemetry-internals">cs-telemetry-internals</a></h3>
+            <p>Six technical whitepapers and dual-mode IDAPython/CLI analyzer (<code>tools/vac_module_analyzer.py</code>) examining virtual address space traversal (<code>NtQueryVirtualMemory</code>), relocation-masked <code>.text</code> section hashing, and subtick protobuf telemetry.</p>
           </div>
           <div class="card-footer">
-            <a href="https://github.com/ccsimplyspolit/cs-telemetry-internals">View Repository &rarr;</a>
+            <a href="https://github.com/ccsimplyspolit/cs-telemetry-internals">View GitHub Repository &rarr;</a>
           </div>
         </article>
 
         <article class="card">
           <div>
             <div class="card-header">
-              <span class="id-tag">ADV-2026-002</span>
-              <span class="tool-tag">PE64 / Deterministic Lockstep</span>
+              <span class="id-tag">TOOL &amp; WHITEPAPERS // PE64 AUDIT</span>
+              <span class="tool-tag">PE32+ / Lockstep (3/3 PASS)</span>
             </div>
-            <h3><a href="https://github.com/ccsimplyspolit/cardinal-engine-integrity/blob/main/advisories/ADV-2026-002_anti_tamper_mechanics.md">Cardinal Engine Integrity &amp; 4,423-Function Simulation Audit</a></h3>
-            <p>Relocation-normalized section integrity verification, IAT boundary auditing, and static classification of 4,423 simulation functions in 64-bit deterministic RTS engines.</p>
+            <h3><a href="https://github.com/ccsimplyspolit/cardinal-engine-integrity">cardinal-engine-integrity</a></h3>
+            <p>Four architectural whitepapers and zero-dependency PE32+ auditor (<code>tools/cardinal_iat_audit.py</code>) covering relocation-normalized section hashing, IAT boundary validation, and classification of 4,423 deterministic simulation functions.</p>
           </div>
           <div class="card-footer">
-            <a href="https://github.com/ccsimplyspolit/cardinal-engine-integrity">View Repository &rarr;</a>
+            <a href="https://github.com/ccsimplyspolit/cardinal-engine-integrity">View GitHub Repository &rarr;</a>
           </div>
         </article>
       </div>
     </section>
 
-        <section id="writeups">
+    <section id="writeups">
       <h2>0x03 // Methodology Write-ups (Fuzzing &amp; Memory Safety)</h2>
       <div class="grid">
         <article class="card">
