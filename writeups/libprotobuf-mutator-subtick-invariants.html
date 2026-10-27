@@ -50,7 +50,7 @@
 
     <h2>0x01 // Automating Invariant Harness Generation (<code>--emit-lpm-harness</code>)</h2>
     <p>
-      In <a href="https://github.com/ccsimplyspolit/protobuf-bounds-auditor/releases/tag/v1.1.0"><code>protobuf-bounds-auditor v1.1.0</code></a>, I added structure-aware C++ harness generation for Google's <code>libprotobuf-mutator</code> (<code>DEFINE_PROTO_FUZZER</code>). Running:
+      In <a href="https://github.com/ccsimplyspolit/protobuf-bounds-auditor"><code>protobuf-bounds-auditor v1.1.0</code></a>, I added structure-aware C++ harness generation for Google's <code>libprotobuf-mutator</code> (<code>DEFINE_PROTO_FUZZER</code>). Running:
     </p>
     <pre><code>$ python proto_audit.py usercmd.proto --root-message CBaseUserCmdPB --emit-lpm-harness fuzz_usercmd.cc</code></pre>
     <p>
