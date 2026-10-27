@@ -12,7 +12,7 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Courier >>
 endobj
 5 0 obj
-<< /Length 5214 >>
+<< /Length 5243 >>
 stream
 BT
 /F1 9.0 Tf
@@ -36,15 +36,16 @@ BT
 (C/C++ network/media parsers, embeddable bytecode VMs, and AI/MCP server) Tj T*
 (infrastructure under Coordinated Vulnerability Disclosure \(CVD\). My identity) Tj T*
 (is verified via Persona \(VERIFICATION_TYPE_TAF_CYBER_IDV\). This dossier) Tj T*
-(documents 4 vendor-confirmed/patched vulnerability disclosures, 36 active) Tj T*
-(private GHSA reports in maintainer triage, 4 active HackerOne disclosures,) Tj T*
+(documents 4 maintainer-acknowledged vulnerability disclosures, 45 private) Tj T*
+(GHSA reports in maintainer triage, 4 active HackerOne disclosures,) Tj T*
 (and 3 CERN/Zenodo DOIs to satisfy CVP Defense Access eligibility.) Tj T*
 () Tj T*
-(2. CONFIRMED & UPSTREAM-REMEDIATED VULNERABILITY DISCLOSURES \(4 TOTAL\)) Tj T*
+(2. MAINTAINER-ACKNOWLEDGED VULNERABILITY DISCLOSURES \(4 TOTAL\)) Tj T*
 (----------------------------------------------------------------------------) Tj T*
 (1\) HackerOne #4148578 | brave/ai-gateway \(Brave Software Bug Bounty Program\)) Tj T*
 (   * Scope:  Streaming Tool-Call Alignment Bypass & Attachment Extraction Bug) Tj T*
-(   * Status: Confirmed by Brave \(@artem_chaikin\) on 2026-10-27; $50.00 Bounty.) Tj T*
+(   * Status: Closed as Informative 2026-10-27; $50.00 bounty awarded \(issue) Tj T*
+(             already known internally to Brave\).) Tj T*
 (   * Record: https://ccsimplyspolit.github.io/advisories/H1-4148578.html) Tj T*
 (2\) GHSA-qm7x-j9xp-x3gv | czlonkowski/n8n-mcp \(CWE-918 / CWE-184\)) Tj T*
 (   * Scope:  SSRF Protection Bypass in validateUrlSync & validateWebhookUrl) Tj T*
@@ -61,8 +62,8 @@ BT
 () Tj T*
 (3. ACTIVE PRIVATE DISCLOSURES IN UPSTREAM MAINTAINER TRIAGE) Tj T*
 (----------------------------------------------------------------------------) Tj T*
-(* GitHub Private Vulnerability Reporting \(36 Active Advisories in Triage\):) Tj T*
-(  36 additional private GHSAs \(state: triage\) across C/C++ protocol/media) Tj T*
+(* GitHub Private Vulnerability Reporting \(45 Advisories in Triage, 27 Oct\):) Tj T*
+(  45 private GHSAs \(state: triage\) across C/C++ protocol/media) Tj T*
 (  parsers \(LIEF, gpmf-parser, pocketpy, GameNetworkingSockets, onnx, MeshCore,) Tj T*
 (  gravity\) and AI/MCP servers \(graphify, nanobot, codebase-memory-mcp,) Tj T*
 (  codegraph, rtk, openhuman, samlshield, agent-toolkit, mcp-server-cloudflare,) Tj T*
@@ -97,5 +98,5 @@ xref
 trailer
 << /Size 6 /Root 1 0 R >>
 startxref
-5575
+5604
 %%EOF
