@@ -275,10 +275,11 @@
       </div>
     </header>
 
-                    <section id="disclosures">
-      <h2>0x00 // Coordinated Vulnerability Disclosures &amp; Server Input Audits</h2>
+
+    <section id="disclosures">
+      <h2>0x00 // Confirmed Coordinated Vulnerability Disclosures</h2>
       <div class="embargo-banner">
-        <strong>[CVD EMBARGO POLICY]</strong> Active vulnerability reports currently in vendor triage (<code>GHSA-*</code> and <code>CVD-2026-*</code>) are listed in this public registry by identifier, CWE classification, cryptographic SHA-256 specification commitment, and affected component scope only. Full technical advisories, reproduction harnesses, and remediation diffs are strictly withheld from public access until upstream patches are released and coordinated embargoes are lifted.
+        <strong>[CVD POLICY]</strong> Only vendor-accepted advisories, bounty-awarded disclosures, and published specifications are listed in this public registry. Active reports still undergoing initial maintainer triage remain strictly private until upstream confirmation.
       </div>
       <div class="grid">
         <article class="card">
@@ -298,466 +299,46 @@
         <article class="card">
           <div>
             <div class="card-header">
-              <span class="id-tag">GHSA-h3mc-v47q-wj82</span>
-              <span class="cwe-tag">CWE-125 / CWE-190 / CWE-191</span>
+              <span class="id-tag">H1-4148578</span>
+              <span class="cwe-tag">CWE-20 / CWE-755</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-h3mc-v47q-wj82.html" style="color: inherit;">SNP Unreliable Framing 64-Bit Offset Bounds &amp; Encoder Length Invariants (<code>ValveSoftware/GameNetworkingSockets</code>)</a></h3>
-            <p>Coordinated vulnerability disclosure covering 64-bit unreliable message offset bounds, zero-length segment logging guards, and buffer string truncation seek offsets (GitHub CNA).</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/H1-4148578.html" style="color: inherit;">Multi-Tool Call Buffer State Desynchronization &amp; Validation Exception Handling (<code>brave/ai-gateway</code>)</a></h3>
+            <p>Confirmed by Brave Software security team via HackerOne (#4148578) and awarded a bug bounty; upstream fix scheduled by maintainers.</p>
           </div>
           <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-h3mc-v47q-wj82.html"><span class="embargo-tag">In Triage (GHSA-h3mc-v47q-wj82) &rarr;</span></a>
-            <span class="target-tag">ValveSoftware/GameNetworkingSockets</span>
-          </div>
-        </article>
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-2qf6-94w7-mjcq</span>
-              <span class="cwe-tag">CWE-22 / CWE-61 / CWE-73</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-2qf6-94w7-mjcq.html" style="color: inherit;">External Tensor Symlink Containment &amp; Archive Extraction Path Validation (<code>onnx/onnx</code>)</a></h3>
-            <p>Coordinated vulnerability disclosure covering symlink containment and archive extraction boundary validation in model loaders.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-2qf6-94w7-mjcq.html"><span class="embargo-tag">In Triage (GHSA-2qf6-94w7-mjcq) &rarr;</span></a>
-            <span class="target-tag">onnx/onnx</span>
-          </div>
-        </article>
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-29j7-mxxj-g9hg</span>
-              <span class="cwe-tag">CWE-79 / CWE-20 / CWE-863</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-29j7-mxxj-g9hg.html" style="color: inherit;">OAuth Redirect URI Scheme Allowlisting &amp; Signed Consent State Binding (<code>cloudflare/mcp-server-cloudflare</code>)</a></h3>
-            <p>Coordinated vulnerability disclosure covering URI scheme validation and server-verified consent parameter binding in MCP OAuth workers.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-29j7-mxxj-g9hg.html"><span class="embargo-tag">In Triage (GHSA-29j7-mxxj-g9hg) &rarr;</span></a>
-            <span class="target-tag">cloudflare/mcp-server-cloudflare</span>
-          </div>
-        </article>
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-rg4w-8g8x-2vhf</span>
-              <span class="cwe-tag">CWE-352 / CWE-400</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-rg4w-8g8x-2vhf.html" style="color: inherit;">Loopback OAuth Callback State Verification Ordering &amp; Single-Use Channel Handling (<code>github/github-mcp-server</code>)</a></h3>
-            <p>Coordinated vulnerability disclosure covering cryptographic OAuth state verification ordering prior to callback channel closure.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-rg4w-8g8x-2vhf.html"><span class="embargo-tag">In Triage (GHSA-rg4w-8g8x-2vhf) &rarr;</span></a>
-            <span class="target-tag">github/github-mcp-server</span>
-          </div>
-        </article>
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-g4pg-rg2m-6vm4</span>
-              <span class="cwe-tag">CWE-918 / CWE-22</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-g4pg-rg2m-6vm4.html" style="color: inherit;">Path Segment Normalization &amp; URI Encoding in Resource Handlers (<code>paypal/agent-toolkit</code>)</a></h3>
-            <p>Coordinated vulnerability disclosure covering path segment encoding for resource identifiers in REST API request builders.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-g4pg-rg2m-6vm4.html"><span class="embargo-tag">In Triage (GHSA-g4pg-rg2m-6vm4) &rarr;</span></a>
-            <span class="target-tag">paypal/agent-toolkit</span>
-          </div>
-        </article>
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-x2gm-fvv7-8x97</span>
-              <span class="cwe-tag">CWE-347 / CWE-290</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-x2gm-fvv7-8x97.html" style="color: inherit;">Strict XPath Element Traversal &amp; Canonicalization Attribute Handling (<code>stytchauth/samlshield</code>)</a></h3>
-            <p>Coordinated vulnerability disclosure covering XML signature verification subtree bounds and exclusive canonicalization.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-x2gm-fvv7-8x97.html"><span class="embargo-tag">In Triage (GHSA-x2gm-fvv7-8x97) &rarr;</span></a>
-            <span class="target-tag">stytchauth/samlshield</span>
-          </div>
-        </article>
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-796w-fvw2-ccmp</span>
-              <span class="cwe-tag">CWE-377 / CWE-59 / CWE-732</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-796w-fvw2-ccmp.html" style="color: inherit;">Exclusive Temporary File Creation &amp; Permission Mode Preservation (<code>github/gh-aw</code>)</a></h3>
-            <p>Embargoed static security audit of temporary file creation flags and permission mode preservation in CLI compilation pipelines.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-796w-fvw2-ccmp.html"><span class="embargo-tag">Embargoed (Vendor Triage) &rarr;</span></a>
-            <span class="target-tag">github/gh-aw</span>
-          </div>
-        </article>
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-79pm-w9c4-x743</span>
-              <span class="cwe-tag">CWE-59 / CWE-732</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-79pm-w9c4-x743.html" style="color: inherit;">Chroot Initialization Symlink Handling &amp; Container Audit Path Validation (<code>github/gh-aw-firewall</code>)</a></h3>
-            <p>Embargoed static security audit of non-symlink ownership operations and target path validation in firewall container helpers.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-79pm-w9c4-x743.html"><span class="embargo-tag">Embargoed (Vendor Triage) &rarr;</span></a>
-            <span class="target-tag">github/gh-aw-firewall</span>
-          </div>
-        </article>
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-w9vr-vppr-7473</span>
-              <span class="cwe-tag">CWE-328 / CWE-639 / CWE-59</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-w9vr-vppr-7473.html" style="color: inherit;">Point ID Hashing, Scoped Deletion Filtering &amp; Shard Cleanup Containment (<code>crewAIInc/crewAI</code>)</a></h3>
-            <p>Embargoed static security audit of non-UUID point ID hashing, scope prefix enforcement on deletion, and symlink checks in edge storage.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-w9vr-vppr-7473.html"><span class="embargo-tag">Embargoed (Vendor Triage) &rarr;</span></a>
-            <span class="target-tag">crewAIInc/crewAI</span>
-          </div>
-        </article>
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">CVD-2026-HF-MCP-001</span>
-              <span class="cwe-tag">CWE-22 / CWE-918 / CWE-200</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-HF-MCP-001.html" style="color: inherit;">Gradio Space Identifier Path Validation &amp; Remote Schema Fetch Restrictions (<code>huggingface/hf-mcp-server</code>)</a></h3>
-            <p>Embargoed static security audit of path segment sanitization in Space discovery and remote schema transport validation.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/CVD-2026-HF-MCP-001.html"><span class="embargo-tag">Embargoed (Vendor Triage) &rarr;</span></a>
-            <span class="target-tag">huggingface/hf-mcp-server</span>
-          </div>
-        </article>
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-qxvg-wc96-c9hg</span>
-              <span class="cwe-tag">CWE-200 / CWE-290</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-qxvg-wc96-c9hg.html" style="color: inherit;">Telemetry Trace Credential Redaction &amp; Client Tracking Classification (<code>apify/apify-mcp-server</code>)</a></h3>
-            <p>Embargoed static security audit of sensitive token redaction in trace identifiers and client classification patterns.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-qxvg-wc96-c9hg.html"><span class="embargo-tag">Embargoed (Vendor Triage) &rarr;</span></a>
-            <span class="target-tag">apify/apify-mcp-server</span>
-          </div>
-        </article>
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-66qg-3qqj-frhp</span>
-              <span class="cwe-tag">CWE-22 / CWE-426 / CWE-209</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-66qg-3qqj-frhp.html" style="color: inherit;">Recursive Dependency Include Containment &amp; Reserved Environment Filtering (<code>ArcadeAI/arcade-mcp</code>)</a></h3>
-            <p>Embargoed static security audit of recursive requirement path containment, reserved environment filtering, and error redaction.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-66qg-3qqj-frhp.html"><span class="embargo-tag">Embargoed (Vendor Triage) &rarr;</span></a>
-            <span class="target-tag">ArcadeAI/arcade-mcp</span>
-          </div>
-        </article>
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-pj28-99w2-cmmr</span>
-              <span class="cwe-tag">CWE-863 / CWE-20</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-pj28-99w2-cmmr.html" style="color: inherit;">One-Way Security Override Enforcement &amp; Request Configuration Bounds (<code>mongodb-js/mongodb-mcp-server</code>)</a></h3>
-            <p>Embargoed static security audit of one-way override invariants for security guards and numeric configuration bounds.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-pj28-99w2-cmmr.html"><span class="embargo-tag">Embargoed (Vendor Triage) &rarr;</span></a>
-            <span class="target-tag">mongodb-js/mongodb-mcp-server</span>
-          </div>
-        </article>
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-4gxr-rmq4-gf3g</span>
-              <span class="cwe-tag">CWE-22 / CWE-200</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-4gxr-rmq4-gf3g.html" style="color: inherit;">Resource URI Scheme Allowlisting &amp; Local/UNC Path Containment (<code>evalstate/fast-agent</code>)</a></h3>
-            <p>Embargoed static security audit of resource URI scheme validation and local/UNC path restrictions in tool output handlers.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-4gxr-rmq4-gf3g.html"><span class="embargo-tag">Embargoed (Vendor Triage) &rarr;</span></a>
-            <span class="target-tag">evalstate/fast-agent</span>
+            <a href="https://ccsimplyspolit.github.io/advisories/H1-4148578.html"><span class="embargo-tag">Confirmed &amp; Bounty Awarded (H1 #4148578) &rarr;</span></a>
+            <span class="target-tag">brave/ai-gateway</span>
           </div>
         </article>
       </div>
     </section>
 
     <section id="api-audits">
-      <h2>0x01 // Protocol, Deserialization &amp; API Security Advisories</h2>
+      <h2>0x01 // Confirmed Advisories &amp; Published Security Specifications</h2>
       <table>
         <thead>
           <tr>
             <th>Advisory ID</th>
             <th>Target Scope</th>
             <th>Vulnerability Class (CWE)</th>
-            <th>Component Scope (Embargo Summary)</th>
+            <th>Component Scope</th>
             <th>Status / Reference</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><a href="/advisories/GHSA-48q7-428c-jmfw.html"><code>GHSA-48q7-428c-jmfw</code></a></td>
-            <td><code>Graphify-Labs/graphify</code></td>
-            <td><code>CWE-184 / CWE-200 / CWE-918</code></td>
-            <td>Incomplete Fix for GHSA-pcc4-rvhr-2pr8 in Fortran Preprocessor Filter (graphify/extractors/fortran.py) and IPv6/Redirect SSRF Bypass (graphify/security.py, graphify/transcribe.py)</td>
-            <td><a href="/advisories/GHSA-48q7-428c-jmfw.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-mxjx-wqmx-hwx7.html"><code>GHSA-mxjx-wqmx-hwx7</code></a></td>
-            <td><code>HKUDS/nanobot</code></td>
-            <td><code>CWE-22 / CWE-184 / CWE-918</code></td>
-            <td>Incomplete Fix for GHSA-vc5v-6vwm-wf9m (ZDI-CAN-29369) in nanobot/security/network.py and Command/Path Guard Bypass in nanobot/agent/tools/shell.py</td>
-            <td><a href="/advisories/GHSA-mxjx-wqmx-hwx7.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-gx9q-44qw-3frv.html"><code>GHSA-gx9q-44qw-3frv</code></a></td>
-            <td><code>DeusData/codebase-memory-mcp</code></td>
-            <td><code>CWE-125 / CWE-170</code></td>
-            <td>Out-of-Bounds Stack Read via Non-Null-Terminated strncpy in emit_property() (CWE-170 / CWE-125) and Unchecked Pointer Subtraction in extract_attr() (internal/cbm/iris_export_xml.c)</td>
-            <td><a href="/advisories/GHSA-gx9q-44qw-3frv.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-wf26-5m35-vf27.html"><code>GHSA-wf26-5m35-vf27</code></a></td>
-            <td><code>lief-project/LIEF</code></td>
-            <td><code>CWE-125 / CWE-190 / CWE-674</code></td>
-            <td>Heap Buffer Overflow (CWE-787) in ELF::Segment::set_content_value and Unbounded Recursion / Heap OOB Read-Write in DEX/VDEX Parsers</td>
-            <td><a href="/advisories/GHSA-wf26-5m35-vf27.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
-          </tr>
-          <tr>
             <td><a href="/advisories/GHSA-cr23-59mg-h2rc.html"><code>GHSA-cr23-59mg-h2rc</code></a></td>
             <td><code>bacnet-stack/bacnet-stack</code></td>
             <td><code>CWE-125 / CWE-400 / CWE-787</code></td>
-            <td>Pre-Auth Infinite Loop / Heap Exhaustion (CWE-835 / CWE-400) and Out-of-Bounds Read/Write (CWE-125 / CWE-787) via Unchecked Negative Decode Lengths in Calendar_Write_Property() and Notification_Class_Write_Property()</td>
+            <td>Pre-Auth Infinite Loop / Heap Exhaustion and Out-of-Bounds Read/Write via Unchecked Negative Decode Lengths in Calendar_Write_Property() and Notification_Class_Write_Property()</td>
             <td><a href="/advisories/GHSA-cr23-59mg-h2rc.html"><span class="embargo-tag">Accepted (GHSA Draft — Fix PR #1595)</span></a></td>
           </tr>
           <tr>
-            <td><a href="/advisories/GHSA-7m49-w797-wqp6.html"><code>GHSA-7m49-w797-wqp6</code></a></td>
-            <td><code>pocketpy/pocketpy</code></td>
-            <td><code>CWE-121 / CWE-125 / CWE-787</code></td>
-            <td>Stack-Based Buffer Overflow (CWE-121), Out-of-Bounds Memo Read/Write (CWE-787), and Raw Pointer Forgery (CWE-822) in pickle.loads() (src/modules/pickle.c)</td>
-            <td><a href="/advisories/GHSA-7m49-w797-wqp6.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-g278-chr4-fg9f.html"><code>GHSA-g278-chr4-fg9f</code></a></td>
-            <td><code>marcobambini/gravity</code></td>
-            <td><code>CWE-125 / CWE-843</code></td>
-            <td>Union Type Confusion (CWE-843) and Heap Buffer Over-Read (CWE-125) in gravity_function_deserialize()</td>
-            <td><a href="/advisories/GHSA-g278-chr4-fg9f.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-j47j-8qq9-628m.html"><code>GHSA-j47j-8qq9-628m</code></a></td>
-            <td><code>gopro/gpmf-parser</code></td>
-            <td><code>CWE-121 / CWE-191 / CWE-193</code></td>
-            <td>Stack-Based Buffer Overflow in GPMF_ScaledData() via Unbounded ORIN/ORIO Calibration Matrix Generation (CWE-121 / CWE-787)</td>
-            <td><a href="/advisories/GHSA-j47j-8qq9-628m.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-4xx2-wr42-gjg3.html"><code>GHSA-4xx2-wr42-gjg3</code></a></td>
-            <td><code>meshcore-dev/MeshCore</code></td>
-            <td><code>CWE-125 / CWE-191</code></td>
-            <td>Unsigned Integer Underflow (CWE-191) and Out-of-Bounds Read (CWE-125) in Mesh::onRecvPacket() and Packet::readFrom()</td>
-            <td><a href="/advisories/GHSA-4xx2-wr42-gjg3.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-6hh9-gpj4-cr69.html"><code>GHSA-6hh9-gpj4-cr69</code></a></td>
-            <td><code>moonlight-stream/moonlight-common-c</code></td>
-            <td><code>CWE-125 / CWE-908</code></td>
-            <td>Out-of-Bounds Read (CWE-125) and Uninitialized Memory Usage (CWE-908) in ControlStream Packet Dispatch (src/ControlStream.c)</td>
-            <td><a href="/advisories/GHSA-6hh9-gpj4-cr69.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-hfc6-f2q5-m256.html"><code>GHSA-hfc6-f2q5-m256</code></a></td>
-            <td><code>tinyhumansai/openhuman</code></td>
-            <td><code>CWE-22 / CWE-78 / CWE-863</code></td>
-            <td>Shell Protected-Path Floor and Read-Only Classifier Bypass via Intra-Word Quote Splitting, file:// URLs, and git --output in CommandAnalysis</td>
-            <td><a href="/advisories/GHSA-hfc6-f2q5-m256.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-ggvf-5fq9-jxq2.html"><code>GHSA-ggvf-5fq9-jxq2</code></a></td>
-            <td><code>rtk-ai/rtk</code></td>
-            <td><code>CWE-22 / CWE-345 / CWE-829</code></td>
-            <td>Project Pipeline Trust Gate Bypass via RTK_CONFIG_DIR Override and Un-Hashed External Directive File Targets</td>
-            <td><a href="/advisories/GHSA-ggvf-5fq9-jxq2.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-qm7x-j9xp-x3gv.html"><code>GHSA-qm7x-j9xp-x3gv</code></a></td>
-            <td><code>czlonkowski/n8n-mcp</code></td>
-            <td><code>CWE-184 / CWE-918</code></td>
-            <td>SSRF Protection Bypass in validateUrlSync and validateWebhookUrl via Trailing-Dot FQDNs and RFC 6761 *.localhost Subdomains</td>
-            <td><a href="/advisories/GHSA-qm7x-j9xp-x3gv.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-7mfv-3jjj-45vr.html"><code>GHSA-7mfv-3jjj-45vr</code></a></td>
-            <td><code>colbymchenry/codegraph</code></td>
-            <td><code>CWE-20 / CWE-78</code></td>
-            <td>Unvalidated Version Tag Interpolation in PowerShell Upgrade Script and Windows cmd.exe Invocation in src/upgrade/index.ts</td>
-            <td><a href="/advisories/GHSA-7mfv-3jjj-45vr.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-2qf6-94w7-mjcq.html"><code>GHSA-2qf6-94w7-mjcq</code></a></td>
-            <td><code>onnx/onnx</code></td>
-            <td><code>CWE-22 / CWE-367 / CWE-755</code></td>
-            <td>External Data #-Prefix Path/Size Check Bypass, Missing Post-Open S_ISREG Check, and Uncaught Numeric Parser Exceptions</td>
-            <td><a href="/advisories/GHSA-2qf6-94w7-mjcq.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-h3mc-v47q-wj82.html"><code>GHSA-h3mc-v47q-wj82</code></a></td>
-            <td><code>ValveSoftware/GameNetworkingSockets</code></td>
-            <td><code>CWE-125 / CWE-190 / CWE-191</code></td>
-            <td>Unbounded 64-Bit Unreliable Message Number Offset, Zero-Length Segment OOB Read, Base64EncodeMaxOutput(0) Underflow, and CUtlBuffer::GetString Seek Misalignment</td>
-            <td><a href="/advisories/GHSA-h3mc-v47q-wj82.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-rg4w-8g8x-2vhf.html"><code>GHSA-rg4w-8g8x-2vhf</code></a></td>
-            <td><code>github/github-mcp-server</code></td>
-            <td><code>CWE-352 / CWE-400</code></td>
-            <td>OAuth PKCE Callback Server Single-Shot Channel Exhaustion Before state Validation in internal/oauth/callback.go</td>
-            <td><a href="/advisories/GHSA-rg4w-8g8x-2vhf.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-29j7-mxxj-g9hg.html"><code>GHSA-29j7-mxxj-g9hg</code></a></td>
-            <td><code>cloudflare/mcp-server-cloudflare</code></td>
-            <td><code>CWE-20 / CWE-79 / CWE-863</code></td>
-            <td>Unvalidated clientUri Scheme in OAuth Approval Dialog and Fail-Open Consent Decision Parsing in workers-oauth-utils.ts</td>
-            <td><a href="/advisories/GHSA-29j7-mxxj-g9hg.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-g4pg-rg2m-6vm4.html"><code>GHSA-g4pg-rg2m-6vm4</code></a></td>
-            <td><code>paypal/agent-toolkit</code></td>
-            <td><code>CWE-20 / CWE-22 / CWE-285</code></td>
-            <td>paypal/agent-toolkit: Resource identifier validation and URL path segment encoding in REST tool handlers</td>
-            <td><a href="/advisories/GHSA-g4pg-rg2m-6vm4.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-x2gm-fvv7-8x97.html"><code>GHSA-x2gm-fvv7-8x97</code></a></td>
-            <td><code>stytchauth/samlshield</code></td>
-            <td><code>CWE-20 / CWE-287</code></td>
-            <td>stytchauth/samlshield: Timestamp NaN validation and subject element cardinality checks in SAML assertion verification</td>
-            <td><a href="/advisories/GHSA-x2gm-fvv7-8x97.html"><span class="embargo-tag">In Triage (GHSA)</span></a></td>
-          </tr>
-          <tr>
-            <td><code>CVD-2026-NEBIUS-001</code></td>
-            <td><code>nebius/mcp-server &amp; nebius/contree-mcp</code></td>
-            <td><code>CWE-88 / CWE-22 / CWE-200</code></td>
-            <td>CLI option delimiter handling, symlink/prefix cache exclusion checks, and cross-origin redirect header stripping (H1 #4145362).</td>
-            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
-          </tr>
-          <tr>
-            <td><code>CVD-2026-RUNDECK-001</code></td>
-            <td><code>rundeck/mcp</code></td>
-            <td><code>CWE-918 / CWE-522 / CWE-863</code></td>
-            <td>Origin validation for authenticated API requests and path normalization in confirmation guards (H1 #4145363).</td>
-            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
-          </tr>
-          <tr>
-            <td><code>CVD-2026-RUNDECK-002</code></td>
-            <td><code>rundeck/rundeck</code></td>
-            <td><code>CWE-22 / CWE-73 / CWE-639</code></td>
-            <td>Storage reference path canonicalization and project ownership verification during job import (H1 #4145745).</td>
-            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
-          </tr>
-          <tr>
-            <td><code>CVD-2026-RUBY-001</code></td>
-            <td><code>ruby/ruby</code></td>
-            <td><code>CWE-1333 / CWE-755</code></td>
-            <td>Zero-repetition quantifier compilation invariants in regular expression bytecode generation (H1 #4145826).</td>
-            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
-          </tr>
-          <tr>
-            <td><code>CVD-2026-NODE-001</code></td>
-            <td><code>nodejs/node</code></td>
-            <td><code>CWE-285 / CWE-863</code></td>
-            <td>Prefix tree wildcard matching and directory boundary normalization in filesystem permission checks (H1 #4145962).</td>
-            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-w9vr-vppr-7473.html"><code>GHSA-w9vr-vppr-7473</code></a></td>
-            <td><code>crewAIInc/crewAI</code></td>
-            <td><code>CWE-328 / CWE-639 / CWE-59</code></td>
-            <td>Point ID hashing, scope filter enforcement during record deletion, and symlink validation in edge shard storage.</td>
-            <td><a href="/advisories/GHSA-w9vr-vppr-7473.html"><span class="embargo-tag">Embargoed (Vendor Triage)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-796w-fvw2-ccmp.html"><code>GHSA-796w-fvw2-ccmp</code></a></td>
-            <td><code>github/gh-aw</code></td>
-            <td><code>CWE-377 / CWE-59 / CWE-732</code></td>
-            <td>Exclusive temporary file creation and permission mode preservation in CLI compilation progress writers.</td>
-            <td><a href="/advisories/GHSA-796w-fvw2-ccmp.html"><span class="embargo-tag">Embargoed (Vendor Triage)</span></a></td>
-          </tr>
-          <tr>
-            <td><code>GHSA-v72p-99r9-27ff</code></td>
-            <td><code>php/php-src</code></td>
-            <td><code>CWE-200 / CWE-918</code></td>
-            <td>Cross-origin port comparison and credential header stripping across HTTP redirects in SOAP client transport.</td>
-            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
-          </tr>
-          <tr>
-            <td><code>CVD-2026-CPYTHON-001</code></td>
-            <td><code>python/cpython</code></td>
-            <td><code>CWE-20 / CWE-284</code></td>
-            <td>Cookie policy domain/path matching invariants and catalog expression validation in standard library modules.</td>
-            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-79pm-w9c4-x743.html"><code>GHSA-79pm-w9c4-x743</code></a></td>
-            <td><code>github/gh-aw-firewall</code></td>
-            <td><code>CWE-59 / CWE-732</code></td>
-            <td>Non-symlink ownership changes in chroot initialization and target path validation in container audit preservation.</td>
-            <td><a href="/advisories/GHSA-79pm-w9c4-x743.html"><span class="embargo-tag">Embargoed (Vendor Triage)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/CVD-2026-HF-MCP-001.html"><code>CVD-2026-HF-MCP-001</code></a></td>
-            <td><code>huggingface/hf-mcp-server</code></td>
-            <td><code>CWE-22 / CWE-918 / CWE-200</code></td>
-            <td>Path segment validation in Gradio Space discovery and origin/scheme enforcement for remote tool schemas.</td>
-            <td><a href="/advisories/CVD-2026-HF-MCP-001.html"><span class="embargo-tag">Embargoed (Vendor Triage)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-qxvg-wc96-c9hg.html"><code>GHSA-qxvg-wc96-c9hg</code></a></td>
-            <td><code>apify/apify-mcp-server</code></td>
-            <td><code>CWE-200 / CWE-290</code></td>
-            <td>Sensitive header redaction in telemetry trace identifiers and client tracking classification rules.</td>
-            <td><a href="/advisories/GHSA-qxvg-wc96-c9hg.html"><span class="embargo-tag">Embargoed (Vendor Triage)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-66qg-3qqj-frhp.html"><code>GHSA-66qg-3qqj-frhp</code></a></td>
-            <td><code>ArcadeAI/arcade-mcp</code></td>
-            <td><code>CWE-22 / CWE-426 / CWE-209</code></td>
-            <td>Path containment for recursive dependency includes, reserved environment variable filtering, and error redaction.</td>
-            <td><a href="/advisories/GHSA-66qg-3qqj-frhp.html"><span class="embargo-tag">Embargoed (Vendor Triage)</span></a></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-pj28-99w2-cmmr.html"><code>GHSA-pj28-99w2-cmmr</code></a></td>
-            <td><code>mongodb-js/mongodb-mcp-server</code></td>
-            <td><code>CWE-863 / CWE-20</code></td>
-            <td>One-way security override enforcement for delimiter guards and numeric bounds checking in request overrides.</td>
-            <td><a href="/advisories/GHSA-pj28-99w2-cmmr.html"><span class="embargo-tag">Embargoed (Vendor Triage)</span></a></td>
-          </tr>
-          <tr>
-            <td><code>GHSA-93r3-hqxp-7955</code></td>
-            <td><code>omacom/omarchy</code></td>
-            <td><code>CWE-78 / CWE-20</code></td>
-            <td>URI host string escaping in network captive-portal helpers and path validation in system scripts.</td>
-            <td><span class="embargo-tag">Embargoed (Vendor Triage)</span></td>
-          </tr>
-          <tr>
-            <td><a href="/advisories/GHSA-4gxr-rmq4-gf3g.html"><code>GHSA-4gxr-rmq4-gf3g</code></a></td>
-            <td><code>evalstate/fast-agent</code></td>
-            <td><code>CWE-22 / CWE-200</code></td>
-            <td>Scheme allowlisting and local/UNC file path restriction in tool output resource handlers.</td>
-            <td><a href="/advisories/GHSA-4gxr-rmq4-gf3g.html"><span class="embargo-tag">Embargoed (Vendor Triage)</span></a></td>
+            <td><a href="/advisories/H1-4148578.html"><code>H1-4148578</code></a></td>
+            <td><code>brave/ai-gateway</code></td>
+            <td><code>CWE-20 / CWE-755</code></td>
+            <td>Multi-Tool Call Buffer State Desynchronization and Unhandled Validation Exceptions in OpenAIAdapter Streaming Tool Parser</td>
+            <td><a href="/advisories/H1-4148578.html"><span class="embargo-tag">Confirmed &amp; Bounty Awarded (H1 #4148578)</span></a></td>
           </tr>
           <tr>
             <td><code>ADV-2026-003</code></td>

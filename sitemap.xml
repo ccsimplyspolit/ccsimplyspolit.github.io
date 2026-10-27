@@ -5,45 +5,6 @@
   <url><loc>https://ccsimplyspolit.github.io/writeups/libprotobuf-mutator-subtick-invariants.html</loc></url>
   <url><loc>https://ccsimplyspolit.github.io/writeups/vm-deserialization-union-type-confusion.html</loc></url>
   <url><loc>https://ccsimplyspolit.github.io/writeups/snapshot-fuzzing-binary-parsers.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-qxvg-wc96-c9hg.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-66qg-3qqj-frhp.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-w9vr-vppr-7473.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-4gxr-rmq4-gf3g.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-796w-fvw2-ccmp.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-79pm-w9c4-x743.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/CVD-2026-HF-MCP-001.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-pj28-99w2-cmmr.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-29j7-mxxj-g9hg.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-2qf6-94w7-mjcq.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-48q7-428c-jmfw.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-4xx2-wr42-gjg3.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-6hh9-gpj4-cr69.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-7m49-w797-wqp6.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-7mfv-3jjj-45vr.html</loc></url>
   <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-g278-chr4-fg9f.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-g4pg-rg2m-6vm4.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-ggvf-5fq9-jxq2.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-gx9q-44qw-3frv.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-h3mc-v47q-wj82.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-hfc6-f2q5-m256.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-j47j-8qq9-628m.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-mxjx-wqmx-hwx7.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-qm7x-j9xp-x3gv.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-rg4w-8g8x-2vhf.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-wf26-5m35-vf27.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-x2gm-fvv7-8x97.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-v72p-99r9-27ff.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-93r3-hqxp-7955.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-mp5c-mhfh-vrqc.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-w6cx-jx35-frm4.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-qqhv-8xr3-rvqp.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-h55v-vc6g-w45w.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-p7v6-jj9g-jrrw.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-pqj5-xmmr-6v82.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-qvj6-wc44-8544.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-mcpr-7m53-9gj7.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-qmmh-w8m2-24hg.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-8qxf-jr7j-f6qf.html</loc></url>
-  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-fc5w-j5vw-fvvg.html</loc></url>
+  <url><loc>https://ccsimplyspolit.github.io/advisories/H1-4148578.html</loc></url>
 </urlset>
