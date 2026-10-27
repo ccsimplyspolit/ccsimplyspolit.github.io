@@ -12,7 +12,7 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Courier >>
 endobj
 5 0 obj
-<< /Length 5204 >>
+<< /Length 5214 >>
 stream
 BT
 /F1 9.0 Tf
@@ -20,14 +20,14 @@ BT
 10.8 TL
 (ANTHROPIC CYBER VERIFICATION PROGRAM \(CVP\) - APPEALS & ELIGIBILITY DOSSIER) Tj T*
 (============================================================================) Tj T*
-(Applicant Name:       Serhii Shunko \(@sshunko / @ccsimplyspolit\)) Tj T*
+(Applicant Name:       Serhii Shunko) Tj T*
 (Account Email:        cc.simply.spolit@gmail.com) Tj T*
 (Organization UUID:    c4ebb284-8fa8-4c0b-95fb-9cf6e36fc24b) Tj T*
 (Identity Status:      pass_011Cfqc1KQAujYVncduA6dDL \(VERIFICATION_TYPE_TAF_CYBER_IDV: VERIFIED\)) Tj T*
 (Verification Portal:  https://ccsimplyspolit.github.io/) Tj T*
-(GitHub / HackerOne:   https://github.com/ccsimplyspolit | https://hackerone.com/sshunko) Tj T*
-(Bugcrowd / LinkedIn:  https://bugcrowd.com/h/sshunko | https://www.linkedin.com/in/sshunko/) Tj T*
-(X / ORCID iD:         https://x.com/SergeyccShunko | https://orcid.org/0009-0002-4183-0361) Tj T*
+(GitHub \(only account\): https://github.com/ccsimplyspolit) Tj T*
+(HackerOne / Bugcrowd: https://hackerone.com/sshunko | https://bugcrowd.com/h/sshunko) Tj T*
+(LinkedIn / ORCID iD:  https://www.linkedin.com/in/sshunko/ | https://orcid.org/0009-0002-4183-0361) Tj T*
 (CERN / Zenodo DOIs:   10.5281/zenodo.23641037 | 10.5281/zenodo.23640494 | 10.5281/zenodo.23640496) Tj T*
 () Tj T*
 (1. SUMMARY OF DEFENSIVE RESEARCH & REASON FOR APPEAL) Tj T*
@@ -97,5 +97,5 @@ xref
 trailer
 << /Size 6 /Root 1 0 R >>
 startxref
-5565
+5575
 %%EOF
