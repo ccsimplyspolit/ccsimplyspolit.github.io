@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GHSA-cr23-59mg-h2rc — bacnet-stack/bacnet-stack Coordinated Disclosure Record | Serhii Shunko (@sshunko)</title>
-  <meta name="description" content="Coordinated Vulnerability Disclosure verification record for GHSA-cr23-59mg-h2rc in bacnet-stack/bacnet-stack (Accepted into Draft, Upstream Fix PR #1595) by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <meta name="description" content="Coordinated Vulnerability Disclosure verification record for GHSA-cr23-59mg-h2rc in bacnet-stack/bacnet-stack (Accepted into Draft, Upstream Fix PR #1595 Open) by Serhii Shunko (@sshunko / @ccsimplyspolit).">
   <style>
     :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,9 +23,9 @@
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
     <h1>GHSA-cr23-59mg-h2rc: Coordinated Vulnerability Disclosure Verification Record (<code>bacnet-stack/bacnet-stack</code>)</h1>
     <div class="notice">
-      <strong>[ACCEPTED BY VENDOR INTO DRAFT GHSA / UPSTREAM REMEDIATION PR #1595]</strong><br>
-      Privately reported to <code>bacnet-stack/bacnet-stack</code> via GitHub Private Vulnerability Reporting (<a href="https://github.com/bacnet-stack/bacnet-stack/security/advisories/GHSA-cr23-59mg-h2rc">GHSA-cr23-59mg-h2rc</a>).<br>
-      Accepted into <code>draft</code> state by lead maintainer Steve Karg (<code>@skarg</code>) on <code>2026-10-26</code> with official reporter credit to <code>@ccsimplyspolit</code>, and addressed via upstream remediation Pull Request <a href="https://github.com/bacnet-stack/bacnet-stack/pull/1595"><code>bacnet-stack/bacnet-stack#1595</code></a> (commit <code>76091b35a8</code>).
+      <strong>[ACCEPTED BY VENDOR INTO DRAFT GHSA / UPSTREAM REMEDIATION PR #1595 OPEN]</strong><br>
+      Privately reported to <code>bacnet-stack/bacnet-stack</code> via GitHub Private Vulnerability Reporting (<a href="https://github.com/bacnet-stack/bacnet-stack/security/advisories/GHSA-cr23-59mg-h2rc">GHSA-cr23-59mg-h2rc</a>) covering <em>Pre-Auth Infinite Loop and OOB Read/Write via Negative Decode Length in <code>Calendar_Write_Property()</code> (<code>src/bacnet/basic/object/calendar.c</code>) and <code>Notification_Class</code></em>.<br>
+      Accepted into <code>draft</code> state by lead maintainer Steve Karg (<code>@skarg</code>) on <code>2026-10-26</code> with official reporter credit to <code>@ccsimplyspolit</code>; upstream remediation Pull Request <a href="https://github.com/bacnet-stack/bacnet-stack/pull/1595"><code>bacnet-stack/bacnet-stack#1595</code></a> (commit <code>76091b35a8</code>, 36/36 CI checks passed) is currently open.
     </div>
     <h2>0x00 // GitHub CNA &amp; Upstream Remediation Metadata</h2>
     <pre><code>{
@@ -34,7 +34,8 @@
   "html_url": "https://github.com/bacnet-stack/bacnet-stack/security/advisories/GHSA-cr23-59mg-h2rc",
   "upstream_remediation_pr": "https://github.com/bacnet-stack/bacnet-stack/pull/1595",
   "state": "draft",
-  "status": "Accepted by Lead Maintainer (@skarg) into Draft GHSA / Upstream Fix PR #1595",
+  "summary": "Pre-Auth Infinite Loop and OOB Read/Write via Negative Decode Length in Calendar_Write_Property() and Notification_Class",
+  "status": "Accepted by Lead Maintainer (@skarg) into Draft GHSA / Upstream Fix PR #1595 Open",
   "severity": "high",
   "cvss_v3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:H",
   "created_at": "2026-10-25T12:59:06Z",

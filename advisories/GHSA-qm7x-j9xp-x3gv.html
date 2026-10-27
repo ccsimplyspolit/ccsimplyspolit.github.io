@@ -24,7 +24,7 @@
     <h1>GHSA-qm7x-j9xp-x3gv: Coordinated Vulnerability Disclosure Verification Record (<code>czlonkowski/n8n-mcp</code>)</h1>
     <div class="notice">
       <strong>[CONFIRMED &amp; PATCHED BY VENDOR IN v2.99.2 / COMMIT a49dfb4]</strong><br>
-      Privately reported to <code>czlonkowski/n8n-mcp</code> via GitHub Private Vulnerability Reporting (<a href="https://github.com/czlonkowski/n8n-mcp/security/advisories/GHSA-qm7x-j9xp-x3gv">GHSA-qm7x-j9xp-x3gv</a>) covering Hostname checks in SSRF protection skipped trailing-dot and <code>*.localhost</code> names (<code>CWE-918</code> / <code>CWE-184</code>, Defense-in-Depth <code>CVSS 3.1 Low</code>).<br>
+      Privately reported to <code>czlonkowski/n8n-mcp</code> via GitHub Private Vulnerability Reporting (<a href="https://github.com/czlonkowski/n8n-mcp/security/advisories/GHSA-qm7x-j9xp-x3gv">GHSA-qm7x-j9xp-x3gv</a>) covering <em>SSRF Protection Bypass in <code>validateUrlSync</code> and <code>validateWebhookUrl</code> via Trailing-Dot FQDNs and RFC 6761 <code>*.localhost</code> Subdomains</em> (<code>CWE-918</code> / <code>CWE-184</code>, Defense-in-Depth <code>CVSS 3.1 Low</code>).<br>
       Confirmed and patched upstream in <code>n8n-mcp v2.99.2</code> via commit <a href="https://github.com/czlonkowski/n8n-mcp/commit/a49dfb4"><code>a49dfb4</code></a> (merged in <a href="https://github.com/czlonkowski/n8n-mcp/commit/09611fd"><code>09611fd</code></a>) with official reporter credit to <code>@ccsimplyspolit</code>.
     </div>
     <h2>0x00 // GitHub CNA &amp; Upstream Patch Metadata</h2>
@@ -38,7 +38,7 @@
   "upstream_merge_commit": "https://github.com/czlonkowski/n8n-mcp/commit/09611fd",
   "html_url": "https://github.com/czlonkowski/n8n-mcp/security/advisories/GHSA-qm7x-j9xp-x3gv",
   "state": "draft",
-  "summary": "Hostname checks in SSRF protection skipped trailing-dot and *.localhost names",
+  "summary": "SSRF Protection Bypass in validateUrlSync and validateWebhookUrl via Trailing-Dot FQDNs and RFC 6761 *.localhost Subdomains",
   "severity": "low",
   "cvss_v3": "CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:L/I:N/A:N",
   "status": "Confirmed &amp; Patched Upstream (v2.99.2, commit a49dfb4)",

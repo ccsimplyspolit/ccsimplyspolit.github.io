@@ -3,7 +3,7 @@
 << /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [3 0 R 6 0 R] /Count 2 >>
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
 endobj
 3 0 obj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
@@ -12,153 +12,90 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Courier >>
 endobj
 5 0 obj
-<< /Length 4912 >>
+<< /Length 5204 >>
 stream
 BT
-/F1 8.4 Tf
-36 760 Td
-10.3 TL
+/F1 9.0 Tf
+40 756 Td
+10.8 TL
 (ANTHROPIC CYBER VERIFICATION PROGRAM \(CVP\) - APPEALS & ELIGIBILITY DOSSIER) Tj T*
 (============================================================================) Tj T*
 (Applicant Name:       Serhii Shunko \(@sshunko / @ccsimplyspolit\)) Tj T*
 (Account Email:        cc.simply.spolit@gmail.com) Tj T*
-(Primary Org UUID:     c4ebb284-8fa8-4c0b-95fb-9cf6e36fc24b \(cc.simply.spolit@gmail.com's Org\)) Tj T*
-(Individual Org UUID:  5dfd117e-ed34-4e95-af20-c3b34ad9955f \(sshunko's Individual Org\)) Tj T*
-(Persona Passport ID:  pass_011Cfqc1KQAujYVncduA6dDL \(VERIFICATION_TYPE_TAF_CYBER_IDV: VERIFIED\)) Tj T*
-(Support Ticket ID:    Conversation ID 215476228011063 \(Confirmed by Poem on 2026-10-26\)) Tj T*
+(Organization UUID:    c4ebb284-8fa8-4c0b-95fb-9cf6e36fc24b) Tj T*
+(Identity Status:      pass_011Cfqc1KQAujYVncduA6dDL \(VERIFICATION_TYPE_TAF_CYBER_IDV: VERIFIED\)) Tj T*
 (Verification Portal:  https://ccsimplyspolit.github.io/) Tj T*
-(GitHub Profile:       https://github.com/ccsimplyspolit) Tj T*
-(HackerOne Profile:    https://hackerone.com/sshunko) Tj T*
-(ORCID iD:             https://orcid.org/0009-0002-4183-0361) Tj T*
-(CERN / Zenodo DOIs:   https://doi.org/10.5281/zenodo.23641037 | 23640494 | 23640496) Tj T*
+(GitHub / HackerOne:   https://github.com/ccsimplyspolit | https://hackerone.com/sshunko) Tj T*
+(Bugcrowd / LinkedIn:  https://bugcrowd.com/h/sshunko | https://www.linkedin.com/in/sshunko/) Tj T*
+(X / ORCID iD:         https://x.com/SergeyccShunko | https://orcid.org/0009-0002-4183-0361) Tj T*
+(CERN / Zenodo DOIs:   10.5281/zenodo.23641037 | 10.5281/zenodo.23640494 | 10.5281/zenodo.23640496) Tj T*
 () Tj T*
-(1. QUALIFICATION UNDER BOTH 'BOUNTY' AND 'ADVISORY' CVP TRACKS \(UPDATED OCT 27, 2026\)) Tj T*
+(1. SUMMARY OF DEFENSIVE RESEARCH & REASON FOR APPEAL) Tj T*
 (----------------------------------------------------------------------------) Tj T*
-(I am an independent defensive security researcher conducting static source and binary) Tj T*
-(auditing of open-source C/C++ network/media parsers and AI/MCP server implementations) Tj T*
-(under Coordinated Vulnerability Disclosure \(CVD\). My identity is verified via Persona) Tj T*
-(\(pass_011Cfqc1KQAujYVncduA6dDL\). As of October 27, 2026, I independently satisfy) Tj T*
-(multiple official CVP Defense Access tracks:) Tj T*
+(I am an independent systems and binary security researcher auditing open-source) Tj T*
+(C/C++ network/media parsers, embeddable bytecode VMs, and AI/MCP server) Tj T*
+(infrastructure under Coordinated Vulnerability Disclosure \(CVD\). My identity) Tj T*
+(is verified via Persona \(VERIFICATION_TYPE_TAF_CYBER_IDV\). This dossier) Tj T*
+(documents 4 vendor-confirmed/patched vulnerability disclosures, 36 active) Tj T*
+(private GHSA reports in maintainer triage, 4 active HackerOne disclosures,) Tj T*
+(and 3 CERN/Zenodo DOIs to satisfy CVP Defense Access eligibility.) Tj T*
 () Tj T*
-(A. TRACK: BOUNTY \(Paid Bug Bounties & Verified Platform Standing on HackerOne\)) Tj T*
+(2. CONFIRMED & UPSTREAM-REMEDIATED VULNERABILITY DISCLOSURES \(4 TOTAL\)) Tj T*
 (----------------------------------------------------------------------------) Tj T*
-(* PAID BOUNTY AWARDED - HackerOne Report #4148578 \(Brave Software - brave/ai-gateway\):) Tj T*
-(  - Title:   Streaming Tool-Call Alignment Check Bypass on Multi-Tool Turns and) Tj T*
-(             Attachment-First User Message Extraction Failure in OpenAIAdapter) Tj T*
-(  - Outcome: Confirmed by Brave Security \(@artem_chaikin\) on 2026-10-27T02:02:21Z;) Tj T*
-(             awarded $50.00 USD Bounty \('The improper tool call parsing is a known) Tj T*
-(             issue... I will apply the fix in the coming days'\).) Tj T*
-(* 4 Active HackerOne Disclosures in Triage \(state=new, passed preliminary review\):) Tj T*
-(  - #4145362 \(Nebius AI\):  nebius/mcp-server & contree-mcp CLI flag bypass & symlink) Tj T*
-(  - #4145363 \(PagerDuty\):  rundeck/mcp cross-origin X-Rundeck-Auth-Token SSRF) Tj T*
-(  - #4145745 \(PagerDuty\):  rundeck/rundeck JobFileRecord path traversal & ownership) Tj T*
-(  - #4148863 \(Ruby / IBB\): ruby/ruby \(Onigmo\) {0,0}? quantifier match-cache bypass) Tj T*
+(1\) HackerOne #4148578 | brave/ai-gateway \(Brave Software Bug Bounty Program\)) Tj T*
+(   * Scope:  Streaming Tool-Call Alignment Bypass & Attachment Extraction Bug) Tj T*
+(   * Status: Confirmed by Brave \(@artem_chaikin\) on 2026-10-27; $50.00 Bounty.) Tj T*
+(   * Record: https://ccsimplyspolit.github.io/advisories/H1-4148578.html) Tj T*
+(2\) GHSA-qm7x-j9xp-x3gv | czlonkowski/n8n-mcp \(CWE-918 / CWE-184\)) Tj T*
+(   * Scope:  SSRF Protection Bypass in validateUrlSync & validateWebhookUrl) Tj T*
+(   * Status: Accepted into Draft GHSA & Patched in v2.99.2 \(commit a49dfb4\).) Tj T*
+(   * Record: https://ccsimplyspolit.github.io/advisories/GHSA-qm7x-j9xp-x3gv.html) Tj T*
+(3\) GHSA-6hh9-gpj4-cr69 | moonlight-stream/moonlight-common-c \(CWE-125 / CWE-908\)) Tj T*
+(   * Scope:  Missing IDX_DS_ADAPTIVE_TRIGGERS Sentinel in src/ControlStream.c) Tj T*
+(   * Status: Fix PR #168 Merged into master by @cgutman on 2026-10-26T22:46:49Z.) Tj T*
+(   * Record: https://ccsimplyspolit.github.io/advisories/GHSA-6hh9-gpj4-cr69.html) Tj T*
+(4\) GHSA-cr23-59mg-h2rc | bacnet-stack/bacnet-stack \(CVSS 8.2 High, CWE-835/125\)) Tj T*
+(   * Scope:  Negative Decode Length Infinite Loop & OOB Read in Calendar_Write_Property) Tj T*
+(   * Status: Accepted into Draft GHSA by @skarg; Upstream Fix PR #1595 Open.) Tj T*
+(   * Record: https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html) Tj T*
 () Tj T*
-(B. TRACK: ADVISORY \(Upstream-Accepted & Patched GitHub Security Advisories\)) Tj T*
+(3. ACTIVE PRIVATE DISCLOSURES IN UPSTREAM MAINTAINER TRIAGE) Tj T*
 (----------------------------------------------------------------------------) Tj T*
-(1\) GHSA-qm7x-j9xp-x3gv - czlonkowski/n8n-mcp \(23,100+ GitHub Stars\)) Tj T*
-(   * Status:   ACCEPTED INTO DRAFT & PATCHED IN RELEASE v2.99.2 \(2026-10-27T10:19:43Z\)) Tj T*
-(   * Credit:   Official Reporter Credit Granted & Accepted \(@ccsimplyspolit\)) Tj T*
-(   * Fix:      Patched by maintainer Romuald Czlonkowski in commit a49dfb4 \(v2.99.2\)) Tj T*
-(   * URL:      https://github.com/czlonkowski/n8n-mcp/security/advisories/GHSA-qm7x-j9xp-x3gv) Tj T*
+(* GitHub Private Vulnerability Reporting \(36 Active Advisories in Triage\):) Tj T*
+(  36 additional private GHSAs \(state: triage\) across C/C++ protocol/media) Tj T*
+(  parsers \(LIEF, gpmf-parser, pocketpy, GameNetworkingSockets, onnx, MeshCore,) Tj T*
+(  gravity\) and AI/MCP servers \(graphify, nanobot, codebase-memory-mcp,) Tj T*
+(  codegraph, rtk, openhuman, samlshield, agent-toolkit, mcp-server-cloudflare,) Tj T*
+(  github-mcp-server\), each paired with an ASan/runtime reproducer and patch.) Tj T*
+(* Active HackerOne Disclosures in Upstream Triage \(4 Reports, state: new\):) Tj T*
+(  - #4148863 \(Ruby IBB / ruby/ruby Onigmo regex engine; CRuby committer) Tj T*
+(    @makenowjust joined the report thread\)) Tj T*
+(  - #4145362 \(Nebius AI VDP: nebius/mcp-server & contree-mcp CLI flag bypass\)) Tj T*
+(  - #4145363 \(PagerDuty VDP: rundeck/mcp cross-origin token exfiltration/SSRF\)) Tj T*
+(  - #4145745 \(PagerDuty VDP: rundeck/rundeck JobFileRecord path traversal\)) Tj T*
+(* Bugcrowd Private Programs: Active researcher \(@sshunko\), including Cohere.) Tj T*
 () Tj T*
-(2\) GHSA-cr23-59mg-h2rc - bacnet-stack/bacnet-stack \(High Severity, CVSS 8.2\)) Tj T*
-(   * Status:   ACCEPTED INTO DRAFT BY LEAD MAINTAINER STEVE KARG \(@skarg, 2026-10-26\)) Tj T*
-(   * Credit:   Official Reporter Credit Granted & Accepted \(@ccsimplyspolit\)) Tj T*
-(   * Fix PR:   https://github.com/bacnet-stack/bacnet-stack/pull/1595 \(commit 76091b35a8\)) Tj T*
-(   * URL:      https://github.com/bacnet-stack/bacnet-stack/security/advisories/GHSA-cr23-59mg-h2rc) Tj T*
-() Tj T*
-(3\) GHSA-6hh9-gpj4-cr69 - moonlight-stream/moonlight-common-c \(Merged Fix PR #168\)) Tj T*
-(   * Status:   PATCH MERGED INTO MASTER BY LEAD MAINTAINER CAMERON GUTMAN \(@cgutman\)) Tj T*
-(   * Credit:   Official Reporter Credit Granted & Accepted \(@ccsimplyspolit\)) Tj T*
-(   * Fix PR:   https://github.com/moonlight-stream/moonlight-common-c/pull/168 \(2026-10-27\)) Tj T*
-(   * URL:      https://github.com/moonlight-stream/moonlight-common-c/security/advisories/GHSA-6hh9-gpj4-cr69) Tj T*
-() Tj T*
-(4\) Evil0ctal/Douyin_TikTok_Download_API - Merged Upstream PR #800 \(commit 59aadd6\)) Tj T*
-(   * URL:      https://github.com/Evil0ctal/Douyin_TikTok_Download_API/pull/800) Tj T*
-() Tj T*
-(5\) Active Threat Intelligence & Malware Takedown Confirmed by Netlify \(Case #1155047\)) Tj T*
-(   * Confirmed taken down by Netlify Trust & Safety \(Spriha Arora\) on 2026-10-27T13:59.) Tj T*
-ET
-endstream
-endobj
-6 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 7 0 R >>
-endobj
-7 0 obj
-<< /Length 4980 >>
-stream
-BT
-/F1 8.4 Tf
-36 760 Td
-10.3 TL
-(ANTHROPIC CVP DOSSIER \(PAGE 2\) - 40 CREDITED GITHUB SECURITY ADVISORIES) Tj T*
-(============================================================================) Tj T*
-(All 40 advisories have official reporter credit=accepted for @ccsimplyspolit) Tj T*
-(and include deterministic reproduction harnesses and unified remediation diffs:) Tj T*
+(4. PUBLISHED OPEN-SOURCE SECURITY TOOLING \(CERN / ZENODO DOIs\)) Tj T*
 (----------------------------------------------------------------------------) Tj T*
-( 1. GHSA-qm7x-j9xp-x3gv | czlonkowski/n8n-mcp                 | ACCEPTED DRAFT \(Patched v2.99.2\)) Tj T*
-( 2. GHSA-cr23-59mg-h2rc | bacnet-stack/bacnet-stack           | ACCEPTED DRAFT \(Fix PR #1595\)) Tj T*
-( 3. GHSA-6hh9-gpj4-cr69 | moonlight-stream/moonlight-common-c | MERGED FIX PR #168 \(master\)) Tj T*
-( 4. GHSA-v72p-99r9-27ff | php/php-src                         | Triage \(credit=accepted\)) Tj T*
-( 5. GHSA-wf26-5m35-vf27 | lief-project/LIEF                   | Triage \(credit=accepted\)) Tj T*
-( 6. GHSA-j47j-8qq9-628m | gopro/gpmf-parser                   | Triage \(credit=accepted\)) Tj T*
-( 7. GHSA-7m49-w797-wqp6 | pocketpy/pocketpy                   | Triage \(credit=accepted\)) Tj T*
-( 8. GHSA-h3mc-v47q-wj82 | ValveSoftware/GameNetworkingSockets | Triage \(credit=accepted\)) Tj T*
-( 9. GHSA-2qf6-94w7-mjcq | onnx/onnx                           | Triage \(credit=accepted\)) Tj T*
-(10. GHSA-4xx2-wr42-gjg3 | meshcore-dev/MeshCore               | Triage \(credit=accepted\)) Tj T*
-(11. GHSA-g278-chr4-fg9f | marcobambini/gravity                | Triage \(credit=accepted\)) Tj T*
-(12. GHSA-48q7-428c-jmfw | Graphify-Labs/graphify              | Triage \(credit=accepted\)) Tj T*
-(13. GHSA-mxjx-wqmx-hwx7 | HKUDS/nanobot                       | Triage \(credit=accepted\)) Tj T*
-(14. GHSA-gx9q-44qw-3frv | DeusData/codebase-memory-mcp        | Triage \(credit=accepted\)) Tj T*
-(15. GHSA-7mfv-3jjj-45vr | colbymchenry/codegraph              | Triage \(credit=accepted\)) Tj T*
-(16. GHSA-ggvf-5fq9-jxq2 | rtk-ai/rtk                          | Triage \(credit=accepted\)) Tj T*
-(17. GHSA-hfc6-f2q5-m256 | tinyhumansai/openhuman              | Triage \(credit=accepted\)) Tj T*
-(18. GHSA-x2gm-fvv7-8x97 | stytchauth/samlshield               | Triage \(credit=accepted\)) Tj T*
-(19. GHSA-g4pg-rg2m-6vm4 | paypal/agent-toolkit                | Triage \(credit=accepted\)) Tj T*
-(20. GHSA-29j7-mxxj-g9hg | cloudflare/mcp-server-cloudflare    | Triage \(credit=accepted\)) Tj T*
-(21. GHSA-rg4w-8g8x-2vhf | github/github-mcp-server            | Triage \(credit=accepted\)) Tj T*
-(22. GHSA-w9vr-vppr-7473 | crewAIInc/crewAI                    | Triage \(credit=accepted\)) Tj T*
-(23. GHSA-796w-fvw2-ccmp | github/gh-aw                        | Triage \(credit=accepted\)) Tj T*
-(24. GHSA-79pm-w9c4-x743 | github/gh-aw-firewall               | Triage \(credit=accepted\)) Tj T*
-(25. GHSA-66qg-3qqj-frhp | ArcadeAI/arcade-mcp                 | Triage \(credit=accepted\)) Tj T*
-(26. GHSA-pj28-99w2-cmmr | mongodb-js/mongodb-mcp-server       | Triage \(credit=accepted\)) Tj T*
-(27. GHSA-93r3-hqxp-7955 | omacom/omarchy                      | Triage \(credit=accepted\)) Tj T*
-(28. GHSA-4gxr-rmq4-gf3g | evalstate/fast-agent                | Triage \(credit=accepted\)) Tj T*
-(29. GHSA-mp5c-mhfh-vrqc | steipete/SweetCookieKit             | Triage \(credit=accepted\)) Tj T*
-(30. GHSA-w6cx-jx35-frm4 | vishalsachdev/canvas-mcp            | Triage \(credit=accepted\)) Tj T*
-(31. GHSA-qqhv-8xr3-rvqp | TETRA-2023/pytaiga-mcp              | Triage \(credit=accepted\)) Tj T*
-(32. GHSA-h55v-vc6g-w45w | ronak-create/FableCut               | Triage \(credit=accepted\)) Tj T*
-(33. GHSA-p7v6-jj9g-jrrw | zhinjs/zhin                         | Triage \(credit=accepted\)) Tj T*
-(34. GHSA-pqj5-xmmr-6v82 | nuetzliches/devstack                | Triage \(credit=accepted\)) Tj T*
-(35. GHSA-qvj6-wc44-8544 | SolaceProducts/solace-broker-mcp    | Triage \(credit=accepted\)) Tj T*
-(36. GHSA-mcpr-7m53-9gj7 | hashgraph-online/hol-guard          | Triage \(credit=accepted\)) Tj T*
-(37. GHSA-qmmh-w8m2-24hg | PrismorSec/prismor                  | Triage \(credit=accepted\)) Tj T*
-(38. GHSA-8qxf-jr7j-f6qf | miracodeai/mira                     | Triage \(credit=accepted\)) Tj T*
-(39. GHSA-fc5w-j5vw-fvvg | pipeshub-ai/pipeshub-ai             | Triage \(credit=accepted\)) Tj T*
-(40. GHSA-qxvg-wc96-c9hg | apify/apify-mcp-server              | Closed \(credit=accepted\)) Tj T*
-() Tj T*
-(VERIFIED PUBLICATIONS & IDENTITY LINKS \(ORCID 0009-0002-4183-0361\):) Tj T*
-(* Zenodo DOI 1 \(protobuf-bounds-auditor\):   https://doi.org/10.5281/zenodo.23641037) Tj T*
-(* Zenodo DOI 2 \(cs-telemetry-internals\):    https://doi.org/10.5281/zenodo.23640494) Tj T*
-(* Zenodo DOI 3 \(cardinal-engine-integrity\): https://doi.org/10.5281/zenodo.23640496) Tj T*
-(* ORCID Record:                             https://orcid.org/0009-0002-4183-0361) Tj T*
-(* Public CVD Verification Registry:         https://ccsimplyspolit.github.io/) Tj T*
+(* protobuf-bounds-auditor \(https://doi.org/10.5281/zenodo.23641037\): Static) Tj T*
+(  .proto analyzer \(CWE-1284/20/400\) with SARIF v2.1.0 & DEFINE_PROTO_FUZZER.) Tj T*
+(* cs-telemetry-internals  \(https://doi.org/10.5281/zenodo.23640494\): Source 2) Tj T*
+(  protobuf wire bounds auditing & relocation-masked PE32+ integrity analyzer.) Tj T*
+(* cardinal-engine-integrity \(https://doi.org/10.5281/zenodo.23640496\): PE32+) Tj T*
+(  section integrity, IAT boundary auditor & 4,423-function lockstep audit.) Tj T*
 ET
 endstream
 endobj
 xref
-0 8
+0 6
 0000000000 65535 f 
 0000000009 00000 n 
 0000000058 00000 n 
-0000000121 00000 n 
-0000000247 00000 n 
-0000000315 00000 n 
-0000005279 00000 n 
-0000005405 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000000309 00000 n 
 trailer
-<< /Size 8 /Root 1 0 R >>
+<< /Size 6 /Root 1 0 R >>
 startxref
-10437
+5565
 %%EOF

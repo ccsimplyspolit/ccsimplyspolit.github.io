@@ -1,4 +1,3 @@
 User-agent: *
-Disallow: /advisories/
 Allow: /
 Sitemap: https://ccsimplyspolit.github.io/sitemap.xml
