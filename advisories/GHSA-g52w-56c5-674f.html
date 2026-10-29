@@ -23,7 +23,7 @@
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
     <h1>GHSA-g52w-56c5-674f: Path Containment Omission in <code>Services.resolveWithProjectDirectory()</code> and Tool-Annotation Mismatch in <code>createWebDavTools</code> (<code>SalesforceCommerceCloud/b2c-developer-tooling</code>)</h1>
     <div class="notice">
-      <strong>[PUBLISHED BY VENDOR ON 2026-10-28T20:05:05Z &bull; PR #828 MERGED &bull; HIGH SEVERITY]</strong><br>
+      <strong>[PUBLISHED BY VENDOR &bull; CVE REQUESTED FROM GITHUB CNA &bull; FIXED IN @salesforce/b2c-dx-mcp@3.9.0 (PR #828)]</strong><br>
       Privately reported to <code>SalesforceCommerceCloud/b2c-developer-tooling</code> via GitHub Private Vulnerability Reporting (<a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/security/advisories/GHSA-g52w-56c5-674f">GHSA-g52w-56c5-674f</a>) covering <em>Path Containment Omission in Services.resolveWithProjectDirectory() and Tool-Annotation Mismatch in createWebDavTools</em> (<code>CWE-22</code>, <code>High 7.1</code>).<br>Confirmed, patched in merged Pull Request <a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/pull/828">#828</a> (commit <a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/commit/bf85de16ef"><code>bf85de16ef</code></a>), and officially published by Salesforce Commerce Cloud maintainer Chris Lavery (<code>@clavery</code>) on <code>2026-10-28T20:05:05Z</code> with accepted reporter credit to <code>@ccsimplyspolit</code>.
     </div>
     <h2>0x00 // GitHub Security Advisory &amp; Remediation Metadata</h2>
@@ -36,10 +36,12 @@
   "fix_commit": "https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/commit/bf85de16ef",
   "state": "published",
   "published_at": "2026-10-28T20:05:05Z",
+  "patched_version": "@salesforce/b2c-dx-mcp@3.9.0",
+  "cve_request_status": "Requested by maintainer (@clavery) via GitHub CNA on 2026-10-29",
   "summary": "Path Containment Omission in Services.resolveWithProjectDirectory() and Tool-Annotation Mismatch in createWebDavTools",
   "severity": "high",
   "cvss_v3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:L/A:N",
-  "status": "Published by Vendor & Patched in PR #828 (commit bf85de16ef)",
+  "status": "Published by Vendor (GHSA-g52w-56c5-674f) • CVE Requested • Fixed in @salesforce/b2c-dx-mcp@3.9.0 (PR #828)",
   "credits": [
     {
       "login": "ccsimplyspolit",
