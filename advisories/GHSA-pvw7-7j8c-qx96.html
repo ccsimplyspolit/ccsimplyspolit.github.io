@@ -23,8 +23,8 @@
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
     <h1>GHSA-pvw7-7j8c-qx96: Authorization Bypass via Pre-Decode Query-Parameter Truncation &amp; Raw Query-String Forwarding in <code>api_handlers_go2rtc_proxy.c</code> (<code>opensensor/lightNVR</code>)</h1>
     <div class="notice">
-      <strong>[ACCEPTED BY VENDOR (DRAFT GHSA) &bull; PATCHED IN v0.44.3 (COMMIT 507bce1c0715)]</strong><br>
-      Privately reported to <code>opensensor/lightNVR</code> via GitHub Private Vulnerability Reporting (<a href="https://github.com/opensensor/lightNVR/security/advisories/GHSA-pvw7-7j8c-qx96">GHSA-pvw7-7j8c-qx96</a>). Promoted to <code>state: draft</code> by upstream maintainer <code>@matteius</code> on <code>2026-10-28T21:54:57Z</code> with accepted reporter credit and patched in <code>v0.44.3</code> (<a href="https://github.com/opensensor/lightNVR/commit/507bce1c0715">commit <code>507bce1c0715</code></a>: <em>Restore authenticated go2rtc live view and harden media proxy</em>).
+      <strong>[OFFICIALLY PUBLISHED BY VENDOR &bull; CVE REQUESTED FROM GITHUB CNA &bull; PATCHED IN v0.44.3]</strong><br>
+      Officially published by upstream maintainer <code>@matteius</code> on <code>2026-10-29T04:38:44Z</code> as <a href="https://github.com/opensensor/lightNVR/security/advisories/GHSA-pvw7-7j8c-qx96">GHSA-pvw7-7j8c-qx96</a> (<code>state: published</code>, <code>High</code> severity, CVE requested from GitHub CNA on <code>2026-10-29</code>) with official reporter credit to <code>@ccsimplyspolit</code>, and patched upstream in <code>v0.44.3</code> (<a href="https://github.com/opensensor/lightNVR/commit/507bce1c0715">commit <code>507bce1c0715</code></a>: <em>Restore authenticated go2rtc live view and harden media proxy</em>).
     </div>
     <h2>0x00 // GitHub Security Advisory &amp; Remediation Metadata</h2>
     <pre><code>{
@@ -33,12 +33,14 @@
   "html_url": "https://github.com/opensensor/lightNVR/security/advisories/GHSA-pvw7-7j8c-qx96",
   "fix_commit": "https://github.com/opensensor/lightNVR/commit/507bce1c0715",
   "patched_version": "v0.44.3",
-  "state": "draft",
-  "updated_at": "2026-10-28T21:54:57Z",
+  "state": "published",
+  "published_at": "2026-10-29T04:38:44Z",
+  "updated_at": "2026-10-29T04:38:44Z",
+  "cve_request_status": "Requested by maintainer (@matteius) via GitHub CNA on 2026-10-29",
   "summary": "Authorization Bypass via Pre-Decode Query-Parameter Truncation and Raw Query-String Forwarding in api_handlers_go2rtc_proxy.c",
   "severity": "high",
   "cvss_v3": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:H",
-  "status": "Accepted by Vendor (draft GHSA) & Patched in v0.44.3 (507bce1c0715)",
+  "status": "Officially Published by Vendor (GHSA-pvw7-7j8c-qx96) • CVE Requested • Patched in v0.44.3 (507bce1c0715)",
   "credits": [
     {
       "login": "ccsimplyspolit",
