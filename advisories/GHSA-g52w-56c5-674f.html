@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GHSA-g52w-56c5-674f — SalesforceCommerceCloud/b2c-developer-tooling Published Advisory Record | Serhii Shunko (@sshunko)</title>
-  <meta name="description" content="Official vendor-published GitHub Security Advisory GHSA-g52w-56c5-674f in SalesforceCommerceCloud/b2c-developer-tooling (High severity, published 2026-10-28T20:05:05Z) reported by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <title>GHSA-g52w-56c5-674f — SalesforceCommerceCloud/b2c-developer-tooling Advisory Record | Serhii Shunko (@sshunko)</title>
+  <meta name="description" content="Coordinated vulnerability disclosure record GHSA-g52w-56c5-674f in SalesforceCommerceCloud/b2c-developer-tooling (High (7.1)) reported by Serhii Shunko (@sshunko / @ccsimplyspolit).">
   <style>
     :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,22 +23,22 @@
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
     <h1>GHSA-g52w-56c5-674f: Official Published Security Advisory (<code>SalesforceCommerceCloud/b2c-developer-tooling</code>)</h1>
     <div class="notice">
-      <strong>[PUBLISHED BY VENDOR ON 2026-10-28T20:05:05Z &bull; HIGH SEVERITY]</strong><br>
-      Privately reported to <code>SalesforceCommerceCloud/b2c-developer-tooling</code> via GitHub Private Vulnerability Reporting (<a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/security/advisories/GHSA-g52w-56c5-674f">GHSA-g52w-56c5-674f</a>) covering <em>Path Containment Omission in Services.resolveWithProjectDirectory() and Tool-Annotation Mismatch in createWebDavTools</em> (<code>CWE-22</code> / <code>CWE-73</code>, <code>High</code> severity).<br>
-      Confirmed and officially published by Salesforce Commerce Cloud maintainer Chris Lavery (<code>@clavery</code>) on <code>2026-10-28T20:05:05Z</code> with accepted reporter credit to <code>@ccsimplyspolit</code>.
+      <strong>[PUBLISHED BY VENDOR ON 2026-10-28T20:05:05Z &bull; PR #828 MERGED &bull; HIGH SEVERITY]</strong><br>
+      Privately reported to <code>SalesforceCommerceCloud/b2c-developer-tooling</code> via GitHub Private Vulnerability Reporting (<a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/security/advisories/GHSA-g52w-56c5-674f">GHSA-g52w-56c5-674f</a>) covering <em>Path Containment Omission in Services.resolveWithProjectDirectory() and Tool-Annotation Mismatch in createWebDavTools</em> (<code>CWE-22</code> / <code>CWE-73</code>, <code>High 7.1</code>).<br>Confirmed, patched in merged Pull Request <a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/pull/828">#828</a>, and officially published by Salesforce Commerce Cloud maintainer Chris Lavery (<code>@clavery</code>) on <code>2026-10-28T20:05:05Z</code> with accepted reporter credit to <code>@ccsimplyspolit</code>.
     </div>
-    <h2>0x00 // GitHub CNA &amp; Vendor Advisory Metadata</h2>
+    <h2>0x00 // GitHub Security Advisory &amp; Remediation Metadata</h2>
     <pre><code>{
   "ghsa_id": "GHSA-g52w-56c5-674f",
   "repository": "SalesforceCommerceCloud/b2c-developer-tooling",
   "package": "npm:@salesforce/b2c-dx-mcp",
   "html_url": "https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/security/advisories/GHSA-g52w-56c5-674f",
+  "fix_pr": "https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/pull/828",
   "state": "published",
   "published_at": "2026-10-28T20:05:05Z",
   "summary": "Path Containment Omission in Services.resolveWithProjectDirectory() and Tool-Annotation Mismatch in createWebDavTools",
   "severity": "high",
   "cvss_v3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:L/A:N",
-  "status": "Published by Vendor (SalesforceCommerceCloud/b2c-developer-tooling)",
+  "status": "Published by Vendor & Patched in PR #828",
   "credits": [
     {
       "login": "ccsimplyspolit",
