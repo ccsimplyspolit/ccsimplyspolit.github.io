@@ -285,10 +285,10 @@
           <div>
             <div class="card-header">
               <span class="id-tag">GHSA-g52w-56c5-674f</span>
-              <span class="cwe-tag">CWE-22 / CWE-73 (High 7.1)</span>
+              <span class="cwe-tag">CWE-22 (High 7.1)</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-g52w-56c5-674f.html" style="color: inherit;">Path Traversal via Unvalidated <code>projectDirectory</code> &amp; Arbitrary Local File Overwrite in <code>webdav_get</code> (<code>SalesforceCommerceCloud/b2c-developer-tooling</code>)</a></h3>
-            <p>Confirmed, patched in merged PR <a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/pull/828">#828</a>, and officially published by Salesforce Commerce Cloud engineering (<code>@clavery</code>) as <a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/security/advisories/GHSA-g52w-56c5-674f">GHSA-g52w-56c5-674f</a> (<code>state: published</code>, <code>High</code> severity) on <code>2026-10-28T20:05:05Z</code> with official reporter credit.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-g52w-56c5-674f.html" style="color: inherit;">Path Containment Omission in <code>Services.resolveWithProjectDirectory()</code> &amp; Tool-Annotation Mismatch in <code>createWebDavTools</code> (<code>SalesforceCommerceCloud/b2c-developer-tooling</code>)</a></h3>
+            <p>Confirmed, patched in merged PR <a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/pull/828">#828</a> (<a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/commit/bf85de16ef"><code>bf85de16ef</code></a>), and officially published by Salesforce Commerce Cloud engineering (<code>@clavery</code>) as <a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/security/advisories/GHSA-g52w-56c5-674f">GHSA-g52w-56c5-674f</a> (<code>state: published</code>, <code>High</code> severity) on <code>2026-10-28T20:05:05Z</code> with official reporter credit.</p>
           </div>
           <div class="card-footer">
             <a href="https://ccsimplyspolit.github.io/advisories/GHSA-g52w-56c5-674f.html"><span class="embargo-tag">Published by Vendor (GHSA-g52w-56c5-674f &bull; PR #828 Merged) &rarr;</span></a>
@@ -311,13 +311,13 @@
           <div>
             <div class="card-header">
               <span class="id-tag">GHSA-pvw7-7j8c-qx96</span>
-              <span class="cwe-tag">CWE-287 / CWE-306 / CWE-918 (High 8.1)</span>
+              <span class="cwe-tag">CWE-285 / CWE-416 (High 8.1)</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-pvw7-7j8c-qx96.html" style="color: inherit;">Unauthenticated <code>/api/go2rtc/*</code> Proxy Bypass with Embedded Admin Basic-Auth Injection in <code>handle_go2rtc_proxy</code> (<code>opensensor/lightNVR</code>)</a></h3>
-            <p>Accepted into GitHub Security Advisory <code>draft</code> state (<a href="https://github.com/opensensor/lightNVR/security/advisories/GHSA-pvw7-7j8c-qx96">GHSA-pvw7-7j8c-qx96</a>) with official reporter credit and patched upstream in <code>lightNVR v0.44.3</code> (<a href="https://github.com/opensensor/lightNVR/commit/507bce1c07">commit <code>507bce1c07</code></a>).</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-pvw7-7j8c-qx96.html" style="color: inherit;">Authorization Bypass via Pre-Decode Query-Parameter Truncation &amp; Raw Query-String Forwarding in <code>api_handlers_go2rtc_proxy.c</code> (<code>opensensor/lightNVR</code>)</a></h3>
+            <p>Accepted into GitHub Security Advisory <code>draft</code> state (<a href="https://github.com/opensensor/lightNVR/security/advisories/GHSA-pvw7-7j8c-qx96">GHSA-pvw7-7j8c-qx96</a>) with official reporter credit and patched upstream in <code>lightNVR v0.44.3</code> (<a href="https://github.com/opensensor/lightNVR/commit/507bce1c0715">commit <code>507bce1c0715</code></a>).</p>
           </div>
           <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-pvw7-7j8c-qx96.html"><span class="embargo-tag">Accepted (draft GHSA) &bull; Patched in v0.44.3 (507bce1c07) &rarr;</span></a>
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-pvw7-7j8c-qx96.html"><span class="embargo-tag">Accepted (draft GHSA) &bull; Patched in v0.44.3 (507bce1c0715) &rarr;</span></a>
           </div>
         </article>
         <article class="card">
@@ -326,7 +326,7 @@
               <span class="id-tag">GHSA-qm7x-j9xp-x3gv</span>
               <span class="cwe-tag">CWE-918 / CWE-184</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-qm7x-j9xp-x3gv.html" style="color: inherit;">SSRF Protection Bypass in <code>validateUrlSync</code> and <code>validateWebhookUrl</code> via Trailing-Dot FQDNs and RFC 6761 <code>*.localhost</code> Subdomains (<code>czlonkowski/n8n-mcp</code>)</a></h3>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-qm7x-j9xp-x3gv.html" style="color: inherit;">Hostname Checks in SSRF Protection Skipped Trailing-Dot &amp; <code>*.localhost</code> Names in <code>validateUrlSync</code> &amp; <code>validateWebhookUrl</code> (<code>czlonkowski/n8n-mcp</code>)</a></h3>
             <p>Accepted into GitHub Security Advisory <code>draft</code> state (<a href="https://github.com/czlonkowski/n8n-mcp/security/advisories/GHSA-qm7x-j9xp-x3gv">GHSA-qm7x-j9xp-x3gv</a>) and patched upstream in <code>n8n-mcp v2.99.2</code> (<a href="https://github.com/czlonkowski/n8n-mcp/commit/a49dfb4">commit <code>a49dfb4</code></a>) with official reporter credit.</p>
           </div>
           <div class="card-footer">
@@ -363,10 +363,10 @@
           <div>
             <div class="card-header">
               <span class="id-tag">GHSA-w6v4-9j58-rv79</span>
-              <span class="cwe-tag">CWE-120 / CWE-190 / CWE-787</span>
+              <span class="cwe-tag">CWE-125 / CWE-345 (Critical 9.8)</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-w6v4-9j58-rv79.html" style="color: inherit;">TACACS+ Authen Start/Continue Raw-Mode Bound Check &amp; Header Validation in <code>src/protocols/tacacs/decode.c</code> &amp; <code>base.c</code> (<code>FreeRADIUS/freeradius-server</code>)</a></h3>
-            <p>Reported via <a href="https://github.com/FreeRADIUS/freeradius-server/security/advisories/GHSA-w6v4-9j58-rv79">GHSA-w6v4-9j58-rv79</a>; confirmed and patched upstream on <code>master</code> by FreeRADIUS lead developer Alan DeKok (<code>@alandekok</code>) in commits <a href="https://github.com/FreeRADIUS/freeradius-server/commit/1ef1b499f1"><code>1ef1b499f1</code></a> and <a href="https://github.com/FreeRADIUS/freeradius-server/commit/1c7661e1bd"><code>1c7661e1bd</code></a>.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-w6v4-9j58-rv79.html" style="color: inherit;">Heap OOB Read on Nested TLV Decoding in <code>eap_fast_decode_pair</code> &amp; Crypto-Binding Bypass in <code>eap_fast_process_tlvs</code> (<code>FreeRADIUS/freeradius-server</code>)</a></h3>
+            <p>Reported via <a href="https://github.com/FreeRADIUS/freeradius-server/security/advisories/GHSA-w6v4-9j58-rv79">GHSA-w6v4-9j58-rv79</a> (<code>rlm_eap_fast.c</code>); confirmed and patched upstream on <code>master</code> by FreeRADIUS lead developer Alan DeKok (<code>@alandekok</code>) in commits <a href="https://github.com/FreeRADIUS/freeradius-server/commit/1ef1b499f1"><code>1ef1b499f1</code></a> and <a href="https://github.com/FreeRADIUS/freeradius-server/commit/1c7661e1bd"><code>1c7661e1bd</code></a>.</p>
           </div>
           <div class="card-footer">
             <a href="https://ccsimplyspolit.github.io/advisories/GHSA-w6v4-9j58-rv79.html"><span class="embargo-tag">Patched Upstream on master (commits 1ef1b499f1 &amp; 1c7661e1bd) &rarr;</span></a>
@@ -376,9 +376,9 @@
           <div>
             <div class="card-header">
               <span class="id-tag">GHSA-x9vx-8c8r-c57x</span>
-              <span class="cwe-tag">CWE-362 / CWE-664 / CWE-287</span>
+              <span class="cwe-tag">CWE-22 / CWE-88 (Medium 5.4)</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-x9vx-8c8r-c57x.html" style="color: inherit;">Cross-Request Session Hijacking &amp; Bearer Token Race via Shared Singletons in HTTP Mode (<code>Infomaniak/mcp-server-kchat</code>)</a></h3>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-x9vx-8c8r-c57x.html" style="color: inherit;">Unvalidated <code>username</code> Parameter Path Traversal in <code>getUserByUsername()</code> (<code>src/kchat-client.ts</code> &amp; <code>src/index.ts</code>) (<code>Infomaniak/mcp-server-kchat</code>)</a></h3>
             <p>Reported via <a href="https://github.com/Infomaniak/mcp-server-kchat/security/advisories/GHSA-x9vx-8c8r-c57x">GHSA-x9vx-8c8r-c57x</a>; confirmed and patched upstream by <code>@L3o-pold</code> in Pull Request <a href="https://github.com/Infomaniak/mcp-server-kchat/pull/70">#70</a> (<a href="https://github.com/Infomaniak/mcp-server-kchat/commit/5ed2728f5aa9d1829a3023c673bca8b6037ecbf8">commit <code>5ed2728f5a</code></a>, released in <code>v1.1.1</code>).</p>
           </div>
           <div class="card-footer">

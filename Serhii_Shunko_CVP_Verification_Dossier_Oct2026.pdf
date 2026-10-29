@@ -12,23 +12,23 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Courier >>
 endobj
 5 0 obj
-<< /Length 6000 >>
+<< /Length 5668 >>
 stream
 BT
-/F1 8.2 Tf
-36 760 Td
-9.6 TL
+/F1 8.4 Tf
+38 762 Td
+10.1 TL
 (ANTHROPIC CYBER VERIFICATION PROGRAM \(CVP\) - APPEALS & ELIGIBILITY DOSSIER) Tj T*
 (============================================================================) Tj T*
-(Applicant Name:        Serhii Shunko) Tj T*
-(Account Email:         cc.simply.spolit@gmail.com) Tj T*
-(Organization UUID:     c4ebb284-8fa8-4c0b-95fb-9cf6e36fc24b) Tj T*
-(Identity Status:       pass_011Cfqc1KQAujYVncduA6dDL \(VERIFICATION_TYPE_TAF_CYBER_IDV: VERIFIED\)) Tj T*
-(Verification Portal:   https://ccsimplyspolit.github.io/) Tj T*
+(Applicant Name:       Serhii Shunko) Tj T*
+(Account Email:        cc.simply.spolit@gmail.com) Tj T*
+(Organization UUID:    c4ebb284-8fa8-4c0b-95fb-9cf6e36fc24b) Tj T*
+(Identity Status:      pass_011Cfqc1KQAujYVncduA6dDL \(VERIFICATION_TYPE_TAF_CYBER_IDV: VERIFIED\)) Tj T*
+(Verification Portal:  https://ccsimplyspolit.github.io/) Tj T*
 (GitHub \(only account\): https://github.com/ccsimplyspolit) Tj T*
-(HackerOne / Bugcrowd:  https://hackerone.com/sshunko | https://bugcrowd.com/h/sshunko) Tj T*
-(LinkedIn / ORCID iD:   https://www.linkedin.com/in/sshunko/ | https://orcid.org/0009-0002-4183-0361) Tj T*
-(CERN / Zenodo DOIs:    10.5281/zenodo.23641037 | 10.5281/zenodo.23640494 | 10.5281/zenodo.23640496) Tj T*
+(HackerOne / Bugcrowd: https://hackerone.com/sshunko | https://bugcrowd.com/h/sshunko) Tj T*
+(LinkedIn / ORCID iD:  https://www.linkedin.com/in/sshunko/ | https://orcid.org/0009-0002-4183-0361) Tj T*
+(CERN / Zenodo DOIs:   10.5281/zenodo.23641037 | 10.5281/zenodo.23640494 | 10.5281/zenodo.23640496) Tj T*
 () Tj T*
 (1. SUMMARY OF DEFENSIVE RESEARCH & REASON FOR APPEAL) Tj T*
 (----------------------------------------------------------------------------) Tj T*
@@ -36,48 +36,44 @@ BT
 (C/C++ network/media parsers, embeddable bytecode VMs, and AI/MCP server) Tj T*
 (infrastructure under Coordinated Vulnerability Disclosure \(CVD\). My identity) Tj T*
 (is verified via Persona \(VERIFICATION_TYPE_TAF_CYBER_IDV\). This dossier) Tj T*
-(documents 8 maintainer-acknowledged vulnerability disclosures \(including) Tj T*
-(officially published GHSA-g52w-56c5-674f\), 58 active private GHSA reports in) Tj T*
-(maintainer triage, 4 active HackerOne disclosures, and 3 CERN/Zenodo DOIs.) Tj T*
+(documents 8 maintainer-acknowledged vulnerability disclosures, 58 private) Tj T*
+(GHSA reports in maintainer triage, 4 active HackerOne disclosures,) Tj T*
+(and 3 CERN/Zenodo DOIs to satisfy CVP Defense Access eligibility.) Tj T*
 () Tj T*
 (2. MAINTAINER-ACKNOWLEDGED VULNERABILITY DISCLOSURES \(8 TOTAL\)) Tj T*
 (----------------------------------------------------------------------------) Tj T*
-(1\) GHSA-g52w-56c5-674f | SalesforceCommerceCloud/b2c-developer-tooling \(High 7.1, CWE-22/73\)) Tj T*
-(   * Status: Officially Published by Vendor \(2026-10-28\) & Patched in Merged PR #828.) Tj T*
-(   * Record: https://ccsimplyspolit.github.io/advisories/GHSA-g52w-56c5-674f.html) Tj T*
-(2\) HackerOne #4148578 | brave/ai-gateway \(Brave Software Bug Bounty Program, CWE-20/755\)) Tj T*
+(1\) GHSA-g52w-56c5-674f | SalesforceCommerceCloud/b2c-developer-tooling \(High 7.1, CWE-22\)) Tj T*
+(   * Scope:  Path Containment Omission in Services.resolveWithProjectDirectory\(\)) Tj T*
+(   * Status: Officially PUBLISHED by Salesforce \(2026-10-28\); Fix PR #828 Merged.) Tj T*
+(2\) HackerOne #4148578 | brave/ai-gateway \(Brave Software Bug Bounty Program\)) Tj T*
+(   * Scope:  Streaming Tool-Call Alignment Bypass & Attachment Extraction Bug) Tj T*
 (   * Status: Closed as Informative 2026-10-27; $50.00 USD bounty awarded.) Tj T*
-(   * Record: https://ccsimplyspolit.github.io/advisories/H1-4148578.html) Tj T*
-(3\) GHSA-pvw7-7j8c-qx96 | opensensor/lightNVR \(High 8.1, CWE-287/306/918\)) Tj T*
-(   * Status: Accepted into Draft GHSA & Patched in v0.44.3 \(commit 507bce1c07\).) Tj T*
-(   * Record: https://ccsimplyspolit.github.io/advisories/GHSA-pvw7-7j8c-qx96.html) Tj T*
+(3\) GHSA-pvw7-7j8c-qx96 | opensensor/lightNVR \(High 8.1, CWE-285 / CWE-416\)) Tj T*
+(   * Scope:  Auth Bypass via Query-Param Truncation in api_handlers_go2rtc_proxy.c) Tj T*
+(   * Status: Accepted into Draft GHSA by @matteius & Patched in v0.44.3 \(507bce1c0715\).) Tj T*
 (4\) GHSA-qm7x-j9xp-x3gv | czlonkowski/n8n-mcp \(CWE-918 / CWE-184\)) Tj T*
+(   * Scope:  SSRF Protection Skipped Trailing-Dot & *.localhost in validateUrlSync) Tj T*
 (   * Status: Accepted into Draft GHSA & Patched in v2.99.2 \(commit a49dfb4\).) Tj T*
-(   * Record: https://ccsimplyspolit.github.io/advisories/GHSA-qm7x-j9xp-x3gv.html) Tj T*
-(5\) GHSA-cr23-59mg-h2rc | bacnet-stack/bacnet-stack \(High 8.2, CWE-835/125/787\)) Tj T*
+(5\) GHSA-cr23-59mg-h2rc | bacnet-stack/bacnet-stack \(High 8.2, CWE-835 / CWE-125\)) Tj T*
+(   * Scope:  Negative Decode Length Infinite Loop & OOB Read in Calendar_Write_Property) Tj T*
 (   * Status: Accepted into Draft GHSA by @skarg; Upstream Fix PR #1595 Open.) Tj T*
-(   * Record: https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html) Tj T*
 (6\) GHSA-6hh9-gpj4-cr69 | moonlight-stream/moonlight-common-c \(CWE-125 / CWE-908\)) Tj T*
+(   * Scope:  Missing IDX_DS_ADAPTIVE_TRIGGERS Sentinel in src/ControlStream.c) Tj T*
 (   * Status: Fix PR #168 Merged into master by @cgutman on 2026-10-26T22:46:49Z.) Tj T*
-(   * Record: https://ccsimplyspolit.github.io/advisories/GHSA-6hh9-gpj4-cr69.html) Tj T*
-(7\) GHSA-w6v4-9j58-rv79 | FreeRADIUS/freeradius-server \(High 7.5, CWE-120/190/787\)) Tj T*
-(   * Status: Patched Upstream on master by @alandekok \(commits 1ef1b499f1 & 1c7661e1bd\).) Tj T*
-(   * Record: https://ccsimplyspolit.github.io/advisories/GHSA-w6v4-9j58-rv79.html) Tj T*
-(8\) GHSA-x9vx-8c8r-c57x | Infomaniak/mcp-server-kchat \(High 8.1, CWE-362/664/287\)) Tj T*
-(   * Status: Patched Upstream in v1.1.1 \(Fix PR #70 Merged, commit 5ed2728f5a\).) Tj T*
-(   * Record: https://ccsimplyspolit.github.io/advisories/GHSA-x9vx-8c8r-c57x.html) Tj T*
+(7\) GHSA-w6v4-9j58-rv79 | FreeRADIUS/freeradius-server \(Critical 9.8, CWE-125 / CWE-345\)) Tj T*
+(   * Scope:  EAP-FAST Nested TLV OOB Read & Crypto-Binding Bypass in rlm_eap_fast.c) Tj T*
+(   * Status: Patched on master by @alandekok \(commits 1ef1b499f1 & 1c7661e1bd\).) Tj T*
+(8\) GHSA-x9vx-8c8r-c57x | Infomaniak/mcp-server-kchat \(Medium 5.4, CWE-22 / CWE-88\)) Tj T*
+(   * Scope:  Unvalidated username Path Traversal in getUserByUsername\(\) \(kchat-client.ts\)) Tj T*
+(   * Status: Fix PR #70 Merged by @L3o-pold in v1.1.1 \(commit 5ed2728f5a\).) Tj T*
 () Tj T*
 (3. ACTIVE PRIVATE DISCLOSURES IN UPSTREAM MAINTAINER TRIAGE) Tj T*
 (----------------------------------------------------------------------------) Tj T*
-(* GitHub Private Vulnerability Reporting \(58 Active Advisories in Triage\):) Tj T*
-(  58 private GHSAs \(state: triage\) across C/C++ protocol/media parsers) Tj T*
-(  \(LIEF, gpmf-parser, pocketpy, GameNetworkingSockets, onnx, MeshCore, gravity\)) Tj T*
-(  and AI/MCP servers \(graphify, nanobot, codebase-memory-mcp, codegraph, rtk,) Tj T*
-(  openhuman, samlshield, agent-toolkit, mcp-server-cloudflare, github-mcp-server,) Tj T*
-(  hf-mcp-server, codescene-mcp-server, app-mesh\), each paired with a patch.) Tj T*
+(* GitHub Private Vulnerability Reporting \(58 Advisories in Triage, 29 Oct\):) Tj T*
+(  58 private GHSAs \(state: triage\) across C/C++ protocol/media parsers and) Tj T*
+(  AI/MCP servers, each paired with an ASan/runtime reproducer and patch.) Tj T*
 (* Active HackerOne Disclosures in Upstream Triage \(4 Reports, state: new\):) Tj T*
-(  - #4148863 \(Ruby IBB / ruby/ruby Onigmo regex engine; CRuby committer) Tj T*
-(    @makenowjust joined the report thread\)) Tj T*
+(  - #4148863 \(Ruby IBB / ruby/ruby Onigmo regex engine; @makenowjust joined\)) Tj T*
 (  - #4145362 \(Nebius AI VDP: nebius/mcp-server & contree-mcp CLI flag bypass\)) Tj T*
 (  - #4145363 \(PagerDuty VDP: rundeck/mcp cross-origin token exfiltration/SSRF\)) Tj T*
 (  - #4145745 \(PagerDuty VDP: rundeck/rundeck JobFileRecord path traversal\)) Tj T*
@@ -105,5 +101,5 @@ xref
 trailer
 << /Size 6 /Root 1 0 R >>
 startxref
-6361
+6029
 %%EOF
