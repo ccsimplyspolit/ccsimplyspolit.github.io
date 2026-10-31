@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GHSA-4x7j-8w5q-5f7w — ntop/nDPI Advisory Record | Serhii Shunko (@sshunko)</title>
+  <meta name="description" content="Coordinated vulnerability disclosure record GHSA-4x7j-8w5q-5f7w in ntop/nDPI (Moderate 5.3, CWE-670) reported by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <style>
+    :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.65; padding: 2rem 1.25rem 4rem; }
+    .container { max-width: 960px; margin: 0 auto; }
+    a { color: var(--accent); text-decoration: none; }
+    .back { font-family: var(--mono); font-size: 0.88rem; display: inline-block; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    h2 { font-family: var(--mono); font-size: 1.05rem; color: var(--accent); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+    .notice { background: rgba(52, 211, 153, 0.08); border: 1px solid rgba(52, 211, 153, 0.35); border-radius: 6px; padding: 1rem 1.2rem; margin: 1.25rem 0; font-size: 0.92rem; }
+    pre { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.5; margin: 0.75rem 0; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
+    <h1>GHSA-4x7j-8w5q-5f7w: DCE/RPC Fragment Length Detection Bypass &amp; DHCP Option Offset Clamping in <code>ntop/nDPI</code></h1>
+    <div class="notice">
+      <strong>[PUBLISHED BY VENDOR &bull; FIXED IN COMMIT ff44ed2]</strong><br>
+      Privately reported to <code>ntop/nDPI</code> via GitHub Private Vulnerability Reporting (<a href="https://github.com/ntop/nDPI/security/advisories/GHSA-4x7j-8w5q-5f7w">GHSA-4x7j-8w5q-5f7w</a>) covering <code>src/lib/protocols/dcerpc.c</code> and <code>src/lib/protocols/dhcp.c</code>.<br>Confirmed, fixed in commit <a href="https://github.com/ntop/nDPI/commit/ff44ed2"><code>ff44ed2</code></a>, and officially published by nDPI maintainer Ivan Nardi (<code>@IvanNardi</code>) on <code>2026-10-30T17:39:13Z</code> with accepted reporter credit to <code>@ccsimplyspolit</code>.
+    </div>
+    <h2>0x00 // GitHub Security Advisory &amp; Remediation Metadata</h2>
+    <pre><code>{
+  "ghsa_id": "GHSA-4x7j-8w5q-5f7w",
+  "repository": "ntop/nDPI",
+  "html_url": "https://github.com/ntop/nDPI/security/advisories/GHSA-4x7j-8w5q-5f7w",
+  "fix_commit": "https://github.com/ntop/nDPI/commit/ff44ed2",
+  "state": "published",
+  "published_at": "2026-10-30T17:39:13Z",
+  "severity": "moderate",
+  "cvss_v3": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
+  "credits": [
+    {
+      "login": "ccsimplyspolit",
+      "type": "reporter",
+      "state": "accepted"
+    }
+  ],
+  "cwe_ids": [
+    "CWE-670"
+  ]
+}</code></pre>
+  </div>
+</body>
+</html>

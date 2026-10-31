@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GHSA-hw42-92fr-x9vc — LTplus-AG/ifc-lite Advisory Record | Serhii Shunko (@sshunko)</title>
+  <meta name="description" content="Coordinated vulnerability disclosure record GHSA-hw42-92fr-x9vc in LTplus-AG/ifc-lite (Moderate, CWE-74) reported by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <style>
+    :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.65; padding: 2rem 1.25rem 4rem; }
+    .container { max-width: 960px; margin: 0 auto; }
+    a { color: var(--accent); text-decoration: none; }
+    .back { font-family: var(--mono); font-size: 0.88rem; display: inline-block; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    h2 { font-family: var(--mono); font-size: 1.05rem; color: var(--accent); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+    .notice { background: rgba(52, 211, 153, 0.08); border: 1px solid rgba(52, 211, 153, 0.35); border-radius: 6px; padding: 1rem 1.2rem; margin: 1.25rem 0; font-size: 0.92rem; }
+    pre { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.5; margin: 0.75rem 0; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
+    <h1>GHSA-hw42-92fr-x9vc: STEP Record Injection via Unvalidated Typed-Value Type Names in the STEP Mutation Writer (<code>LTplus-AG/ifc-lite</code>)</h1>
+    <div class="notice">
+      <strong>[PUBLISHED BY VENDOR &bull; FIXED IN @ifc-lite/export@4.13.1 &amp; ifc-lite-export@27.0.0]</strong><br>
+      Reported to <code>LTplus-AG/ifc-lite</code> and officially published as <a href="https://github.com/LTplus-AG/ifc-lite/security/advisories/GHSA-hw42-92fr-x9vc">GHSA-hw42-92fr-x9vc</a> by maintainer Louis True (<code>@louistrue</code>) on <code>2026-10-29</code> with accepted finder credit to <code>@ccsimplyspolit</code>.
+    </div>
+    <h2>0x00 // GitHub Security Advisory &amp; Remediation Metadata</h2>
+    <pre><code>{
+  "ghsa_id": "GHSA-hw42-92fr-x9vc",
+  "repository": "LTplus-AG/ifc-lite",
+  "packages": ["npm:@ifc-lite/export", "cargo:ifc-lite-export"],
+  "html_url": "https://github.com/LTplus-AG/ifc-lite/security/advisories/GHSA-hw42-92fr-x9vc",
+  "state": "published",
+  "published_at": "2026-10-29",
+  "patched_versions": ["@ifc-lite/export@4.13.1", "ifc-lite-export@27.0.0"],
+  "summary": "STEP record injection via unvalidated typed-value type names in the STEP mutation writer",
+  "severity": "moderate",
+  "credits": [
+    {
+      "login": "ccsimplyspolit",
+      "type": "finder",
+      "state": "accepted"
+    }
+  ],
+  "cwe_ids": [
+    "CWE-74"
+  ]
+}</code></pre>
+  </div>
+</body>
+</html>

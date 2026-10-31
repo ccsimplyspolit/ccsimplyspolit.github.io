@@ -278,9 +278,74 @@
     <section id="disclosures">
       <h2>0x00 // Maintainer-Acknowledged Coordinated Vulnerability Disclosures</h2>
       <div class="embargo-banner">
-        <strong>[CVD POLICY]</strong> Only vendor-accepted advisories, upstream-merged security patches, and bounty-awarded disclosures are published with full technical details in Section <code>0x00</code>. Active disclosures currently in upstream maintainer triage are summarized in Section <code>0x01</code> with exploit details withheld until remediation.
+        <strong>[CVD POLICY]</strong> Only vendor-accepted advisories, upstream-merged security patches, and bounty-awarded disclosures are published with full technical details in Section <code>0x00</code>. Unpatched reports remain strictly private until upstream remediation is complete.
       </div>
       <div class="grid">
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-qr8h-p53p-x564</span>
+              <span class="cwe-tag">CWE-125 / CWE-191 / CWE-835 (High 8.2)</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-qr8h-p53p-x564.html" style="color: inherit;">RTC: Crash and Heap Overflow from a Malformed RTCP Packet in <code>srs_kernel_rtc_rtcp.cpp</code> (<code>ossrs/srs</code>)</a></h3>
+            <p>Confirmed, patched in Pull Request <a href="https://github.com/ossrs/srs/pull/4669">#4669</a> (<a href="https://github.com/ossrs/srs/commit/e3830fc46"><code>e3830fc46</code></a>, <code>v6.0-r3</code>), and officially published by SRS lead maintainer Winlin (<code>@winlinvip</code>) as <a href="https://github.com/ossrs/srs/security/advisories/GHSA-qr8h-p53p-x564">GHSA-qr8h-p53p-x564</a> (<code>state: published</code>, <code>High</code> severity, CVE requested) on <code>2026-10-30T14:14:41Z</code> with accepted reporter credit.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-qr8h-p53p-x564.html"><span class="embargo-tag">Published by Vendor (GHSA-qr8h-p53p-x564 &bull; CVE Requested &bull; PR #4669) &rarr;</span></a>
+          </div>
+        </article>
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-4x7j-8w5q-5f7w</span>
+              <span class="cwe-tag">CWE-670 (Moderate 5.3)</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-4x7j-8w5q-5f7w.html" style="color: inherit;">DCE/RPC Fragment Length Detection Bypass &amp; DHCP Option Offset Clamping in <code>dcerpc.c</code> / <code>dhcp.c</code> (<code>ntop/nDPI</code>)</a></h3>
+            <p>Confirmed, patched in commit <a href="https://github.com/ntop/nDPI/commit/ff44ed2"><code>ff44ed2</code></a>, and officially published by nDPI maintainer Ivan Nardi (<code>@IvanNardi</code>) as <a href="https://github.com/ntop/nDPI/security/advisories/GHSA-4x7j-8w5q-5f7w">GHSA-4x7j-8w5q-5f7w</a> (<code>state: published</code>) on <code>2026-10-30T17:39:13Z</code> with accepted reporter credit.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-4x7j-8w5q-5f7w.html"><span class="embargo-tag">Published by Vendor (GHSA-4x7j-8w5q-5f7w &bull; Fixed in ff44ed2) &rarr;</span></a>
+          </div>
+        </article>
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-hw42-92fr-x9vc</span>
+              <span class="cwe-tag">CWE-74 (Moderate)</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-hw42-92fr-x9vc.html" style="color: inherit;">STEP Record Injection via Unvalidated Typed-Value Type Names in the STEP Mutation Writer (<code>LTplus-AG/ifc-lite</code>)</a></h3>
+            <p>Officially published by upstream maintainer <code>@louistrue</code> on <code>2026-10-29</code> as <a href="https://github.com/LTplus-AG/ifc-lite/security/advisories/GHSA-hw42-92fr-x9vc">GHSA-hw42-92fr-x9vc</a> (<code>state: published</code>) and patched in <code>@ifc-lite/export@4.13.1</code> and <code>ifc-lite-export@27.0.0</code> with accepted finder credit.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-hw42-92fr-x9vc.html"><span class="embargo-tag">Published by Vendor (GHSA-hw42-92fr-x9vc &bull; v4.13.1 / v27.0.0) &rarr;</span></a>
+          </div>
+        </article>
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-xvmx-7qq5-34q6</span>
+              <span class="cwe-tag">CWE-125 / CWE-787 / CWE-191 (Critical 9.1)</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-xvmx-7qq5-34q6.html" style="color: inherit;">Out-of-Bounds Read/Write via Unchecked IEEE 1722 ACF Message &amp; CAN Padding Lengths (<code>COVESA/Open1722</code>)</a></h3>
+            <p>Accepted into GitHub Security Advisory <code>draft</code> state (<a href="https://github.com/COVESA/Open1722/security/advisories/GHSA-xvmx-7qq5-34q6">GHSA-xvmx-7qq5-34q6</a>) with CVE requested from GitHub CNA; upstream fix merged in Pull Request <a href="https://github.com/COVESA/Open1722/pull/69">#69</a> (<a href="https://github.com/COVESA/Open1722/commit/78de7ef"><code>78de7ef</code></a>).</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-xvmx-7qq5-34q6.html"><span class="embargo-tag">Accepted by Vendor (draft GHSA &bull; CVE Requested &bull; PR #69 Merged) &rarr;</span></a>
+          </div>
+        </article>
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-43p9-7988-4jf7</span>
+              <span class="cwe-tag">CWE-644 / CWE-79</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-43p9-7988-4jf7.html" style="color: inherit;"><code>Sisk.Documenting</code> Documentation Exporter <code>Origin</code> / <code>Host</code> Header Link Injection (<code>sisk-http/core</code>)</a></h3>
+            <p>Accepted by lead maintainer Gabriel Scatolin (<code>@CypherPotato</code>) into GitHub Security Advisory <code>draft</code> state (<a href="https://github.com/sisk-http/core/security/advisories/GHSA-43p9-7988-4jf7">GHSA-43p9-7988-4jf7</a>) with CVE requested from GitHub CNA; patched in <a href="https://github.com/sisk-http/core/commit/51893cf">commit <code>51893cf</code></a> (<code>v1.18.2</code>).</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-43p9-7988-4jf7.html"><span class="embargo-tag">Accepted by Vendor (draft GHSA &bull; CVE Requested &bull; v1.18.2) &rarr;</span></a>
+          </div>
+        </article>
         <article class="card">
           <div>
             <div class="card-header">
@@ -388,57 +453,8 @@
       </div>
     </section>
 
-    <section id="active-pipeline">
-      <h2>0x01 // Active Coordinated Disclosure Pipeline (Under Upstream Triage)</h2>
-      <p style="color: var(--muted); font-size: 0.92rem; margin-bottom: 0.85rem;">
-        Alongside the 8 maintainer-acknowledged disclosures in Section <code>0x00</code>, the following coordinated vulnerability reports are currently in active upstream triage. Per CVD policy, reproduction harnesses and unpatched source locations remain embargoed until maintainer review concludes.
-      </p>
-      <table>
-        <thead>
-          <tr>
-            <th>Channel / Program</th>
-            <th>Target Scope</th>
-            <th>Vulnerability Classes</th>
-            <th>Pipeline Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>GitHub PVR (58 GHSAs in triage)</code></td>
-            <td>Open-source C/C++ network &amp; media parsers, embeddable bytecode VMs, and AI/MCP server repositories</td>
-            <td><code>CWE-125 / CWE-787 / CWE-191 / CWE-918 / CWE-22</code></td>
-            <td><span class="triage-tag">58 Private Advisories in Maintainer Triage (state: triage)</span></td>
-          </tr>
-          <tr>
-            <td><code>HackerOne #4148863</code></td>
-            <td><code>ruby/ruby</code> (Onigmo Regular Expression Engine, Internet Bug Bounty)</td>
-            <td><code>CWE-682 / Regex Match-Cache State</code></td>
-            <td><span class="triage-tag">In Upstream Triage &bull; CRuby Committer @makenowjust Joined</span></td>
-          </tr>
-          <tr>
-            <td><code>HackerOne #4145362</code></td>
-            <td>Nebius AI VDP (<code>nebius/mcp-server</code> &amp; <code>nebius/contree-mcp</code>)</td>
-            <td><code>CWE-88 / CWE-59</code></td>
-            <td><span class="triage-tag">Passed Preliminary Triage (state: new)</span></td>
-          </tr>
-          <tr>
-            <td><code>HackerOne #4145363 &amp; #4145745</code></td>
-            <td>PagerDuty VDP (<code>rundeck/mcp</code> &amp; <code>rundeck/rundeck</code>)</td>
-            <td><code>CWE-918 / CWE-22 / CWE-639</code></td>
-            <td><span class="triage-tag">Passed Preliminary Triage (state: new)</span></td>
-          </tr>
-          <tr>
-            <td><a href="https://bugcrowd.com/h/sshunko"><code>Bugcrowd (@sshunko)</code></a></td>
-            <td>Public &amp; Invite-Only Private Bug Bounty Programs (including <strong>Cohere</strong> private program)</td>
-            <td><code>AI/LLM Gateway &amp; Parser Security</code></td>
-            <td><span class="embargo-tag">Active Verified Researcher</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
     <section id="binary-research">
-      <h2>0x02 // Open-Source Security Tooling &amp; Published Zenodo DOIs</h2>
+      <h2>0x01 // Open-Source Security Tooling &amp; Published Zenodo DOIs</h2>
       <div class="grid">
         <article class="card">
           <div>
@@ -485,7 +501,7 @@
     </section>
 
     <section id="writeups">
-      <h2>0x03 // Methodology Write-ups (Fuzzing &amp; Memory Safety)</h2>
+      <h2>0x02 // Methodology Write-ups (Fuzzing &amp; Memory Safety)</h2>
       <div class="grid">
         <article class="card">
           <div>
