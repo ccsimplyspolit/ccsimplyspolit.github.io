@@ -375,8 +375,8 @@
     <!-- Key Metrics Counter Section -->
     <section class="metrics-grid">
       <div class="metric-card">
-        <div class="metric-val">12</div>
-        <div class="metric-label">Verified GHSAs</div>
+        <div class="metric-val">19</div>
+        <div class="metric-label">Published GHSAs &amp; Fixes</div>
       </div>
       <div class="metric-card">
         <div class="metric-val">3</div>
@@ -578,18 +578,48 @@
           </div>
         </article>
 
-        <!-- 12. AmadeusITGroup/ai-primitives-hub (GHSA-phrf-cwfr-v2rw) -->
-        <article class="card" data-category="mcp" data-text="amadeus amadeusitgroup ai-primitives-hub ghsa-phrf-cwfr-v2rw cwe-79 cwe-22 xss webview path traversal high">
+        <!-- 12. siyuan-note/siyuan (GHSA-g275-mf26-qx9r) -->
+        <article class="card" data-category="mcp" data-text="siyuan siyuan-note ghsa-g275-mf26-qx9r cwe-79 cwe-94 xss rce critical 9.6">
           <div>
             <div class="card-header">
-              <span class="id-tag">GHSA-phrf-cwfr-v2rw</span>
-              <span class="cwe-tag">CWE-79 / CWE-22 (High)</span>
+              <span class="id-tag">GHSA-g275-mf26-qx9r</span>
+              <span class="cwe-tag">CWE-79 / CWE-94 (Critical 9.6)</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-phrf-cwfr-v2rw.html">CSP-Bypassing Webview Script Injection &amp; Path Traversal in <code>MarketplaceViewProvider</code> (<code>AmadeusITGroup</code>)</a></h3>
-            <p>Accepted by Amadeus security engineering team into draft GHSA state with coordinated remediation fork active for VS Code extension webview containment and URI scheme validation.</p>
+            <h3><a href="https://github.com/siyuan-note/siyuan/security/advisories/GHSA-g275-mf26-qx9r">Stored XSS Escalating to Arbitrary Code Execution via Unescaped Checkbox Column (<code>siyuan-note/siyuan</code>)</a></h3>
+            <p>Officially published by SiYuan engineering (42,000+ &starf;) as <a href="https://github.com/siyuan-note/siyuan/security/advisories/GHSA-g275-mf26-qx9r">GHSA-g275-mf26-qx9r</a> (CVSS 9.6 Critical); patched upstream in <code>v3.8.10</code>.</p>
           </div>
           <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-phrf-cwfr-v2rw.html"><span class="embargo-tag">Accepted by Vendor &bull; Remediation Fork Active &rarr;</span></a>
+            <a href="https://github.com/siyuan-note/siyuan/security/advisories/GHSA-g275-mf26-qx9r"><span class="embargo-tag">Published by Vendor &bull; Fixed in v3.8.10 &rarr;</span></a>
+          </div>
+        </article>
+
+        <!-- 13. wailsapp/wails (GHSA-r5j2-ghh9-2jqw) -->
+        <article class="card" data-category="mcp" data-text="wails wailsapp webkitgtk ghsa-r5j2-ghh9-2jqw cwe-346 origin bypass high 8.3">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-r5j2-ghh9-2jqw</span>
+              <span class="cwe-tag">CWE-346 (High 8.3)</span>
+            </div>
+            <h3><a href="https://github.com/wailsapp/wails/security/advisories/GHSA-r5j2-ghh9-2jqw">Linux WebKitGTK Script Message Bridge Uses Top-Level WebView URI Instead of Frame Origin (<code>wailsapp/wails</code>)</a></h3>
+            <p>Officially published by Wails maintainers (27,000+ &starf;) as <a href="https://github.com/wailsapp/wails/security/advisories/GHSA-r5j2-ghh9-2jqw">GHSA-r5j2-ghh9-2jqw</a> (CVSS 8.3 High); patched upstream in <code>v2.17.1</code>.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://github.com/wailsapp/wails/security/advisories/GHSA-r5j2-ghh9-2jqw"><span class="embargo-tag">Published by Vendor &bull; Fixed in v2.17.1 &rarr;</span></a>
+          </div>
+        </article>
+
+        <!-- 14. jdx/mise (PR #15235) -->
+        <article class="card" data-category="mcp" data-text="mise jdx safe mode lockfile trust bypass pr 15235">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">PR #15235</span>
+              <span class="cwe-tag">Safe Mode Trust Bypass</span>
+            </div>
+            <h3><a href="https://github.com/jdx/mise/pull/15235">Safe Mode (<code>MISE_SAFE=1</code>) Project Lockfile Trust Bypass in <code>lockfile_is_trusted</code> (<code>jdx/mise</code>)</a></h3>
+            <p>Disclosed via CVD and merged upstream by <code>@jdx</code> (25,000+ &starf;) in <a href="https://github.com/jdx/mise/pull/15235">PR #15235</a> (<code>fix(lock): never trust a project lockfile in safe mode</code>).</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://github.com/jdx/mise/pull/15235"><span class="embargo-tag">Merged Upstream &bull; PR #15235 &rarr;</span></a>
           </div>
         </article>
 
