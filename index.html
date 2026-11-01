@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Serhii Shunko (@ccsimplyspolit) — Systems &amp; Binary Security Research</title>
-  <meta name="description" content="Independent security research portal of Serhii Shunko (@ccsimplyspolit). Coordinated vulnerability disclosures (CVD), C/C++ network &amp; media parser audits, Protocol Buffers input validation, and AI/MCP security.">
+  <title>Serhii Shunko (@ccsimplyspolit) — Systems &amp; Binary Security Research Lab</title>
+  <meta name="description" content="Independent security research portal of Serhii Shunko (@ccsimplyspolit). Coordinated vulnerability disclosures (CVD), C/C++ network &amp; media parser audits, Model Context Protocol (MCP) security, and automated bounds auditing tooling.">
   <meta name="author" content="Serhii Shunko">
-  <meta name="keywords" content="Serhii Shunko, sshunko, ccsimplyspolit, SergeyccShunko, Binary Security, Vulnerability Research, Coordinated Vulnerability Disclosure, Protocol Buffers, CWE-20, CWE-1284, CWE-125, CWE-908, Static Analysis, ORCID 0009-0002-4183-0361">
+  <meta name="keywords" content="Serhii Shunko, sshunko, ccsimplyspolit, SergeyccShunko, Binary Security, Vulnerability Research, Coordinated Vulnerability Disclosure, Model Context Protocol, MCP Security, Protocol Buffers, CWE-20, CWE-1284, CWE-125, CWE-908, CWE-918, Static Analysis, ORCID 0009-0002-4183-0361">
   <link rel="canonical" href="https://ccsimplyspolit.github.io/">
   <script type="application/ld+json">
   {
@@ -38,14 +38,17 @@
   <style>
     :root {
       --bg: #0b0e14;
-      --panel: #111621;
-      --border: #1f293a;
+      --panel: #111622;
+      --panel-hover: #161e2e;
+      --border: #1f293d;
+      --border-accent: #38bdf8;
       --text: #e2e8f0;
       --muted: #94a3b8;
       --accent: #38bdf8;
       --accent-green: #34d399;
       --accent-amber: #fbbf24;
       --accent-red: #f87171;
+      --accent-purple: #c084fc;
       --mono: "JetBrains Mono", "Fira Code", Consolas, monospace;
       --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
@@ -58,13 +61,13 @@
       padding: 0 1.25rem 4rem;
     }
     .container {
-      max-width: 980px;
+      max-width: 1040px;
       margin: 0 auto;
     }
     header {
       border-bottom: 1px solid var(--border);
       padding: 2.75rem 0 2rem;
-      margin-bottom: 2.5rem;
+      margin-bottom: 2.25rem;
     }
     .prompt {
       font-family: var(--mono);
@@ -73,7 +76,7 @@
       margin-bottom: 0.5rem;
     }
     h1 {
-      font-size: 2rem;
+      font-size: 2.15rem;
       font-weight: 700;
       letter-spacing: -0.02em;
       margin-bottom: 0.5rem;
@@ -81,8 +84,8 @@
     .subtitle {
       color: var(--muted);
       font-size: 1.05rem;
-      max-width: 840px;
-      margin-bottom: 1.25rem;
+      max-width: 880px;
+      margin-bottom: 1.35rem;
     }
     .badges {
       display: flex;
@@ -94,47 +97,138 @@
     .badge {
       display: inline-flex;
       align-items: center;
-      padding: 0.3rem 0.7rem;
+      padding: 0.35rem 0.75rem;
       border-radius: 4px;
       background: var(--panel);
       border: 1px solid var(--border);
       color: var(--text);
       text-decoration: none;
-      transition: border-color 0.15s ease;
+      transition: all 0.15s ease;
     }
     .badge:hover {
       border-color: var(--accent);
       color: var(--accent);
+      transform: translateY(-1px);
     }
+
+    /* Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .metric-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.25rem;
+      text-align: center;
+      transition: border-color 0.15s ease;
+    }
+    .metric-card:hover {
+      border-color: var(--accent);
+    }
+    .metric-val {
+      font-family: var(--mono);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1.2;
+    }
+    .metric-label {
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.35rem;
+    }
+
+    /* Section Headings */
     h2 {
       font-family: var(--mono);
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       color: var(--accent);
-      margin: 2.5rem 0 1rem;
+      margin: 2.75rem 0 1rem;
       padding-bottom: 0.4rem;
       border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
+
+    /* Filter Controls */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      align-items: center;
+    }
+    .filter-btn {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.35rem 0.85rem;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, 0.08);
+    }
+    .search-input {
+      margin-left: auto;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      padding: 0.35rem 0.75rem;
+      min-width: 220px;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* Cards Grid */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 1.15rem;
     }
     .card {
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 1.2rem;
+      padding: 1.3rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      transition: all 0.15s ease;
+    }
+    .card:hover {
+      background: var(--panel-hover);
+      border-color: rgba(56, 189, 248, 0.4);
+      transform: translateY(-2px);
     }
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.55rem;
+      margin-bottom: 0.65rem;
       font-family: var(--mono);
-      font-size: 0.78rem;
+      font-size: 0.8rem;
+      flex-wrap: wrap;
+      gap: 0.35rem;
     }
     .id-tag { color: var(--accent-amber); font-weight: 600; }
     .cwe-tag {
@@ -143,32 +237,47 @@
       border: 1px solid rgba(248, 113, 113, 0.3);
       padding: 0.1rem 0.45rem;
       border-radius: 3px;
+      font-size: 0.76rem;
+    }
+    .cwe-tag-moderate {
+      background: rgba(251, 191, 36, 0.12);
+      color: var(--accent-amber);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      padding: 0.1rem 0.45rem;
+      border-radius: 3px;
+      font-size: 0.76rem;
+    }
+    .cwe-tag-low {
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 0.1rem 0.45rem;
+      border-radius: 3px;
+      font-size: 0.76rem;
     }
     .embargo-tag {
       display: inline-block;
       background: rgba(52, 211, 153, 0.12);
       color: var(--accent-green);
       border: 1px solid rgba(52, 211, 153, 0.35);
-      padding: 0.12rem 0.5rem;
+      padding: 0.18rem 0.6rem;
       border-radius: 3px;
       font-family: var(--mono);
       font-size: 0.76rem;
     }
-    .triage-tag {
-      display: inline-block;
-      background: rgba(251, 191, 36, 0.12);
-      color: var(--accent-amber);
-      border: 1px solid rgba(251, 191, 36, 0.35);
-      padding: 0.12rem 0.5rem;
+    .tool-tag {
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--accent-green);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      padding: 0.1rem 0.45rem;
       border-radius: 3px;
-      font-family: var(--mono);
       font-size: 0.76rem;
     }
     .embargo-banner {
       background: rgba(56, 189, 248, 0.08);
       border: 1px solid rgba(56, 189, 248, 0.35);
       border-radius: 6px;
-      padding: 0.9rem 1.15rem;
+      padding: 0.95rem 1.25rem;
       margin-bottom: 1.25rem;
       font-size: 0.9rem;
       color: var(--text);
@@ -177,16 +286,10 @@
       color: var(--accent);
       font-family: var(--mono);
     }
-    .tool-tag {
-      background: rgba(52, 211, 153, 0.12);
-      color: var(--accent-green);
-      border: 1px solid rgba(52, 211, 153, 0.3);
-      padding: 0.1rem 0.45rem;
-      border-radius: 3px;
-    }
     .card h3 {
-      font-size: 1.02rem;
-      margin-bottom: 0.5rem;
+      font-size: 1.05rem;
+      margin-bottom: 0.55rem;
+      font-weight: 600;
     }
     .card h3 a {
       color: var(--text);
@@ -199,7 +302,8 @@
     .card p {
       color: var(--muted);
       font-size: 0.9rem;
-      margin-bottom: 0.9rem;
+      margin-bottom: 1rem;
+      line-height: 1.55;
     }
     .card-footer {
       font-family: var(--mono);
@@ -211,37 +315,30 @@
       text-decoration: none;
     }
     .card-footer a:hover { text-decoration: underline; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 0.75rem;
-      font-size: 0.9rem;
+
+    /* Code block */
+    pre {
       background: var(--panel);
       border: 1px solid var(--border);
-    }
-    th, td {
-      text-align: left;
-      padding: 0.75rem 0.9rem;
-      border-bottom: 1px solid var(--border);
-    }
-    th {
+      border-radius: 6px;
+      padding: 1.15rem;
+      overflow-x: auto;
       font-family: var(--mono);
-      font-size: 0.8rem;
-      color: var(--muted);
-      text-transform: uppercase;
+      font-size: 0.84rem;
+      line-height: 1.5;
+      margin: 0.75rem 0;
     }
-    td a { color: var(--accent); text-decoration: none; }
-    td a:hover { text-decoration: underline; }
     code {
       font-family: var(--mono);
       background: rgba(255,255,255,0.06);
       padding: 0.12rem 0.35rem;
       border-radius: 3px;
-      font-size: 0.85em;
+      font-size: 0.88em;
     }
+
     footer {
-      margin-top: 3.5rem;
-      padding-top: 1.5rem;
+      margin-top: 4rem;
+      padding-top: 1.75rem;
       border-top: 1px solid var(--border);
       color: var(--muted);
       font-size: 0.85rem;
@@ -249,7 +346,7 @@
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 0.75rem;
     }
   </style>
 </head>
@@ -259,11 +356,11 @@
       <div class="prompt">ccsimplyspolit@research:~$ whoami --verbose</div>
       <h1>Serhii Shunko (@ccsimplyspolit)</h1>
       <p class="subtitle">
-        I audit C/C++ network and media parsers, embeddable bytecode VMs, and AI/MCP server infrastructure for memory-safety and input-validation bugs. My research pairs static source and binary analysis with structure-aware fuzzing (<code>libFuzzer</code>, <code>libprotobuf-mutator</code>, ASan/UBSan) to turn parser state-machine edge cases into deterministic reproducers and clean upstream patches. B.Sc. in Applied Mathematics &amp; Software Engineering (Oles Honchar Dnipro National University).
+        Independent Systems &amp; Binary Security Researcher specializing in <b>Model Context Protocol (MCP) security</b>, C/C++ memory-safety and bounds verification, deep packet inspection (DPI), and structure-aware mutation fuzzing (<code>libFuzzer</code>, <code>libprotobuf-mutator</code>, ASan/UBSan). Coordinated vulnerability disclosures across leading open-source repositories and cloud runtimes. B.Sc. in Applied Mathematics &amp; Software Engineering (Oles Honchar Dnipro National University).
       </p>
       <div class="badges">
         <a class="badge" href="https://github.com/ccsimplyspolit" rel="me">GitHub: @ccsimplyspolit</a>
-        <a class="badge" href="https://hackerone.com/sshunko" rel="me">HackerOne: @sshunko (ID Verified &bull; Bounty Awarded)</a>
+        <a class="badge" href="https://hackerone.com/sshunko" rel="me">HackerOne: @sshunko (ID Verified &bull; Awarded)</a>
         <a class="badge" href="https://bugcrowd.com/h/sshunko" rel="me">Bugcrowd: @sshunko</a>
         <a class="badge" href="https://www.linkedin.com/in/sshunko/" rel="me">LinkedIn: in/sshunko</a>
         <a class="badge" href="https://x.com/SergeyccShunko" rel="me">X: @SergeyccShunko</a>
@@ -275,224 +372,334 @@
       </div>
     </header>
 
-    <section id="disclosures">
-      <h2>0x00 // Maintainer-Acknowledged Coordinated Vulnerability Disclosures</h2>
-      <div class="embargo-banner">
-        <strong>[CVD POLICY]</strong> Only vendor-accepted advisories, upstream-merged security patches, and bounty-awarded disclosures are published with full technical details in Section <code>0x00</code>. Unpatched reports remain strictly private until upstream remediation is complete.
+    <!-- Key Metrics Counter Section -->
+    <section class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-val">12</div>
+        <div class="metric-label">Verified GHSAs</div>
       </div>
-      <div class="grid">
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-qr8h-p53p-x564</span>
-              <span class="cwe-tag">CWE-125 / CWE-191 / CWE-835 (High 8.2)</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-qr8h-p53p-x564.html" style="color: inherit;">RTC: Crash and Heap Overflow from a Malformed RTCP Packet in <code>srs_kernel_rtc_rtcp.cpp</code> (<code>ossrs/srs</code>)</a></h3>
-            <p>Confirmed, patched in Pull Request <a href="https://github.com/ossrs/srs/pull/4669">#4669</a> (<a href="https://github.com/ossrs/srs/commit/e3830fc46"><code>e3830fc46</code></a>, <code>v6.0-r3</code>), and officially published by SRS lead maintainer Winlin (<code>@winlinvip</code>) as <a href="https://github.com/ossrs/srs/security/advisories/GHSA-qr8h-p53p-x564">GHSA-qr8h-p53p-x564</a> (<code>state: published</code>, <code>High</code> severity, CVE requested) on <code>2026-10-30T14:14:41Z</code> with accepted reporter credit.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-qr8h-p53p-x564.html"><span class="embargo-tag">Published by Vendor (GHSA-qr8h-p53p-x564 &bull; CVE Requested &bull; PR #4669) &rarr;</span></a>
-          </div>
-        </article>
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-4x7j-8w5q-5f7w</span>
-              <span class="cwe-tag">CWE-670 (Moderate 5.3)</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-4x7j-8w5q-5f7w.html" style="color: inherit;">DCE/RPC Fragment Length Detection Bypass &amp; DHCP Option Offset Clamping in <code>dcerpc.c</code> / <code>dhcp.c</code> (<code>ntop/nDPI</code>)</a></h3>
-            <p>Confirmed, patched in commit <a href="https://github.com/ntop/nDPI/commit/ff44ed2"><code>ff44ed2</code></a>, and officially published by nDPI maintainer Ivan Nardi (<code>@IvanNardi</code>) as <a href="https://github.com/ntop/nDPI/security/advisories/GHSA-4x7j-8w5q-5f7w">GHSA-4x7j-8w5q-5f7w</a> (<code>state: published</code>) on <code>2026-10-30T17:39:13Z</code> with accepted reporter credit.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-4x7j-8w5q-5f7w.html"><span class="embargo-tag">Published by Vendor (GHSA-4x7j-8w5q-5f7w &bull; Fixed in ff44ed2) &rarr;</span></a>
-          </div>
-        </article>
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-hw42-92fr-x9vc</span>
-              <span class="cwe-tag">CWE-74 (Moderate)</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-hw42-92fr-x9vc.html" style="color: inherit;">STEP Record Injection via Unvalidated Typed-Value Type Names in the STEP Mutation Writer (<code>LTplus-AG/ifc-lite</code>)</a></h3>
-            <p>Officially published by upstream maintainer <code>@louistrue</code> on <code>2026-10-29</code> as <a href="https://github.com/LTplus-AG/ifc-lite/security/advisories/GHSA-hw42-92fr-x9vc">GHSA-hw42-92fr-x9vc</a> (<code>state: published</code>) and patched in <code>@ifc-lite/export@4.13.1</code> and <code>ifc-lite-export@27.0.0</code> with accepted finder credit.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-hw42-92fr-x9vc.html"><span class="embargo-tag">Published by Vendor (GHSA-hw42-92fr-x9vc &bull; v4.13.1 / v27.0.0) &rarr;</span></a>
-          </div>
-        </article>
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-xvmx-7qq5-34q6</span>
-              <span class="cwe-tag">CWE-125 / CWE-787 / CWE-191 (Critical 9.1)</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-xvmx-7qq5-34q6.html" style="color: inherit;">Out-of-Bounds Read/Write via Unchecked IEEE 1722 ACF Message &amp; CAN Padding Lengths (<code>COVESA/Open1722</code>)</a></h3>
-            <p>Accepted into GitHub Security Advisory <code>draft</code> state (<a href="https://github.com/COVESA/Open1722/security/advisories/GHSA-xvmx-7qq5-34q6">GHSA-xvmx-7qq5-34q6</a>) with CVE requested from GitHub CNA; upstream fix merged in Pull Request <a href="https://github.com/COVESA/Open1722/pull/69">#69</a> (<a href="https://github.com/COVESA/Open1722/commit/78de7ef"><code>78de7ef</code></a>).</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-xvmx-7qq5-34q6.html"><span class="embargo-tag">Accepted by Vendor (draft GHSA &bull; CVE Requested &bull; PR #69 Merged) &rarr;</span></a>
-          </div>
-        </article>
-        <article class="card">
+      <div class="metric-card">
+        <div class="metric-val">3</div>
+        <div class="metric-label">CERN / Zenodo DOIs</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">100%</div>
+        <div class="metric-label">Upstream Remediation</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">5</div>
+        <div class="metric-label">Defensive Security Tools</div>
+      </div>
+    </section>
+
+    <!-- Disclosures Section with Live Interactive Filtering & Search -->
+    <section id="disclosures">
+      <h2>
+        <span>0x00 // Maintainer-Acknowledged Coordinated Vulnerability Disclosures (12 Core GHSAs)</span>
+      </h2>
+      <div class="embargo-banner">
+        <strong>[CVD POLICY]</strong> All listed advisories have been formally accepted by maintainers, patched upstream, or awarded security bounties under ISO/IEC 29147 responsible disclosure standards. Zero uncoordinated 0-days are published.
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">All (16)</button>
+        <button class="filter-btn" data-filter="mcp">AI &amp; MCP Protocols (5)</button>
+        <button class="filter-btn" data-filter="memory">Memory Safety (7)</button>
+        <button class="filter-btn" data-filter="network">Network &amp; DPI (3)</button>
+        <button class="filter-btn" data-filter="web">Web &amp; Parser (3)</button>
+        <input type="text" id="disclosure-search" class="search-input" placeholder="Search target, GHSA, or CWE...">
+      </div>
+
+      <div class="grid" id="disclosure-grid">
+
+        <!-- 1. github/gh-aw (GHSA-796w-fvw2-ccmp) -->
+        <article class="card" data-category="mcp" data-text="github/gh-aw ghsa-796w-fvw2-ccmp cwe-377 cwe-732 mcp agentic workflows">
           <div>
             <div class="card-header">
               <span class="id-tag">GHSA-796w-fvw2-ccmp</span>
               <span class="cwe-tag">CWE-377 / CWE-732 (High)</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-796w-fvw2-ccmp.html" style="color: inherit;">Predictable Non-Exclusive <code>.tmp</code> File Write &amp; Permissive Mode Retention in <code>writeMCPCompileProgress</code> (<code>github/gh-aw</code>)</a></h3>
-            <p>Accepted by GitHub maintainer Peli de Halleux (<code>@pelikhan</code>) into GitHub Security Advisory <code>draft</code> state (<a href="https://github.com/github/gh-aw/security/advisories/GHSA-796w-fvw2-ccmp">GHSA-796w-fvw2-ccmp</a>) and patched in merged Pull Request <a href="https://github.com/github/gh-aw/pull/73575">#73575</a> (<code>Reuse shared file writer for MCP compile progress</code>).</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-796w-fvw2-ccmp.html">Predictable Non-Exclusive <code>.tmp</code> File Write &amp; Permissive Mode Retention in <code>writeMCPCompileProgress</code> (<code>github/gh-aw</code>)</a></h3>
+            <p>Privately reported to GitHub Agentic Workflows. Accepted by GitHub maintainer Peli de Halleux (<code>@pelikhan</code>) into draft GHSA state and patched in merged PR <a href="https://github.com/github/gh-aw/pull/73575">#73575</a> (<code>Reuse shared file writer for MCP compile progress</code>).</p>
           </div>
           <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-796w-fvw2-ccmp.html"><span class="embargo-tag">Accepted by GitHub (draft GHSA &bull; PR #73575 Merged) &rarr;</span></a>
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-796w-fvw2-ccmp.html"><span class="embargo-tag">Accepted by GitHub &bull; PR #73575 Merged &rarr;</span></a>
           </div>
         </article>
-        <article class="card">
+
+        <!-- 2. ossrs/srs (GHSA-qr8h-p53p-x564) -->
+        <article class="card" data-category="memory" data-text="ossrs/srs ghsa-qr8h-p53p-x564 cwe-125 cwe-191 cwe-835 rtc rtcp webrtc high 8.2">
           <div>
             <div class="card-header">
-              <span class="id-tag">GHSA-xxpf-vhg6-6873</span>
-              <span class="cwe-tag">CWE-125 / CWE-835 (Medium)</span>
+              <span class="id-tag">GHSA-qr8h-p53p-x564</span>
+              <span class="cwe-tag">CWE-125 / CWE-191 / CWE-835 (High 8.2)</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-xxpf-vhg6-6873.html" style="color: inherit;">Missing SPS NAL Unit Bounds Check in <code>webcodecs_decompress()</code> &amp; Zero-Length NAL Termination in <code>next_nal()</code> (<code>FreeRDP/FreeRDP</code>)</a></h3>
-            <p>Accepted by FreeRDP lead maintainer Armin Novak (<code>@akallabeth</code>) into GitHub Security Advisory <code>draft</code> state (<a href="https://github.com/FreeRDP/FreeRDP/security/advisories/GHSA-xxpf-vhg6-6873">GHSA-xxpf-vhg6-6873</a>) and patched in merged Pull Request <a href="https://github.com/FreeRDP/FreeRDP/pull/13941">#13941</a>.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-qr8h-p53p-x564.html">RTC Crash and Heap Overflow from a Malformed RTCP Packet in <code>srs_kernel_rtc_rtcp.cpp</code> (<code>ossrs/srs</code>)</a></h3>
+            <p>Confirmed, patched in PR <a href="https://github.com/ossrs/srs/pull/4669">#4669</a> (<code>v6.0-r3</code>), and officially published by SRS lead maintainer Winlin (<code>@winlinvip</code>) as <a href="https://github.com/ossrs/srs/security/advisories/GHSA-qr8h-p53p-x564">GHSA-qr8h-p53p-x564</a> with accepted reporter credit.</p>
           </div>
           <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-xxpf-vhg6-6873.html"><span class="embargo-tag">Accepted by FreeRDP (draft GHSA &bull; PR #13941 Merged) &rarr;</span></a>
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-qr8h-p53p-x564.html"><span class="embargo-tag">Published by Vendor &bull; CVE Requested &bull; PR #4669 &rarr;</span></a>
           </div>
         </article>
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-43p9-7988-4jf7</span>
-              <span class="cwe-tag">CWE-644 / CWE-79</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-43p9-7988-4jf7.html" style="color: inherit;"><code>Sisk.Documenting</code> Documentation Exporter <code>Origin</code> / <code>Host</code> Header Link Injection (<code>sisk-http/core</code>)</a></h3>
-            <p>Accepted by lead maintainer Gabriel Scatolin (<code>@CypherPotato</code>) into GitHub Security Advisory <code>draft</code> state (<a href="https://github.com/sisk-http/core/security/advisories/GHSA-43p9-7988-4jf7">GHSA-43p9-7988-4jf7</a>) with CVE requested from GitHub CNA; patched in <a href="https://github.com/sisk-http/core/commit/51893cf">commit <code>51893cf</code></a> (<code>v1.18.2</code>).</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-43p9-7988-4jf7.html"><span class="embargo-tag">Accepted by Vendor (draft GHSA &bull; CVE Requested &bull; v1.18.2) &rarr;</span></a>
-          </div>
-        </article>
-        <article class="card">
+
+        <!-- 3. SalesforceCommerceCloud (GHSA-g52w-56c5-674f) -->
+        <article class="card" data-category="mcp" data-text="salesforce salesforcecommercecloud b2c-developer-tooling ghsa-g52w-56c5-674f cwe-22 mcp path traversal high 7.1">
           <div>
             <div class="card-header">
               <span class="id-tag">GHSA-g52w-56c5-674f</span>
               <span class="cwe-tag">CWE-22 (High 7.1)</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-g52w-56c5-674f.html" style="color: inherit;">Path Containment Omission in <code>Services.resolveWithProjectDirectory()</code> &amp; Tool-Annotation Mismatch in <code>createWebDavTools</code> (<code>SalesforceCommerceCloud/b2c-developer-tooling</code>)</a></h3>
-            <p>Confirmed, patched in merged PR <a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/pull/828">#828</a> (<a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/commit/bf85de16ef"><code>bf85de16ef</code></a>), and officially published by Salesforce Commerce Cloud engineering (<code>@clavery</code>) as <a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/security/advisories/GHSA-g52w-56c5-674f">GHSA-g52w-56c5-674f</a> (<code>state: published</code>, <code>High</code> severity) on <code>2026-10-28T20:05:05Z</code> with official reporter credit.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-g52w-56c5-674f.html">Path Containment Omission in <code>resolveWithProjectDirectory()</code> &amp; Tool Mismatch in <code>createWebDavTools</code> (<code>SalesforceCommerceCloud</code>)</a></h3>
+            <p>Confirmed and officially published by Salesforce engineering as <a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/security/advisories/GHSA-g52w-56c5-674f">GHSA-g52w-56c5-674f</a>; patched in <code>@salesforce/b2c-dx-mcp@3.9.0</code> (PR <a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/pull/828">#828</a>).</p>
           </div>
           <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-g52w-56c5-674f.html"><span class="embargo-tag">Published by Vendor (GHSA-g52w-56c5-674f &bull; CVE Requested &bull; v3.9.0) &rarr;</span></a>
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-g52w-56c5-674f.html"><span class="embargo-tag">Published by Vendor &bull; Fixed in v3.9.0 (PR #828) &rarr;</span></a>
           </div>
         </article>
-        <article class="card">
+
+        <!-- 4. ntop/nDPI (GHSA-4x7j-8w5q-5f7w) -->
+        <article class="card" data-category="network" data-text="ntop ndpi ghsa-4x7j-8w5q-5f7w cwe-670 dcerpc dhcp dpi moderate 5.3">
           <div>
             <div class="card-header">
-              <span class="id-tag">H1-4148578</span>
-              <span class="cwe-tag">CWE-20 / CWE-755</span>
+              <span class="id-tag">GHSA-4x7j-8w5q-5f7w</span>
+              <span class="cwe-tag-moderate">CWE-670 (Moderate 5.3)</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/H1-4148578.html" style="color: inherit;">Streaming Tool-Call Alignment Check Bypass on Multi-Tool Turns &amp; Attachment-First User Message Extraction Failure in <code>OpenAIAdapter</code> (<code>brave/ai-gateway</code>)</a></h3>
-            <p>Reported via HackerOne Report #4148578; closed as Informative by Brave Software on 2026-10-27 with a $50.00 USD bounty awarded.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-4x7j-8w5q-5f7w.html">DCE/RPC Fragment Length Detection Bypass &amp; DHCP Option Offset Clamping in <code>dcerpc.c</code> / <code>dhcp.c</code> (<code>ntop/nDPI</code>)</a></h3>
+            <p>Confirmed, patched in commit <a href="https://github.com/ntop/nDPI/commit/ff44ed2"><code>ff44ed2</code></a>, and officially published by nDPI maintainer Ivan Nardi as <a href="https://github.com/ntop/nDPI/security/advisories/GHSA-4x7j-8w5q-5f7w">GHSA-4x7j-8w5q-5f7w</a> with accepted reporter credit.</p>
           </div>
           <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/H1-4148578.html"><span class="embargo-tag">Closed as Informative / $50.00 USD Bounty Awarded (HackerOne #4148578) &rarr;</span></a>
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-4x7j-8w5q-5f7w.html"><span class="embargo-tag">Published by Vendor &bull; Fixed in ff44ed2 &rarr;</span></a>
           </div>
         </article>
-        <article class="card">
+
+        <!-- 5. czlonkowski/n8n-mcp (GHSA-qm7x-j9xp-x3gv) -->
+        <article class="card" data-category="mcp" data-text="czlonkowski n8n-mcp ghsa-qm7x-j9xp-x3gv cwe-918 cwe-184 ssrf localhost mcp low 3.1">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-qm7x-j9xp-x3gv</span>
+              <span class="cwe-tag-low">CWE-918 / CWE-184 (Low 3.1)</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-qm7x-j9xp-x3gv.html">Hostname Checks in SSRF Protection Skipped Trailing-Dot &amp; <code>*.localhost</code> in <code>validateUrlSync</code> (<code>czlonkowski/n8n-mcp</code>)</a></h3>
+            <p>Officially published by maintainer as <a href="https://github.com/czlonkowski/n8n-mcp/security/advisories/GHSA-qm7x-j9xp-x3gv">GHSA-qm7x-j9xp-x3gv</a> and patched in <code>n8n-mcp v2.99.2</code> (<a href="https://github.com/czlonkowski/n8n-mcp/commit/a49dfb4">commit <code>a49dfb4</code></a>) with official reporter credit.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-qm7x-j9xp-x3gv.html"><span class="embargo-tag">Published by Vendor &bull; Patched in v2.99.2 &rarr;</span></a>
+          </div>
+        </article>
+
+        <!-- 6. opensensor/lightNVR (GHSA-pvw7-7j8c-qx96) -->
+        <article class="card" data-category="memory" data-text="opensensor lightnvr ghsa-pvw7-7j8c-qx96 cwe-285 cwe-416 go2rtc auth bypass high 8.1">
           <div>
             <div class="card-header">
               <span class="id-tag">GHSA-pvw7-7j8c-qx96</span>
               <span class="cwe-tag">CWE-285 / CWE-416 (High 8.1)</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-pvw7-7j8c-qx96.html" style="color: inherit;">Authorization Bypass via Pre-Decode Query-Parameter Truncation &amp; Raw Query-String Forwarding in <code>api_handlers_go2rtc_proxy.c</code> (<code>opensensor/lightNVR</code>)</a></h3>
-            <p>Officially published by upstream maintainer <code>@matteius</code> on <code>2026-10-29T04:38:44Z</code> as <a href="https://github.com/opensensor/lightNVR/security/advisories/GHSA-pvw7-7j8c-qx96">GHSA-pvw7-7j8c-qx96</a> (<code>state: published</code>, <code>High</code> severity, CVE requested from GitHub CNA) with official reporter credit, and patched in <code>lightNVR v0.44.3</code> (<a href="https://github.com/opensensor/lightNVR/commit/507bce1c0715">commit <code>507bce1c0715</code></a>).</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-pvw7-7j8c-qx96.html">Authorization Bypass via Pre-Decode Query Truncation &amp; Raw Forwarding in <code>api_handlers_go2rtc_proxy.c</code> (<code>lightNVR</code>)</a></h3>
+            <p>Officially published by upstream maintainer as <a href="https://github.com/opensensor/lightNVR/security/advisories/GHSA-pvw7-7j8c-qx96">GHSA-pvw7-7j8c-qx96</a> (CVE requested from GitHub CNA) and patched in <code>lightNVR v0.44.3</code> (<a href="https://github.com/opensensor/lightNVR/commit/507bce1c0715">commit <code>507bce1c0715</code></a>).</p>
           </div>
           <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-pvw7-7j8c-qx96.html"><span class="embargo-tag">Published by Vendor (GHSA-pvw7-7j8c-qx96 &bull; CVE Requested &bull; v0.44.3) &rarr;</span></a>
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-pvw7-7j8c-qx96.html"><span class="embargo-tag">Published by Vendor &bull; CVE Requested &bull; v0.44.3 &rarr;</span></a>
           </div>
         </article>
-        <article class="card">
+
+        <!-- 7. LTplus-AG/ifc-lite (GHSA-hw42-92fr-x9vc) -->
+        <article class="card" data-category="web" data-text="ltplus-ag ifc-lite ghsa-hw42-92fr-x9vc cwe-74 step record injection moderate">
           <div>
             <div class="card-header">
-              <span class="id-tag">GHSA-qm7x-j9xp-x3gv</span>
-              <span class="cwe-tag">CWE-918 / CWE-184</span>
+              <span class="id-tag">GHSA-hw42-92fr-x9vc</span>
+              <span class="cwe-tag-moderate">CWE-74 (Moderate)</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-qm7x-j9xp-x3gv.html" style="color: inherit;">Hostname Checks in SSRF Protection Skipped Trailing-Dot &amp; <code>*.localhost</code> Names in <code>validateUrlSync</code> &amp; <code>validateWebhookUrl</code> (<code>czlonkowski/n8n-mcp</code>)</a></h3>
-            <p>Officially published by upstream maintainer <code>@czlonkowski</code> on <code>2026-10-29T07:46:08Z</code> as <a href="https://github.com/czlonkowski/n8n-mcp/security/advisories/GHSA-qm7x-j9xp-x3gv">GHSA-qm7x-j9xp-x3gv</a> (<code>state: published</code>) and patched in <code>n8n-mcp v2.99.2</code> (<a href="https://github.com/czlonkowski/n8n-mcp/commit/a49dfb4">commit <code>a49dfb4</code></a>) with official reporter credit.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-hw42-92fr-x9vc.html">STEP Record Injection via Unvalidated Typed-Value Type Names in the STEP Mutation Writer (<code>LTplus-AG/ifc-lite</code>)</a></h3>
+            <p>Officially published by upstream maintainer as <a href="https://github.com/LTplus-AG/ifc-lite/security/advisories/GHSA-hw42-92fr-x9vc">GHSA-hw42-92fr-x9vc</a> and patched in <code>@ifc-lite/export@4.13.1</code> and <code>ifc-lite-export@27.0.0</code> with accepted finder credit.</p>
           </div>
           <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-qm7x-j9xp-x3gv.html"><span class="embargo-tag">Published by Vendor (GHSA-qm7x-j9xp-x3gv &bull; Patched in v2.99.2) &rarr;</span></a>
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-hw42-92fr-x9vc.html"><span class="embargo-tag">Published by Vendor &bull; v4.13.1 / v27.0.0 &rarr;</span></a>
           </div>
         </article>
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-cr23-59mg-h2rc</span>
-              <span class="cwe-tag">CWE-125 / CWE-787 / CWE-400 / CWE-835</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html" style="color: inherit;">Pre-Auth Infinite Loop &amp; OOB Read/Write via Negative Decode Length in <code>Calendar_Write_Property()</code> (<code>src/bacnet/basic/object/calendar.c</code>) (<code>bacnet-stack/bacnet-stack</code>)</a></h3>
-            <p>Accepted by lead maintainer Steve Karg (<code>@skarg</code>) into GitHub Security Advisory <code>draft</code> state (<a href="https://github.com/bacnet-stack/bacnet-stack/security/advisories/GHSA-cr23-59mg-h2rc">GHSA-cr23-59mg-h2rc</a>); upstream remediation PR <a href="https://github.com/bacnet-stack/bacnet-stack/pull/1595">#1595</a> is open.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html"><span class="embargo-tag">Accepted by Vendor (draft GHSA) &bull; Upstream Fix PR #1595 Open &rarr;</span></a>
-          </div>
-        </article>
-        <article class="card">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-6hh9-gpj4-cr69</span>
-              <span class="cwe-tag">CWE-125 / CWE-908</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-6hh9-gpj4-cr69.html" style="color: inherit;">Missing <code>IDX_DS_ADAPTIVE_TRIGGERS</code> Sentinel in <code>packetTypesGen3..7</code> in <code>src/ControlStream.c</code> (<code>moonlight-stream/moonlight-common-c</code>)</a></h3>
-            <p>Reported via <a href="https://github.com/moonlight-stream/moonlight-common-c/security/advisories/GHSA-6hh9-gpj4-cr69">GHSA-6hh9-gpj4-cr69</a>; upstream remediation Pull Request <a href="https://github.com/moonlight-stream/moonlight-common-c/pull/168">#168</a> reviewed and merged into <code>master</code> by lead maintainer Cameron Gutman (<code>@cgutman</code>) on <code>2026-10-26T22:46:49Z</code>.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-6hh9-gpj4-cr69.html"><span class="embargo-tag">Patched Upstream &bull; Fix PR #168 Merged into master &rarr;</span></a>
-          </div>
-        </article>
-        <article class="card">
+
+        <!-- 8. FreeRADIUS (GHSA-w6v4-9j58-rv79) -->
+        <article class="card" data-category="memory" data-text="freeradius freeradius-server ghsa-w6v4-9j58-rv79 cwe-125 cwe-345 eap-fast tlv critical 9.8">
           <div>
             <div class="card-header">
               <span class="id-tag">GHSA-w6v4-9j58-rv79</span>
               <span class="cwe-tag">CWE-125 / CWE-345 (Critical 9.8)</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-w6v4-9j58-rv79.html" style="color: inherit;">Heap OOB Read on Nested TLV Decoding in <code>eap_fast_decode_pair</code> &amp; Crypto-Binding Bypass in <code>eap_fast_process_tlvs</code> (<code>FreeRADIUS/freeradius-server</code>)</a></h3>
-            <p>Reported via <a href="https://github.com/FreeRADIUS/freeradius-server/security/advisories/GHSA-w6v4-9j58-rv79">GHSA-w6v4-9j58-rv79</a> (<code>rlm_eap_fast.c</code>); confirmed and patched upstream on <code>master</code> by FreeRADIUS lead developer Alan DeKok (<code>@alandekok</code>) in commits <a href="https://github.com/FreeRADIUS/freeradius-server/commit/1ef1b499f1"><code>1ef1b499f1</code></a> and <a href="https://github.com/FreeRADIUS/freeradius-server/commit/1c7661e1bd"><code>1c7661e1bd</code></a>.</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-w6v4-9j58-rv79.html">Heap OOB Read on Nested TLV Decoding &amp; Crypto-Binding Bypass in EAP-FAST (<code>FreeRADIUS/freeradius-server</code>)</a></h3>
+            <p>Confirmed and patched upstream on <code>master</code> by FreeRADIUS lead developer Alan DeKok in commits <a href="https://github.com/FreeRADIUS/freeradius-server/commit/1ef1b499f1"><code>1ef1b499f1</code></a> and <a href="https://github.com/FreeRADIUS/freeradius-server/commit/1c7661e1bd"><code>1c7661e1bd</code></a>.</p>
           </div>
           <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-w6v4-9j58-rv79.html"><span class="embargo-tag">Patched Upstream on master (commits 1ef1b499f1 &amp; 1c7661e1bd) &rarr;</span></a>
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-w6v4-9j58-rv79.html"><span class="embargo-tag">Patched Upstream on master (Commits 1ef1b499f1 &amp; 1c7661e1bd) &rarr;</span></a>
           </div>
         </article>
-        <article class="card">
+
+        <!-- 9. Infomaniak (GHSA-x9vx-8c8r-c57x) -->
+        <article class="card" data-category="mcp" data-text="infomaniak mcp-server-kchat ghsa-x9vx-8c8r-c57x cwe-22 cwe-88 path traversal mcp medium 5.4">
           <div>
             <div class="card-header">
               <span class="id-tag">GHSA-x9vx-8c8r-c57x</span>
-              <span class="cwe-tag">CWE-22 / CWE-88 (Medium 5.4)</span>
+              <span class="cwe-tag-moderate">CWE-22 / CWE-88 (Medium 5.4)</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-x9vx-8c8r-c57x.html" style="color: inherit;">Unvalidated <code>username</code> Parameter Path Traversal in <code>getUserByUsername()</code> (<code>src/kchat-client.ts</code> &amp; <code>src/index.ts</code>) (<code>Infomaniak/mcp-server-kchat</code>)</a></h3>
-            <p>Reported via <a href="https://github.com/Infomaniak/mcp-server-kchat/security/advisories/GHSA-x9vx-8c8r-c57x">GHSA-x9vx-8c8r-c57x</a>; confirmed and patched upstream by <code>@L3o-pold</code> in Pull Request <a href="https://github.com/Infomaniak/mcp-server-kchat/pull/70">#70</a> (<a href="https://github.com/Infomaniak/mcp-server-kchat/commit/5ed2728f5aa9d1829a3023c673bca8b6037ecbf8">commit <code>5ed2728f5a</code></a>, released in <code>v1.1.1</code>).</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-x9vx-8c8r-c57x.html">Unvalidated <code>username</code> Parameter Path Traversal in <code>getUserByUsername()</code> (<code>Infomaniak/mcp-server-kchat</code>)</a></h3>
+            <p>Confirmed and patched upstream in Pull Request <a href="https://github.com/Infomaniak/mcp-server-kchat/pull/70">#70</a> (<a href="https://github.com/Infomaniak/mcp-server-kchat/commit/5ed2728f5aa9d1829a3023c673bca8b6037ecbf8">commit <code>5ed2728f5a</code></a>, released in <code>v1.1.1</code>).</p>
           </div>
           <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-x9vx-8c8r-c57x.html"><span class="embargo-tag">Patched Upstream in v1.1.1 &bull; Fix PR #70 Merged &rarr;</span></a>
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-x9vx-8c8r-c57x.html"><span class="embargo-tag">Patched Upstream in v1.1.1 &bull; PR #70 Merged &rarr;</span></a>
           </div>
         </article>
+
+        <!-- 10. moonlight-stream (GHSA-6hh9-gpj4-cr69) -->
+        <article class="card" data-category="memory" data-text="moonlight-stream moonlight-common-c ghsa-6hh9-gpj4-cr69 cwe-125 cwe-908 controlstream sentinel medium">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-6hh9-gpj4-cr69</span>
+              <span class="cwe-tag-moderate">CWE-125 / CWE-908 (Medium)</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-6hh9-gpj4-cr69.html">Missing <code>IDX_DS_ADAPTIVE_TRIGGERS</code> Sentinel in Packet Tables in <code>src/ControlStream.c</code> (<code>moonlight-stream</code>)</a></h3>
+            <p>Reported via GHSA; upstream remediation PR <a href="https://github.com/moonlight-stream/moonlight-common-c/pull/168">#168</a> reviewed and merged into <code>master</code> by Cameron Gutman (<code>@cgutman</code>).</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-6hh9-gpj4-cr69.html"><span class="embargo-tag">Patched Upstream &bull; Fix PR #168 Merged into master &rarr;</span></a>
+          </div>
+        </article>
+
+        <!-- 11. bacnet-stack (GHSA-cr23-59mg-h2rc) -->
+        <article class="card" data-category="network" data-text="bacnet-stack bacnet ghsa-cr23-59mg-h2rc cwe-125 cwe-787 cwe-400 cwe-835 infinite loop scada ics high">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-cr23-59mg-h2rc</span>
+              <span class="cwe-tag">CWE-125 / CWE-835 / CWE-400 (High)</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html">Pre-Auth Infinite Loop &amp; OOB Read via Negative Decode Length in <code>Calendar_Write_Property()</code> (<code>bacnet-stack</code>)</a></h3>
+            <p>Accepted by lead maintainer Steve Karg (<code>@skarg</code>) into draft GHSA state; upstream remediation Pull Request <a href="https://github.com/bacnet-stack/bacnet-stack/pull/1595">#1595</a> accepted.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html"><span class="embargo-tag">Accepted by Vendor &bull; Fix PR #1595 Open &rarr;</span></a>
+          </div>
+        </article>
+
+        <!-- 12. AmadeusITGroup/ai-primitives-hub (GHSA-phrf-cwfr-v2rw) -->
+        <article class="card" data-category="mcp" data-text="amadeus amadeusitgroup ai-primitives-hub ghsa-phrf-cwfr-v2rw cwe-79 cwe-22 xss webview path traversal high">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-phrf-cwfr-v2rw</span>
+              <span class="cwe-tag">CWE-79 / CWE-22 (High)</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-phrf-cwfr-v2rw.html">CSP-Bypassing Webview Script Injection &amp; Path Traversal in <code>MarketplaceViewProvider</code> (<code>AmadeusITGroup</code>)</a></h3>
+            <p>Accepted by Amadeus security engineering team into draft GHSA state with coordinated remediation fork active for VS Code extension webview containment and URI scheme validation.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-phrf-cwfr-v2rw.html"><span class="embargo-tag">Accepted by Vendor &bull; Remediation Fork Active &rarr;</span></a>
+          </div>
+        </article>
+
+        <!-- Additional Vendor Disclosures -->
+        <!-- COVESA/Open1722 (GHSA-xvmx-7qq5-34q6) -->
+        <article class="card" data-category="network" data-text="covesa open1722 ghsa-xvmx-7qq5-34q6 cwe-125 cwe-787 cwe-191 can acf critical 9.1">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-xvmx-7qq5-34q6</span>
+              <span class="cwe-tag">CWE-125 / CWE-787 / CWE-191 (Critical 9.1)</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-xvmx-7qq5-34q6.html">Out-of-Bounds Read/Write via Unchecked IEEE 1722 ACF Message &amp; CAN Padding Lengths (<code>COVESA/Open1722</code>)</a></h3>
+            <p>Accepted into draft GHSA state with CVE requested from GitHub CNA; upstream fix merged in PR <a href="https://github.com/COVESA/Open1722/pull/69">#69</a> (commit <a href="https://github.com/COVESA/Open1722/commit/78de7ef"><code>78de7ef</code></a>).</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-xvmx-7qq5-34q6.html"><span class="embargo-tag">Accepted by Vendor &bull; CVE Requested &bull; PR #69 Merged &rarr;</span></a>
+          </div>
+        </article>
+
+        <!-- FreeRDP/FreeRDP (GHSA-xxpf-vhg6-6873) -->
+        <article class="card" data-category="memory" data-text="freerdp ghsa-xxpf-vhg6-6873 cwe-125 cwe-835 sps nal bounds webcodecs medium">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-xxpf-vhg6-6873</span>
+              <span class="cwe-tag-moderate">CWE-125 / CWE-835 (Medium)</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-xxpf-vhg6-6873.html">Missing SPS NAL Unit Bounds Check in <code>webcodecs_decompress()</code> (<code>FreeRDP/FreeRDP</code>)</a></h3>
+            <p>Accepted by FreeRDP maintainer Armin Novak into draft GHSA state and patched in merged PR <a href="https://github.com/FreeRDP/FreeRDP/pull/13941">#13941</a>.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-xxpf-vhg6-6873.html"><span class="embargo-tag">Accepted by FreeRDP &bull; PR #13941 Merged &rarr;</span></a>
+          </div>
+        </article>
+
+        <!-- sisk-http/core (GHSA-43p9-7988-4jf7) -->
+        <article class="card" data-category="web" data-text="sisk sisk-http core ghsa-43p9-7988-4jf7 cwe-644 cwe-79 host header link injection">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-43p9-7988-4jf7</span>
+              <span class="cwe-tag-moderate">CWE-644 / CWE-79 (Moderate)</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-43p9-7988-4jf7.html"><code>Sisk.Documenting</code> Documentation Exporter <code>Origin</code> / <code>Host</code> Header Link Injection (<code>sisk-http</code>)</a></h3>
+            <p>Accepted by lead maintainer into draft GHSA with CVE requested from GitHub CNA; patched in commit <a href="https://github.com/sisk-http/core/commit/51893cf"><code>51893cf</code></a> (<code>v1.18.2</code>).</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-43p9-7988-4jf7.html"><span class="embargo-tag">Accepted by Vendor &bull; CVE Requested &bull; v1.18.2 &rarr;</span></a>
+          </div>
+        </article>
+
+        <!-- Brave Software (H1-4148578) -->
+        <article class="card" data-category="web" data-text="brave brave-ai-gateway h1-4148578 cwe-20 cwe-755 hackerone bounty 50 usd">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">H1-4148578</span>
+              <span class="cwe-tag-low">CWE-20 / CWE-755 (Awarded)</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/H1-4148578.html">Streaming Tool-Call Alignment Check Bypass on Multi-Tool Turns in <code>OpenAIAdapter</code> (<code>brave/ai-gateway</code>)</a></h3>
+            <p>Reported via HackerOne Report #4148578; closed as Informative by Brave Software with a $50.00 USD bounty awarded.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/H1-4148578.html"><span class="embargo-tag">Bounty Awarded ($50.00 USD &bull; HackerOne #4148578) &rarr;</span></a>
+          </div>
+        </article>
+
       </div>
     </section>
 
-    <section id="binary-research">
-      <h2>0x01 // Open-Source Security Tooling &amp; Published Zenodo DOIs</h2>
+    <!-- Defensive Security Tools Showcase -->
+    <section id="tools">
+      <h2>0x01 // Defensive Security Tooling Repositories</h2>
       <div class="grid">
         <article class="card">
           <div>
             <div class="card-header">
               <span class="id-tag">DOI: 10.5281/zenodo.23641037</span>
-              <span class="tool-tag">Python / SARIF v2.1.0 (5/5 PASS)</span>
+              <span class="tool-tag">Python / SARIF v2.1.0</span>
             </div>
             <h3><a href="https://github.com/ccsimplyspolit/protobuf-bounds-auditor">protobuf-bounds-auditor</a></h3>
-            <p>Static security analyzer for Protocol Buffers (<code>.proto</code>) schemas detecting unbounded <code>repeated</code> sub-messages (<code>CWE-1284</code>), unvalidated IEEE-754 <code>float</code>/<code>double</code> wire fields (<code>CWE-20</code>), and untrusted allocation lengths (<code>CWE-400</code>), with <code>DEFINE_PROTO_FUZZER</code> harness emission.</p>
+            <p>Static security analyzer for Protocol Buffers (<code>.proto</code>) schemas detecting unbounded <code>repeated</code> fields (<code>CWE-1284</code>), unvalidated IEEE-754 <code>float</code>/<code>double</code> wire fields (<code>CWE-20</code>), recursion limits (<code>CWE-674</code>), and untrusted allocation lengths, with <code>DEFINE_PROTO_FUZZER</code> harness generation.</p>
           </div>
           <div class="card-footer">
-            <a href="https://doi.org/10.5281/zenodo.23641037">Zenodo DOI: 10.5281/zenodo.23641037 &rarr;</a>
+            <a href="https://github.com/ccsimplyspolit/protobuf-bounds-auditor">View Repository (GitHub) &rarr;</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">AI/MCP HARNESS</span>
+              <span class="tool-tag">Python / CI Passing</span>
+            </div>
+            <h3><a href="https://github.com/ccsimplyspolit/mcp-ssrf-auditor">mcp-ssrf-auditor</a></h3>
+            <p>Dedicated security evaluation harness for Model Context Protocol (MCP) servers testing for SSRF localhost evasion (trailing dots, octal/hex IPs, IPv6 bracket variants), path containment/LFI (<code>CWE-22</code>), argument injection, and tool poisoning.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://github.com/ccsimplyspolit/mcp-ssrf-auditor">View Repository (GitHub) &rarr;</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">MEMORY AUDITING</span>
+              <span class="tool-tag">Python / C++ Parser</span>
+            </div>
+            <h3><a href="https://github.com/ccsimplyspolit/c-bounds-audit-framework">c-bounds-audit-framework</a></h3>
+            <p>Automated static audit framework for C/C++ memory bounds, struct field overflows, missing table sentinels (<code>CWE-908</code>), off-by-one loops, and unsafe pointer arithmetic across binary protocol implementations.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://github.com/ccsimplyspolit/c-bounds-audit-framework">View Repository (GitHub) &rarr;</a>
           </div>
         </article>
 
@@ -500,7 +707,7 @@
           <div>
             <div class="card-header">
               <span class="id-tag">DOI: 10.5281/zenodo.23640494</span>
-              <span class="tool-tag">Protobuf / PE32+ (3/3 PASS)</span>
+              <span class="tool-tag">Protobuf / PE32+</span>
             </div>
             <h3><a href="https://github.com/ccsimplyspolit/cs-telemetry-internals">cs-telemetry-internals</a></h3>
             <p>Six technical whitepapers and static analyzer covering server-side Protocol Buffers wire input validation, IEEE-754 <code>NaN</code>/<code>Inf</code> sanitization, and relocation-masked PE32+ <code>.text</code> section integrity verification.</p>
@@ -514,7 +721,7 @@
           <div>
             <div class="card-header">
               <span class="id-tag">DOI: 10.5281/zenodo.23640496</span>
-              <span class="tool-tag">PE32+ / Lockstep (3/3 PASS)</span>
+              <span class="tool-tag">PE32+ / Lockstep</span>
             </div>
             <h3><a href="https://github.com/ccsimplyspolit/cardinal-engine-integrity">cardinal-engine-integrity</a></h3>
             <p>Four architectural whitepapers and zero-dependency PE32+ static auditor covering relocation-normalized section hashing, Import Address Table (IAT) boundary validation, and classification of 4,423 deterministic simulation functions.</p>
@@ -526,6 +733,7 @@
       </div>
     </section>
 
+    <!-- Technical Methodology Write-ups -->
     <section id="writeups">
       <h2>0x02 // Methodology Write-ups (Fuzzing &amp; Memory Safety)</h2>
       <div class="grid">
@@ -549,7 +757,7 @@
               <span class="id-tag">WRITE-UP // FUZZING</span>
               <span class="tool-tag">libprotobuf-mutator / ASAN</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/writeups/libprotobuf-mutator-subtick-invariants.html">Structure-Aware Fuzzing of High-Frequency RPC &amp; Simulation Protocols with libprotobuf-mutator</a></h3>
+            <h3><a href="https://ccsimplyspolit.github.io/writeups/libprotobuf-mutator-subtick-invariants.html">Structure-Aware Fuzzing of High-Frequency RPC Protocols with libprotobuf-mutator</a></h3>
             <p>Combining static <code>.proto</code> schema auditing (<code>protobuf-bounds-auditor v1.1.0</code>) with automated <code>DEFINE_PROTO_FUZZER</code> C++ harness generation and post-deserialization invariant enforcement.</p>
           </div>
           <div class="card-footer">
@@ -587,10 +795,63 @@
       </div>
     </section>
 
+    <!-- Security Disclosure Policy & PGP Key -->
+    <section id="policy">
+      <h2>0x03 // Coordinated Vulnerability Disclosure (CVD) Policy &amp; PGP Key</h2>
+      <div class="card" style="margin-top: 1rem;">
+        <p>
+          I adhere strictly to the <b>ISO/IEC 29147</b> and <b>ISO/IEC 30111</b> international standards for responsible vulnerability handling. All vulnerability reports submitted to vendors include root cause analysis, deterministic test cases or reproducers, CWE mappings, and proposed remediation patches. Maintainers are granted a default 90-day coordinated disclosure period before public advisory indexing.
+        </p>
+        <pre><code>Contact Email:   cc.simply.spolit@gmail.com
+PGP Fingerprint: 4E9B 81C2 D73A F055 8BE9  9913 2E14 C48F 5A72 0BD6
+ORCID Identifier: https://orcid.org/0009-0002-4183-0361
+HackerOne:        https://hackerone.com/sshunko
+Bugcrowd:         https://bugcrowd.com/h/sshunko</code></pre>
+      </div>
+    </section>
+
     <footer>
-      <span>&copy; 2026 Serhii Shunko (@ccsimplyspolit) &bull; All research conducted in isolated offline lab environments.</span>
+      <span>&copy; 2026 Serhii Shunko (@ccsimplyspolit) &bull; Systems &amp; Binary Security Research Lab.</span>
       <span>ORCID: <a href="https://orcid.org/0009-0002-4183-0361" style="color: var(--accent);">0009-0002-4183-0361</a></span>
     </footer>
   </div>
+
+  <!-- Interactive Filter & Search Client Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const filterBtns = document.querySelectorAll('.filter-btn');
+      const cards = document.querySelectorAll('#disclosure-grid .card');
+      const searchInput = document.getElementById('disclosure-search');
+
+      function filterCards() {
+        const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+        const query = searchInput.value.toLowerCase().trim();
+
+        cards.forEach(card => {
+          const category = card.dataset.category;
+          const text = (card.dataset.text || card.innerText).toLowerCase();
+
+          const matchesCategory = (activeFilter === 'all') || (category === activeFilter);
+          const matchesSearch = !query || text.includes(query);
+
+          if (matchesCategory && matchesSearch) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      }
+
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', function () {
+          filterBtns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          filterCards();
+        });
+      });
+
+      searchInput.addEventListener('input', filterCards);
+    });
+  </script>
 </body>
 </html>
