@@ -12,7 +12,7 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Courier >>
 endobj
 5 0 obj
-<< /Length 5668 >>
+<< /Length 5896 >>
 stream
 BT
 /F1 8.4 Tf
@@ -36,34 +36,37 @@ BT
 (C/C++ network/media parsers, embeddable bytecode VMs, and AI/MCP server) Tj T*
 (infrastructure under Coordinated Vulnerability Disclosure \(CVD\). My identity) Tj T*
 (is verified via Persona \(VERIFICATION_TYPE_TAF_CYBER_IDV\). This dossier) Tj T*
-(documents 8 maintainer-acknowledged vulnerability disclosures, 58 private) Tj T*
+(documents 9 maintainer-acknowledged vulnerability disclosures, 58 private) Tj T*
 (GHSA reports in maintainer triage, 4 active HackerOne disclosures,) Tj T*
 (and 3 CERN/Zenodo DOIs to satisfy CVP Defense Access eligibility.) Tj T*
 () Tj T*
-(2. MAINTAINER-ACKNOWLEDGED VULNERABILITY DISCLOSURES \(8 TOTAL\)) Tj T*
+(2. MAINTAINER-ACKNOWLEDGED VULNERABILITY DISCLOSURES \(9 PUBLISHED / FIXED\)) Tj T*
 (----------------------------------------------------------------------------) Tj T*
-(1\) GHSA-g52w-56c5-674f | SalesforceCommerceCloud/b2c-developer-tooling \(High 7.1, CWE-22\)) Tj T*
+(1\) GHSA-j7g2-gm7j-mfvm | MobSF/Mobile-Security-Framework-MobSF \(Low 3.1, CWE-59 / CWE-755\)) Tj T*
+(   * Scope:  Pre-Extraction Symlink Mode Stripping Bypass in OS Unzip Fallback) Tj T*
+(   * Status: Officially PUBLISHED by Maintainer @ajinabraham; Patched in v4.6.5.) Tj T*
+(2\) GHSA-g52w-56c5-674f | SalesforceCommerceCloud/b2c-developer-tooling \(High 7.1, CWE-22\)) Tj T*
 (   * Scope:  Path Containment Omission in Services.resolveWithProjectDirectory\(\)) Tj T*
 (   * Status: Officially PUBLISHED by Salesforce \(2026-10-28\); Fix PR #828 Merged.) Tj T*
-(2\) HackerOne #4148578 | brave/ai-gateway \(Brave Software Bug Bounty Program\)) Tj T*
+(3\) HackerOne #4148578 | brave/ai-gateway \(Brave Software Bug Bounty Program\)) Tj T*
 (   * Scope:  Streaming Tool-Call Alignment Bypass & Attachment Extraction Bug) Tj T*
 (   * Status: Closed as Informative 2026-10-27; $50.00 USD bounty awarded.) Tj T*
-(3\) GHSA-pvw7-7j8c-qx96 | opensensor/lightNVR \(High 8.1, CWE-285 / CWE-416\)) Tj T*
+(4\) GHSA-pvw7-7j8c-qx96 | opensensor/lightNVR \(High 8.1, CWE-285 / CWE-416\)) Tj T*
 (   * Scope:  Auth Bypass via Query-Param Truncation in api_handlers_go2rtc_proxy.c) Tj T*
-(   * Status: Accepted into Draft GHSA by @matteius & Patched in v0.44.3 \(507bce1c0715\).) Tj T*
-(4\) GHSA-qm7x-j9xp-x3gv | czlonkowski/n8n-mcp \(CWE-918 / CWE-184\)) Tj T*
+(   * Status: Officially PUBLISHED by @matteius & Patched in v0.44.3 \(507bce1c0715\).) Tj T*
+(5\) GHSA-qm7x-j9xp-x3gv | czlonkowski/n8n-mcp \(CWE-918 / CWE-184\)) Tj T*
 (   * Scope:  SSRF Protection Skipped Trailing-Dot & *.localhost in validateUrlSync) Tj T*
-(   * Status: Accepted into Draft GHSA & Patched in v2.99.2 \(commit a49dfb4\).) Tj T*
-(5\) GHSA-cr23-59mg-h2rc | bacnet-stack/bacnet-stack \(High 8.2, CWE-835 / CWE-125\)) Tj T*
-(   * Scope:  Negative Decode Length Infinite Loop & OOB Read in Calendar_Write_Property) Tj T*
-(   * Status: Accepted into Draft GHSA by @skarg; Upstream Fix PR #1595 Open.) Tj T*
-(6\) GHSA-6hh9-gpj4-cr69 | moonlight-stream/moonlight-common-c \(CWE-125 / CWE-908\)) Tj T*
+(   * Status: Officially PUBLISHED by Maintainer & Patched in v2.99.2 \(commit a49dfb4\).) Tj T*
+(6\) GHSA-qr8h-p53p-x564 | ossrs/srs \(High 8.2, CWE-125 / CWE-191 / CWE-835\)) Tj T*
+(   * Scope:  RTC Crash & Heap Overflow from Malformed RTCP Packet in srs_kernel_rtc_rtcp.cpp) Tj T*
+(   * Status: Officially PUBLISHED by @winlinvip & Patched in v6.0-r3 \(PR #4669\).) Tj T*
+(7\) GHSA-6hh9-gpj4-cr69 | moonlight-stream/moonlight-common-c \(CWE-125 / CWE-908\)) Tj T*
 (   * Scope:  Missing IDX_DS_ADAPTIVE_TRIGGERS Sentinel in src/ControlStream.c) Tj T*
 (   * Status: Fix PR #168 Merged into master by @cgutman on 2026-10-26T22:46:49Z.) Tj T*
-(7\) GHSA-w6v4-9j58-rv79 | FreeRADIUS/freeradius-server \(Critical 9.8, CWE-125 / CWE-345\)) Tj T*
+(8\) GHSA-w6v4-9j58-rv79 | FreeRADIUS/freeradius-server \(Critical 9.8, CWE-125 / CWE-345\)) Tj T*
 (   * Scope:  EAP-FAST Nested TLV OOB Read & Crypto-Binding Bypass in rlm_eap_fast.c) Tj T*
 (   * Status: Patched on master by @alandekok \(commits 1ef1b499f1 & 1c7661e1bd\).) Tj T*
-(8\) GHSA-x9vx-8c8r-c57x | Infomaniak/mcp-server-kchat \(Medium 5.4, CWE-22 / CWE-88\)) Tj T*
+(9\) GHSA-x9vx-8c8r-c57x | Infomaniak/mcp-server-kchat \(Medium 5.4, CWE-22 / CWE-88\)) Tj T*
 (   * Scope:  Unvalidated username Path Traversal in getUserByUsername\(\) \(kchat-client.ts\)) Tj T*
 (   * Status: Fix PR #70 Merged by @L3o-pold in v1.1.1 \(commit 5ed2728f5a\).) Tj T*
 () Tj T*
@@ -101,5 +104,5 @@ xref
 trailer
 << /Size 6 /Root 1 0 R >>
 startxref
-6029
+6257
 %%EOF

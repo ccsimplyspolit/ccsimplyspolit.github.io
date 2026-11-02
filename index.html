@@ -375,8 +375,8 @@
     <!-- Key Metrics Counter Section -->
     <section class="metrics-grid">
       <div class="metric-card">
-        <div class="metric-val">19</div>
-        <div class="metric-label">Published GHSAs &amp; Fixes</div>
+        <div class="metric-val">9</div>
+        <div class="metric-label">Published GHSAs (14+ Fixes)</div>
       </div>
       <div class="metric-card">
         <div class="metric-val">3</div>
@@ -395,7 +395,7 @@
     <!-- Disclosures Section with Live Interactive Filtering & Search -->
     <section id="disclosures">
       <h2>
-        <span>0x00 // Maintainer-Acknowledged Coordinated Vulnerability Disclosures (12 Core GHSAs)</span>
+        <span>0x00 // Maintainer-Acknowledged Coordinated Vulnerability Disclosures (9 Published GHSAs &amp; CVD Disclosures)</span>
       </h2>
       <div class="embargo-banner">
         <strong>[CVD POLICY]</strong> All listed advisories have been formally accepted by maintainers, patched upstream, or awarded security bounties under ISO/IEC 29147 responsible disclosure standards. Zero uncoordinated 0-days are published.
@@ -403,32 +403,62 @@
 
       <!-- Filter Bar -->
       <div class="filter-bar">
-        <button class="filter-btn active" data-filter="all">All (16)</button>
-        <button class="filter-btn" data-filter="mcp">AI &amp; MCP Protocols (5)</button>
-        <button class="filter-btn" data-filter="memory">Memory Safety (7)</button>
-        <button class="filter-btn" data-filter="network">Network &amp; DPI (3)</button>
-        <button class="filter-btn" data-filter="web">Web &amp; Parser (3)</button>
+        <button class="filter-btn active" data-filter="all">All (14)</button>
+        <button class="filter-btn" data-filter="mcp">AI &amp; MCP Protocols (4)</button>
+        <button class="filter-btn" data-filter="memory">Memory &amp; Parsers (5)</button>
+        <button class="filter-btn" data-filter="network">Network &amp; DPI (1)</button>
+        <button class="filter-btn" data-filter="web">Web &amp; Desktop (4)</button>
         <input type="text" id="disclosure-search" class="search-input" placeholder="Search target, GHSA, or CWE...">
       </div>
 
-      <div class="grid" id="disclosure-grid">
+            <div class="grid" id="disclosure-grid">
 
-        <!-- 1. github/gh-aw (GHSA-796w-fvw2-ccmp) -->
-        <article class="card" data-category="mcp" data-text="github/gh-aw ghsa-796w-fvw2-ccmp cwe-377 cwe-732 mcp agentic workflows">
+        <!-- 1. MobSF (GHSA-j7g2-gm7j-mfvm) -->
+        <article class="card" data-category="memory" data-text="mobsf mobile-security-framework ghsa-j7g2-gm7j-mfvm cwe-59 cwe-755 symlink unzip parser differential low 3.1">
           <div>
             <div class="card-header">
-              <span class="id-tag">GHSA-796w-fvw2-ccmp</span>
-              <span class="cwe-tag">CWE-377 / CWE-732 (High)</span>
+              <span class="id-tag">GHSA-j7g2-gm7j-mfvm</span>
+              <span class="cwe-tag-low">CWE-59 / CWE-755 (Low 3.1)</span>
             </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-796w-fvw2-ccmp.html">Predictable Non-Exclusive <code>.tmp</code> File Write &amp; Permissive Mode Retention in <code>writeMCPCompileProgress</code> (<code>github/gh-aw</code>)</a></h3>
-            <p>Privately reported to GitHub Agentic Workflows. Accepted by GitHub maintainer Peli de Halleux (<code>@pelikhan</code>) into draft GHSA state and patched in merged PR <a href="https://github.com/github/gh-aw/pull/73575">#73575</a> (<code>Reuse shared file writer for MCP compile progress</code>).</p>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-j7g2-gm7j-mfvm.html">Pre-Extraction Symlink Mode Stripping Bypass in OS Unzip Fallback (<code>MobSF</code>)</a></h3>
+            <p>Officially published by upstream maintainer Ajin Abraham as <a href="https://github.com/MobSF/Mobile-Security-Framework-MobSF/security/advisories/GHSA-j7g2-gm7j-mfvm">GHSA-j7g2-gm7j-mfvm</a> (Low 3.1) and patched in <code>MobSF v4.6.5</code> (<a href="https://github.com/MobSF/Mobile-Security-Framework-MobSF/pull/2766">PR #2766</a>) with accepted reporter credit.</p>
           </div>
           <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-796w-fvw2-ccmp.html"><span class="embargo-tag">Accepted by GitHub &bull; PR #73575 Merged &rarr;</span></a>
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-j7g2-gm7j-mfvm.html"><span class="embargo-tag">Published by Vendor &bull; Patched in v4.6.5 &rarr;</span></a>
           </div>
         </article>
 
-        <!-- 2. ossrs/srs (GHSA-qr8h-p53p-x564) -->
+        <!-- 2. siyuan-note/siyuan (GHSA-g275-mf26-qx9r) -->
+        <article class="card" data-category="web" data-text="siyuan siyuan-note ghsa-g275-mf26-qx9r cwe-79 cwe-94 xss rce critical 9.6">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-g275-mf26-qx9r</span>
+              <span class="cwe-tag">CWE-79 / CWE-94 (Critical 9.6)</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-g275-mf26-qx9r.html">Stored XSS Escalating to Arbitrary Code Execution via Unescaped Checkbox Column (<code>siyuan-note/siyuan</code>)</a></h3>
+            <p>Officially published by SiYuan engineering (42,000+ &starf;) as <a href="https://github.com/siyuan-note/siyuan/security/advisories/GHSA-g275-mf26-qx9r">GHSA-g275-mf26-qx9r</a> (CVSS 9.6 Critical); patched upstream in <code>v3.8.10</code>.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-g275-mf26-qx9r.html"><span class="embargo-tag">Published by Vendor &bull; Fixed in v3.8.10 &rarr;</span></a>
+          </div>
+        </article>
+
+        <!-- 3. wailsapp/wails (GHSA-r5j2-ghh9-2jqw) -->
+        <article class="card" data-category="web" data-text="wails wailsapp webkitgtk ghsa-r5j2-ghh9-2jqw cwe-284 cwe-346 origin bypass high 8.3">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-r5j2-ghh9-2jqw</span>
+              <span class="cwe-tag">CWE-284 / CWE-346 (High 8.3)</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-r5j2-ghh9-2jqw.html">Linux WebKitGTK Script Message Bridge Uses Top-Level WebView URI Instead of Frame Origin (<code>wailsapp/wails</code>)</a></h3>
+            <p>Officially published by Wails maintainers (27,000+ &starf;) as <a href="https://github.com/wailsapp/wails/security/advisories/GHSA-r5j2-ghh9-2jqw">GHSA-r5j2-ghh9-2jqw</a> (CVSS 8.3 High); patched upstream in <code>v2.17.1</code>.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-r5j2-ghh9-2jqw.html"><span class="embargo-tag">Published by Vendor &bull; Fixed in v2.17.1 &rarr;</span></a>
+          </div>
+        </article>
+
+        <!-- 4. ossrs/srs (GHSA-qr8h-p53p-x564) -->
         <article class="card" data-category="memory" data-text="ossrs/srs ghsa-qr8h-p53p-x564 cwe-125 cwe-191 cwe-835 rtc rtcp webrtc high 8.2">
           <div>
             <div class="card-header">
@@ -443,52 +473,7 @@
           </div>
         </article>
 
-        <!-- 3. SalesforceCommerceCloud (GHSA-g52w-56c5-674f) -->
-        <article class="card" data-category="mcp" data-text="salesforce salesforcecommercecloud b2c-developer-tooling ghsa-g52w-56c5-674f cwe-22 mcp path traversal high 7.1">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-g52w-56c5-674f</span>
-              <span class="cwe-tag">CWE-22 (High 7.1)</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-g52w-56c5-674f.html">Path Containment Omission in <code>resolveWithProjectDirectory()</code> &amp; Tool Mismatch in <code>createWebDavTools</code> (<code>SalesforceCommerceCloud</code>)</a></h3>
-            <p>Confirmed and officially published by Salesforce engineering as <a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/security/advisories/GHSA-g52w-56c5-674f">GHSA-g52w-56c5-674f</a>; patched in <code>@salesforce/b2c-dx-mcp@3.9.0</code> (PR <a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/pull/828">#828</a>).</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-g52w-56c5-674f.html"><span class="embargo-tag">Published by Vendor &bull; Fixed in v3.9.0 (PR #828) &rarr;</span></a>
-          </div>
-        </article>
-
-        <!-- 4. ntop/nDPI (GHSA-4x7j-8w5q-5f7w) -->
-        <article class="card" data-category="network" data-text="ntop ndpi ghsa-4x7j-8w5q-5f7w cwe-670 dcerpc dhcp dpi moderate 5.3">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-4x7j-8w5q-5f7w</span>
-              <span class="cwe-tag-moderate">CWE-670 (Moderate 5.3)</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-4x7j-8w5q-5f7w.html">DCE/RPC Fragment Length Detection Bypass &amp; DHCP Option Offset Clamping in <code>dcerpc.c</code> / <code>dhcp.c</code> (<code>ntop/nDPI</code>)</a></h3>
-            <p>Confirmed, patched in commit <a href="https://github.com/ntop/nDPI/commit/ff44ed2"><code>ff44ed2</code></a>, and officially published by nDPI maintainer Ivan Nardi as <a href="https://github.com/ntop/nDPI/security/advisories/GHSA-4x7j-8w5q-5f7w">GHSA-4x7j-8w5q-5f7w</a> with accepted reporter credit.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-4x7j-8w5q-5f7w.html"><span class="embargo-tag">Published by Vendor &bull; Fixed in ff44ed2 &rarr;</span></a>
-          </div>
-        </article>
-
-        <!-- 5. czlonkowski/n8n-mcp (GHSA-qm7x-j9xp-x3gv) -->
-        <article class="card" data-category="mcp" data-text="czlonkowski n8n-mcp ghsa-qm7x-j9xp-x3gv cwe-918 cwe-184 ssrf localhost mcp low 3.1">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-qm7x-j9xp-x3gv</span>
-              <span class="cwe-tag-low">CWE-918 / CWE-184 (Low 3.1)</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-qm7x-j9xp-x3gv.html">Hostname Checks in SSRF Protection Skipped Trailing-Dot &amp; <code>*.localhost</code> in <code>validateUrlSync</code> (<code>czlonkowski/n8n-mcp</code>)</a></h3>
-            <p>Officially published by maintainer as <a href="https://github.com/czlonkowski/n8n-mcp/security/advisories/GHSA-qm7x-j9xp-x3gv">GHSA-qm7x-j9xp-x3gv</a> and patched in <code>n8n-mcp v2.99.2</code> (<a href="https://github.com/czlonkowski/n8n-mcp/commit/a49dfb4">commit <code>a49dfb4</code></a>) with official reporter credit.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-qm7x-j9xp-x3gv.html"><span class="embargo-tag">Published by Vendor &bull; Patched in v2.99.2 &rarr;</span></a>
-          </div>
-        </article>
-
-        <!-- 6. opensensor/lightNVR (GHSA-pvw7-7j8c-qx96) -->
+        <!-- 5. opensensor/lightNVR (GHSA-pvw7-7j8c-qx96) -->
         <article class="card" data-category="memory" data-text="opensensor lightnvr ghsa-pvw7-7j8c-qx96 cwe-285 cwe-416 go2rtc auth bypass high 8.1">
           <div>
             <div class="card-header">
@@ -503,12 +488,42 @@
           </div>
         </article>
 
-        <!-- 7. LTplus-AG/ifc-lite (GHSA-hw42-92fr-x9vc) -->
+        <!-- 6. SalesforceCommerceCloud (GHSA-g52w-56c5-674f) -->
+        <article class="card" data-category="mcp" data-text="salesforce salesforcecommercecloud b2c-developer-tooling ghsa-g52w-56c5-674f cwe-22 mcp path traversal high 7.1">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-g52w-56c5-674f</span>
+              <span class="cwe-tag">CWE-22 (High 7.1)</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-g52w-56c5-674f.html">Path Containment Omission in <code>resolveWithProjectDirectory()</code> &amp; Tool Mismatch in <code>createWebDavTools</code> (<code>SalesforceCommerceCloud</code>)</a></h3>
+            <p>Confirmed and officially published by Salesforce engineering as <a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/security/advisories/GHSA-g52w-56c5-674f">GHSA-g52w-56c5-674f</a>; patched in <code>@salesforce/b2c-dx-mcp@3.9.0</code> (PR <a href="https://github.com/SalesforceCommerceCloud/b2c-developer-tooling/pull/828">#828</a>).</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-g52w-56c5-674f.html"><span class="embargo-tag">Published by Vendor &bull; Fixed in v3.9.0 (PR #828) &rarr;</span></a>
+          </div>
+        </article>
+
+        <!-- 7. ntop/nDPI (GHSA-4x7j-8w5q-5f7w) -->
+        <article class="card" data-category="network" data-text="ntop ndpi ghsa-4x7j-8w5q-5f7w cwe-670 dcerpc dhcp dpi moderate 5.3">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-4x7j-8w5q-5f7w</span>
+              <span class="cwe-tag-moderate">CWE-670 (Moderate 5.3)</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-4x7j-8w5q-5f7w.html">DCE/RPC Fragment Length Detection Bypass &amp; DHCP Option Offset Clamping in <code>dcerpc.c</code> / <code>dhcp.c</code> (<code>ntop/nDPI</code>)</a></h3>
+            <p>Confirmed, patched in commit <a href="https://github.com/ntop/nDPI/commit/ff44ed2"><code>ff44ed2</code></a>, and officially published by nDPI maintainer Ivan Nardi as <a href="https://github.com/ntop/nDPI/security/advisories/GHSA-4x7j-8w5q-5f7w">GHSA-4x7j-8w5q-5f7w</a> with accepted reporter credit.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-4x7j-8w5q-5f7w.html"><span class="embargo-tag">Published by Vendor &bull; Fixed in ff44ed2 &rarr;</span></a>
+          </div>
+        </article>
+
+        <!-- 8. LTplus-AG/ifc-lite (GHSA-hw42-92fr-x9vc) -->
         <article class="card" data-category="web" data-text="ltplus-ag ifc-lite ghsa-hw42-92fr-x9vc cwe-74 step record injection moderate">
           <div>
             <div class="card-header">
               <span class="id-tag">GHSA-hw42-92fr-x9vc</span>
-              <span class="cwe-tag-moderate">CWE-74 (Moderate)</span>
+              <span class="cwe-tag-moderate">CWE-74 (Moderate 5.3)</span>
             </div>
             <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-hw42-92fr-x9vc.html">STEP Record Injection via Unvalidated Typed-Value Type Names in the STEP Mutation Writer (<code>LTplus-AG/ifc-lite</code>)</a></h3>
             <p>Officially published by upstream maintainer as <a href="https://github.com/LTplus-AG/ifc-lite/security/advisories/GHSA-hw42-92fr-x9vc">GHSA-hw42-92fr-x9vc</a> and patched in <code>@ifc-lite/export@4.13.1</code> and <code>ifc-lite-export@27.0.0</code> with accepted finder credit.</p>
@@ -518,7 +533,22 @@
           </div>
         </article>
 
-        <!-- 8. FreeRADIUS (GHSA-w6v4-9j58-rv79) -->
+        <!-- 9. czlonkowski/n8n-mcp (GHSA-qm7x-j9xp-x3gv) -->
+        <article class="card" data-category="mcp" data-text="czlonkowski n8n-mcp ghsa-qm7x-j9xp-x3gv cwe-918 cwe-184 ssrf localhost mcp low 3.1">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-qm7x-j9xp-x3gv</span>
+              <span class="cwe-tag-low">CWE-918 / CWE-184 (Low 3.1)</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-qm7x-j9xp-x3gv.html">Hostname Checks in SSRF Protection Skipped Trailing-Dot &amp; <code>*.localhost</code> in <code>validateUrlSync</code> (<code>czlonkowski/n8n-mcp</code>)</a></h3>
+            <p>Officially published by maintainer as <a href="https://github.com/czlonkowski/n8n-mcp/security/advisories/GHSA-qm7x-j9xp-x3gv">GHSA-qm7x-j9xp-x3gv</a> and patched in <code>n8n-mcp v2.99.2</code> (<a href="https://github.com/czlonkowski/n8n-mcp/commit/a49dfb4">commit <code>a49dfb4</code></a>) with official reporter credit.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-qm7x-j9xp-x3gv.html"><span class="embargo-tag">Published by Vendor &bull; Patched in v2.99.2 &rarr;</span></a>
+          </div>
+        </article>
+
+        <!-- 10. FreeRADIUS (GHSA-w6v4-9j58-rv79) -->
         <article class="card" data-category="memory" data-text="freeradius freeradius-server ghsa-w6v4-9j58-rv79 cwe-125 cwe-345 eap-fast tlv critical 9.8">
           <div>
             <div class="card-header">
@@ -533,7 +563,7 @@
           </div>
         </article>
 
-        <!-- 9. Infomaniak (GHSA-x9vx-8c8r-c57x) -->
+        <!-- 11. Infomaniak (GHSA-x9vx-8c8r-c57x) -->
         <article class="card" data-category="mcp" data-text="infomaniak mcp-server-kchat ghsa-x9vx-8c8r-c57x cwe-22 cwe-88 path traversal mcp medium 5.4">
           <div>
             <div class="card-header">
@@ -548,7 +578,7 @@
           </div>
         </article>
 
-        <!-- 10. moonlight-stream (GHSA-6hh9-gpj4-cr69) -->
+        <!-- 12. moonlight-stream (GHSA-6hh9-gpj4-cr69) -->
         <article class="card" data-category="memory" data-text="moonlight-stream moonlight-common-c ghsa-6hh9-gpj4-cr69 cwe-125 cwe-908 controlstream sentinel medium">
           <div>
             <div class="card-header">
@@ -563,52 +593,7 @@
           </div>
         </article>
 
-        <!-- 11. bacnet-stack (GHSA-cr23-59mg-h2rc) -->
-        <article class="card" data-category="network" data-text="bacnet-stack bacnet ghsa-cr23-59mg-h2rc cwe-125 cwe-787 cwe-400 cwe-835 infinite loop scada ics high">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-cr23-59mg-h2rc</span>
-              <span class="cwe-tag">CWE-125 / CWE-835 / CWE-400 (High)</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html">Pre-Auth Infinite Loop &amp; OOB Read via Negative Decode Length in <code>Calendar_Write_Property()</code> (<code>bacnet-stack</code>)</a></h3>
-            <p>Accepted by lead maintainer Steve Karg (<code>@skarg</code>) into draft GHSA state; upstream remediation Pull Request <a href="https://github.com/bacnet-stack/bacnet-stack/pull/1595">#1595</a> accepted.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-cr23-59mg-h2rc.html"><span class="embargo-tag">Accepted by Vendor &bull; Fix PR #1595 Open &rarr;</span></a>
-          </div>
-        </article>
-
-        <!-- 12. siyuan-note/siyuan (GHSA-g275-mf26-qx9r) -->
-        <article class="card" data-category="mcp" data-text="siyuan siyuan-note ghsa-g275-mf26-qx9r cwe-79 cwe-94 xss rce critical 9.6">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-g275-mf26-qx9r</span>
-              <span class="cwe-tag">CWE-79 / CWE-94 (Critical 9.6)</span>
-            </div>
-            <h3><a href="https://github.com/siyuan-note/siyuan/security/advisories/GHSA-g275-mf26-qx9r">Stored XSS Escalating to Arbitrary Code Execution via Unescaped Checkbox Column (<code>siyuan-note/siyuan</code>)</a></h3>
-            <p>Officially published by SiYuan engineering (42,000+ &starf;) as <a href="https://github.com/siyuan-note/siyuan/security/advisories/GHSA-g275-mf26-qx9r">GHSA-g275-mf26-qx9r</a> (CVSS 9.6 Critical); patched upstream in <code>v3.8.10</code>.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://github.com/siyuan-note/siyuan/security/advisories/GHSA-g275-mf26-qx9r"><span class="embargo-tag">Published by Vendor &bull; Fixed in v3.8.10 &rarr;</span></a>
-          </div>
-        </article>
-
-        <!-- 13. wailsapp/wails (GHSA-r5j2-ghh9-2jqw) -->
-        <article class="card" data-category="mcp" data-text="wails wailsapp webkitgtk ghsa-r5j2-ghh9-2jqw cwe-346 origin bypass high 8.3">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-r5j2-ghh9-2jqw</span>
-              <span class="cwe-tag">CWE-346 (High 8.3)</span>
-            </div>
-            <h3><a href="https://github.com/wailsapp/wails/security/advisories/GHSA-r5j2-ghh9-2jqw">Linux WebKitGTK Script Message Bridge Uses Top-Level WebView URI Instead of Frame Origin (<code>wailsapp/wails</code>)</a></h3>
-            <p>Officially published by Wails maintainers (27,000+ &starf;) as <a href="https://github.com/wailsapp/wails/security/advisories/GHSA-r5j2-ghh9-2jqw">GHSA-r5j2-ghh9-2jqw</a> (CVSS 8.3 High); patched upstream in <code>v2.17.1</code>.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://github.com/wailsapp/wails/security/advisories/GHSA-r5j2-ghh9-2jqw"><span class="embargo-tag">Published by Vendor &bull; Fixed in v2.17.1 &rarr;</span></a>
-          </div>
-        </article>
-
-        <!-- 14. jdx/mise (PR #15235) -->
+        <!-- 13. jdx/mise (PR #15235) -->
         <article class="card" data-category="mcp" data-text="mise jdx safe mode lockfile trust bypass pr 15235">
           <div>
             <div class="card-header">
@@ -623,53 +608,7 @@
           </div>
         </article>
 
-        <!-- Additional Vendor Disclosures -->
-        <!-- COVESA/Open1722 (GHSA-xvmx-7qq5-34q6) -->
-        <article class="card" data-category="network" data-text="covesa open1722 ghsa-xvmx-7qq5-34q6 cwe-125 cwe-787 cwe-191 can acf critical 9.1">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-xvmx-7qq5-34q6</span>
-              <span class="cwe-tag">CWE-125 / CWE-787 / CWE-191 (Critical 9.1)</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-xvmx-7qq5-34q6.html">Out-of-Bounds Read/Write via Unchecked IEEE 1722 ACF Message &amp; CAN Padding Lengths (<code>COVESA/Open1722</code>)</a></h3>
-            <p>Accepted into draft GHSA state with CVE requested from GitHub CNA; upstream fix merged in PR <a href="https://github.com/COVESA/Open1722/pull/69">#69</a> (commit <a href="https://github.com/COVESA/Open1722/commit/78de7ef"><code>78de7ef</code></a>).</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-xvmx-7qq5-34q6.html"><span class="embargo-tag">Accepted by Vendor &bull; CVE Requested &bull; PR #69 Merged &rarr;</span></a>
-          </div>
-        </article>
-
-        <!-- FreeRDP/FreeRDP (GHSA-xxpf-vhg6-6873) -->
-        <article class="card" data-category="memory" data-text="freerdp ghsa-xxpf-vhg6-6873 cwe-125 cwe-835 sps nal bounds webcodecs medium">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-xxpf-vhg6-6873</span>
-              <span class="cwe-tag-moderate">CWE-125 / CWE-835 (Medium)</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-xxpf-vhg6-6873.html">Missing SPS NAL Unit Bounds Check in <code>webcodecs_decompress()</code> (<code>FreeRDP/FreeRDP</code>)</a></h3>
-            <p>Accepted by FreeRDP maintainer Armin Novak into draft GHSA state and patched in merged PR <a href="https://github.com/FreeRDP/FreeRDP/pull/13941">#13941</a>.</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-xxpf-vhg6-6873.html"><span class="embargo-tag">Accepted by FreeRDP &bull; PR #13941 Merged &rarr;</span></a>
-          </div>
-        </article>
-
-        <!-- sisk-http/core (GHSA-43p9-7988-4jf7) -->
-        <article class="card" data-category="web" data-text="sisk sisk-http core ghsa-43p9-7988-4jf7 cwe-644 cwe-79 host header link injection">
-          <div>
-            <div class="card-header">
-              <span class="id-tag">GHSA-43p9-7988-4jf7</span>
-              <span class="cwe-tag-moderate">CWE-644 / CWE-79 (Moderate)</span>
-            </div>
-            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-43p9-7988-4jf7.html"><code>Sisk.Documenting</code> Documentation Exporter <code>Origin</code> / <code>Host</code> Header Link Injection (<code>sisk-http</code>)</a></h3>
-            <p>Accepted by lead maintainer into draft GHSA with CVE requested from GitHub CNA; patched in commit <a href="https://github.com/sisk-http/core/commit/51893cf"><code>51893cf</code></a> (<code>v1.18.2</code>).</p>
-          </div>
-          <div class="card-footer">
-            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-43p9-7988-4jf7.html"><span class="embargo-tag">Accepted by Vendor &bull; CVE Requested &bull; v1.18.2 &rarr;</span></a>
-          </div>
-        </article>
-
-        <!-- Brave Software (H1-4148578) -->
+        <!-- 14. Brave Software (H1-4148578) -->
         <article class="card" data-category="web" data-text="brave brave-ai-gateway h1-4148578 cwe-20 cwe-755 hackerone bounty 50 usd">
           <div>
             <div class="card-header">
@@ -765,8 +704,21 @@
 
     <!-- Technical Methodology Write-ups -->
     <section id="writeups">
-      <h2>0x02 // Methodology Write-ups (Fuzzing &amp; Memory Safety)</h2>
+      <h2>0x02 // Research Write-ups &amp; Whitebox Audits</h2>
       <div class="grid">
+        <article class="card" style="border-color: rgba(56, 189, 248, 0.4); background: rgba(17, 22, 33, 0.95);">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">FEATURED WHITEBOX AUDIT</span>
+              <span class="tool-tag">GHSA-j7g2-gm7j-mfvm</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/writeups/mobsf-zip-parser-differential.html">Deconstructing the Zip Slip Illusion: Fail-Open Parser Differentials and the Reality of Deferred Symlink Containment (MobSF GHSA-j7g2-gm7j-mfvm)</a></h3>
+            <p>An exhaustive whitebox post-mortem of GHSA-j7g2-gm7j-mfvm in Mobile Security Framework (MobSF &le; 4.6.4). How <code>PK\x05\x06</code> signature shadowing inside ZIP EOCD trailing comment bytes triggered an unhandled <code>ValueError</code> in Python's <code>zipfile</code> parser, inducing a fail-open fallback to system <code>/usr/bin/unzip</code>, and why Info-ZIP 6.0's deferred symlink containment model mitigated exploitation.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/writeups/mobsf-zip-parser-differential.html">Read Full Whitebox Write-up &rarr;</a>
+          </div>
+        </article>
         <article class="card">
           <div>
             <div class="card-header">

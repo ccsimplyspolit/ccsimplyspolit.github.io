@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GHSA-r5j2-ghh9-2jqw — Wails Advisory Record | Serhii Shunko (@sshunko)</title>
+  <meta name="description" content="Coordinated vulnerability disclosure record GHSA-r5j2-ghh9-2jqw in wailsapp/wails (High (8.3), CWE-284 / CWE-346) reported by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+  <style>
+    :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.65; padding: 2rem 1.25rem 4rem; }
+    .container { max-width: 960px; margin: 0 auto; }
+    a { color: var(--accent); text-decoration: none; }
+    .back { font-family: var(--mono); font-size: 0.88rem; display: inline-block; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    h2 { font-family: var(--mono); font-size: 1.05rem; color: var(--accent); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+    .notice { background: rgba(52, 211, 153, 0.08); border: 1px solid rgba(52, 211, 153, 0.35); border-radius: 6px; padding: 1rem 1.2rem; margin: 1.25rem 0; font-size: 0.92rem; }
+    pre { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.5; margin: 0.75rem 0; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
+    <h1>GHSA-r5j2-ghh9-2jqw: Linux WebKitGTK Script Message Bridge Uses Top-Level WebView URI Instead of Calling Frame Origin (<code>wailsapp/wails</code>)</h1>
+    <div class="notice">
+      <strong>[OFFICIALLY PUBLISHED BY VENDOR &bull; PATCHED IN Wails v2.17.1]</strong><br>
+      Officially published by Wails maintainers (27,000+ &starf;) on <code>2026-11-01T09:32:51Z</code> as <a href="https://github.com/wailsapp/wails/security/advisories/GHSA-r5j2-ghh9-2jqw">GHSA-r5j2-ghh9-2jqw</a> (<code>state: published</code>, <code>High</code> severity, CVSS v3.1 8.3 / CVSS v4.0 8.9) with official author/reporter credit to <code>@ccsimplyspolit</code>, and patched upstream in <code>v2.17.1</code>.
+    </div>
+    <h2>0x00 // GitHub Security Advisory &amp; Remediation Metadata</h2>
+    <pre><code>{
+  "ghsa_id": "GHSA-r5j2-ghh9-2jqw",
+  "repository": "wailsapp/wails",
+  "package": "go:github.com/wailsapp/wails/v2",
+  "vulnerable_version_range": "<= 2.17.0",
+  "patched_versions": "2.17.1",
+  "html_url": "https://github.com/wailsapp/wails/security/advisories/GHSA-r5j2-ghh9-2jqw",
+  "state": "published",
+  "published_at": "2026-11-01T09:32:51Z",
+  "summary": "Linux WebKitGTK Script Message Bridge Uses Top-Level WebView URI Instead of Calling Frame Origin, Bypassing OriginValidator in Embedded Iframes",
+  "severity": "high",
+  "cvss_v3": {
+    "vector_string": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:C/C:H/I:H/A:H",
+    "score": 8.3,
+    "severity": "HIGH"
+  },
+  "cvss_v4": {
+    "vector_string": "CVSS:4.0/AV:N/AC:H/AT:N/PR:N/UI:A/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H",
+    "score": 8.9,
+    "severity": "HIGH"
+  },
+  "status": "Officially Published by Vendor (GHSA-r5j2-ghh9-2jqw) • Patched in v2.17.1",
+  "credits": [
+    {
+      "login": "ccsimplyspolit",
+      "type": "reporter",
+      "state": "accepted"
+    }
+  ],
+  "cwe_ids": [
+    "CWE-284",
+    "CWE-346"
+  ],
+  "vulnerable_functions": [
+    "windowMessageBridge",
+    "handleMessage"
+  ]
+}</code></pre>
+  </div>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anatomy of a Parser Differential: Breaking MobSF's Pre-Extraction Symlink Neutralizer via PK\x05\x06 EOCD Shadowing (GHSA-j7g2-gm7j-mfvm) | Serhii Shunko (@sshunko)</title>
+  <meta name="description" content="In-depth whitebox security audit and vulnerability post-mortem of GHSA-j7g2-gm7j-mfvm in Mobile Security Framework (MobSF <= 4.6.4). How a parser differential in zipfile EOCD comment handling provoked a fail-open fallback to Info-ZIP unzip.">
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --panel: #111621;
+      --border: #1f293a;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-green: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-red: #f87171;
+      --mono: "JetBrains Mono", "Fira Code", Consolas, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.7; padding: 2rem 1.25rem 4rem; }
+    .container { max-width: 940px; margin: 0 auto; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .back { font-family: var(--mono); font-size: 0.88rem; display: inline-block; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.75rem; margin-bottom: 0.5rem; line-height: 1.3; }
+    .meta { font-family: var(--mono); color: var(--muted); font-size: 0.84rem; margin-bottom: 1.5rem; }
+    h2 { font-family: var(--mono); font-size: 1.2rem; color: var(--accent); margin: 2.25rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+    h3 { font-size: 1.05rem; color: var(--accent-amber); margin: 1.5rem 0 0.5rem; font-family: var(--mono); }
+    p { margin-bottom: 1rem; }
+    ul, ol { margin-left: 1.5rem; margin-bottom: 1rem; }
+    li { margin-bottom: 0.35rem; }
+    pre { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.83rem; line-height: 1.5; margin: 0.85rem 0; }
+    code { font-family: var(--mono); background: rgba(255,255,255,0.06); padding: 0.1rem 0.35rem; border-radius: 3px; font-size: 0.88em; }
+    pre code { background: none; padding: 0; }
+    .box { background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 6px; padding: 1rem 1.25rem; margin: 1.25rem 0; font-size: 0.92rem; }
+    .box-warn { background: rgba(251, 191, 36, 0.06); border: 1px solid rgba(251, 191, 36, 0.3); }
+    .tag { display: inline-block; font-family: var(--mono); font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 3px; background: rgba(52, 211, 153, 0.12); color: var(--accent-green); border: 1px solid rgba(52, 211, 153, 0.3); margin-right: 0.5rem; }
+    .tag-low { background: rgba(56, 189, 248, 0.12); color: var(--accent); border-color: rgba(56, 189, 248, 0.3); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
+    <h1>Anatomy of a Parser Differential: Breaking MobSF's Pre-Extraction Symlink Neutralizer via <code>PK\x05\x06</code> EOCD Shadowing</h1>
+    <div class="meta">
+      <span class="tag">GHSA-j7g2-gm7j-mfvm</span>
+      <span class="tag-low">CVSS v3.1: 3.1 (Low)</span>
+      <span class="tag-low">CVSS v4.0: 2.3 (Low)</span>
+      <span>Author: Serhii Shunko (@sshunko / @ccsimplyspolit) &bull; Published: 2026-11-01</span>
+    </div>
+
+    <div class="box">
+      <strong>Executive Summary:</strong> An incomplete mitigation for <a href="https://github.com/MobSF/Mobile-Security-Framework-MobSF/security/advisories/GHSA-mc92-j6mp-x9cp">GHSA-mc92-j6mp-x9cp</a> in Mobile Security Framework (MobSF &le; 4.6.4) permitted bypassing pre-extraction symbolic link mode stripping. By constructing a ZIP archive whose End of Central Directory (EOCD) comment embedded the 4-byte signature <code>PK\x05\x06</code> within the trailing 21 bytes, MobSF's custom parser threw an unhandled <code>ValueError</code>. This triggered a fail-open fallback in <code>os_unzip()</code> that handed the original, unmodified archive directly to system <code>/usr/bin/unzip</code>. Due to Info-ZIP 6.0's deferred symlink extraction architecture and MobSF's synchronous post-extraction tree sanitization, the vulnerability remained contained to a narrow process race, resulting in a Low severity classification.
+    </div>
+
+    <h2>0x00 // The Context: Archive Extraction in Automated Analysis Engines</h2>
+    <p>
+      Mobile Security Framework (MobSF) is an automated, all-in-one mobile application pen-testing, malware analysis, and security assessment framework. When a security engineer or CI/CD pipeline uploads an Android APK, iOS IPA, or generic ZIP archive, the engine must unpack hundreds or thousands of compressed members before decompilers (JADX, Baksmali, Ghidra) can inspect code and assets.
+    </p>
+    <p>
+      Archive extraction in automated pipelines is notoriously prone to path traversal vulnerabilities (Zip Slip, <code>CWE-22</code>) and symlink exploitation (<code>CWE-59</code>). In previous versions of MobSF, a report (<a href="https://github.com/MobSF/Mobile-Security-Framework-MobSF/security/advisories/GHSA-mc92-j6mp-x9cp">GHSA-mc92-j6mp-x9cp</a>) demonstrated that if an archive contained a Unix symbolic link pointing to a target outside the extraction directory, subsequent archive entries could overwrite arbitrary files on the host filesystem when unpacked with Info-ZIP.
+    </p>
+    <p>
+      To neutralize this risk, MobSF introduced a proactive defense layer: <code>neutralize_zip_special_modes(src, dest_parent)</code> in <code>mobsf/StaticAnalyzer/views/common/shared_func.py</code>. This function inspects the ZIP Central Directory and sanitizes Unix file permission bits (stripping <code>S_IFLNK</code> <code>0o120000</code> and <code>S_IFIFO</code>) before invoking system utilities.
+    </p>
+
+    <h2>0x01 // The Architecture & The Fail-Open Flaw</h2>
+    <p>
+      In <code>mobsf/StaticAnalyzer/views/common/shared_func.py</code>, MobSF employs a tiered extraction strategy. It first attempts to unpack files using Python's native <code>zipfile</code> module. However, because malformed, heavily obfuscated, or custom-packed APKs frequently fail Python's strict header validation, MobSF includes a robust fallback: <code>os_unzip()</code>, which delegates decompression to the host's <code>/usr/bin/unzip</code>.
+    </p>
+    <p>
+      The vulnerability lay in how <code>os_unzip()</code> wrapped the pre-extraction sanitizer:
+    </p>
+    <pre><code># mobsf/StaticAnalyzer/views/common/shared_func.py:400-415 (MobSF <= 4.6.4)
+extract_from = app_path
+try:
+    patched = neutralize_zip_special_modes(app_path, ext_path)
+    extract_from = patched
+except Exception:
+    logger.warning('Could not strip symlink modes before OS unzip')
+
+# OS unzip strips absolute paths and '..' from member names.
+# Symlink modes are rewritten above so it cannot create a link.
+subprocess.call(
+    [unzip_b, '-o', '-q', extract_from, '-d', ext_path])
+
+# chmod first. A directory mode such as 0500 has no write bit, so
+# unlinking a symlink inside it fails and the link would survive.
+# set_permissions skips links, so this does not chmod the target.
+set_permissions(ext_path)
+remove_external_symlinks(ext_path)</code></pre>
+    <p>
+      Notice the critical assumption:
+    </p>
+    <ul>
+      <li><code>extract_from</code> is initialized to <code>app_path</code> (the raw, untrusted user-uploaded file).</li>
+      <li>If <code>neutralize_zip_special_modes()</code> succeeds, <code>extract_from</code> is updated to point to the sanitized temporary file <code>patched</code>.</li>
+      <li>If <code>neutralize_zip_special_modes()</code> raises <strong>any exception</strong>, the exception is caught, logged as a mere warning, and execution falls through with <code>extract_from = app_path</code>!</li>
+    </ul>
+    <p>
+      Furthermore, inside <code>neutralize_zip_special_modes()</code>:
+    </p>
+    <pre><code>def neutralize_zip_special_modes(src, dest_parent):
+    fd, name = tempfile.mkstemp(
+        prefix='mobsf-unzip-',
+        suffix='.zip',
+        dir=_patched_zip_dir(dest_parent))
+    os.close(fd)
+    try:
+        shutil.copyfile(src, name)
+        with open(name, 'r+b') as handle:
+            _rewrite_special_central_directory(handle)
+    except Exception:
+        os.unlink(name)
+        raise
+    return name</code></pre>
+    <p>
+      When an exception is thrown during Central Directory rewriting, <code>neutralize_zip_special_modes</code> unlinks the temporary file and re-raises. <code>os_unzip</code> catches the exception and immediately invokes <code>unzip -o -q</code> on the raw <code>app_path</code> with all Unix symlink modes (<code>0o120777</code>) intact.
+    </p>
+
+    <h2>0x02 // Root Cause: Parser Differential & EOCD Shadowing</h2>
+    <p>
+      To trigger the fail-open fallback, an attacker simply needed to cause <code>_rewrite_special_central_directory(handle)</code> to throw an unhandled exception on an archive that system <code>/usr/bin/unzip</code> would still extract without error.
+    </p>
+    <p>
+      Under the ZIP specification (PKWARE APPNOTE.TXT), an archive terminates with the <strong>End of Central Directory (EOCD)</strong> record:
+    </p>
+    <pre><code>[Central Directory Headers...]
++-------------------------------------------------------------+
+| End of Central Directory Record (EOCD) - 22 bytes minimum   |
+| 0x00: 4 bytes - Signature: 0x06054b50 ("PK\x05\x06")       |
+| 0x04: 2 bytes - Disk Number                                 |
+| 0x06: 2 bytes - Disk with CD Start                          |
+| 0x08: 2 bytes - Number of CD entries on this disk           |
+| 0x0A: 2 bytes - Total Number of CD entries                  |
+| 0x0C: 4 bytes - Size of Central Directory                   |
+| 0x10: 4 bytes - Offset of Central Directory                 |
+| 0x14: 2 bytes - ZIP Comment Length (.n bytes)               |
+| 0x16: .n bytes - Variable Archive Comment                   |
++-------------------------------------------------------------+</code></pre>
+    <p>
+      Because the archive comment can be up to 65,535 bytes in length, locating the EOCD requires scanning backward from the end of the file. MobSF implemented the following helper:
+    </p>
+    <pre><code>def _eocd_offset(handle, size):
+    """Return the end-of-central-directory offset."""
+    window = min(size, 65535 + 22)
+    data = _read_at(handle, size - window, window)
+    rel = data.rfind(_EOCD_SIG)
+    if rel < 0 or window - rel < 22:
+        raise ValueError('EOCD not found')
+    return size - window + rel</code></pre>
+
+    <h3>The Flaw in <code>data.rfind(_EOCD_SIG)</code></h3>
+    <p>
+      Python's <code>bytes.rfind()</code> searches from the right (the very end of the byte string) toward the left. If a ZIP archive includes an archive comment that embeds the 4-byte sequence <code>PK\x05\x06</code> within the trailing 21 bytes of the file:
+    </p>
+    <ol>
+      <li><code>data.rfind(_EOCD_SIG)</code> matches the false signature inside the comment rather than the genuine EOCD record located earlier.</li>
+      <li>Because this false signature is within the trailing 21 bytes, <code>window - rel < 22</code> evaluates to <code>True</code>.</li>
+      <li><code>_eocd_offset</code> immediately raises <code>ValueError('EOCD not found')</code>.</li>
+    </ol>
+    <p>
+      A second trigger exists in Python's internal <code>zipfile._EndRecData64</code> parser. When malformed comments or ZIP64 locator differentials cause a mismatch, Python's <code>_EndRecData64</code> raises <code>ValueError: substring not found</code>.
+    </p>
+    <p>
+      A third trigger exists in Central Directory traversal rigidity:
+    </p>
+    <pre><code>marker = _read_at(handle, pos, 4) if pos + 4 <= size else b''
+if marker not in (_EOCD_SIG, _ZIP64_EOCD_SIG):
+    raise ValueError('central directory walk did not finish')</code></pre>
+    <p>
+      If non-zero alignment padding or extraneous bytes exist between the final Central Directory entry and the EOCD header, MobSF raises <code>ValueError('central directory walk did not finish')</code>. Even if all entries up to that point had their symlink modes neutralized in the temporary file, the exception handler deletes the temporary file and falls open to <code>app_path</code>!
+    </p>
+
+    <h2>0x03 // Why the Vulnerability is Low Severity: The Info-ZIP 6.0 Containment Window</h2>
+    <p>
+      In many security contexts, bypassing symlink sanitization in an automated engine would constitute an immediate Critical vulnerability (Arbitrary File Overwrite / RCE). Why, then, was <code>GHSA-j7g2-gm7j-mfvm</code> rated <strong>Low</strong> (CVSS v3.1: 3.1)?
+    </p>
+    <div class="box box-warn">
+      <strong>The Dual Containment Barrier:</strong>
+      <ol>
+        <li><strong>Info-ZIP 6.0 Deferred Extraction & <code>checkdir()</code>:</strong> Modern Info-ZIP (version 6.0+) does not immediately follow unverified directory symlinks created during the same extraction pass. Info-ZIP defers symlink creation to the end of the extraction process in standard configurations and invokes internal security checks (<code>checkdir.c</code>) to prevent path escape.</li>
+        <li><strong>Synchronous Post-Extraction Purge:</strong> Look closely at the cleanup sequence in MobSF:
+          <pre><code>subprocess.call([unzip_b, '-o', '-q', extract_from, '-d', ext_path])
+set_permissions(ext_path)
+remove_external_symlinks(ext_path)</code></pre>
+          MobSF's <code>remove_external_symlinks(ext_path)</code> runs <em>synchronously</em> in the same Python thread immediately after <code>subprocess.call</code> returns. It performs a full depth-first traversal of <code>ext_path</code>, verifies <code>os.path.realpath(entry)</code> against the canonical root, and immediately unlinks any external symlink before MobSF begins analyzing the contents.
+        </li>
+      </ol>
+    </div>
+    <p>
+      Consequently, an attacker cannot achieve persistent external symlinks on the host. The only theoretical vector is a race condition where a secondary archive member overwrites a target file through a transient symlink during the single <code>unzip</code> execution cycle. Because Info-ZIP 6.0 contains defensive boundary validation, the practical exploitability is constrained, fully justifying the maintainer's <strong>Low</strong> CVSS evaluation (<code>AV:N/AC:H/PR:L/UI:N/S:U/C:N/I:L/A:N</code>).
+    </p>
+
+    <h2>0x04 // Deterministic Verification Code</h2>
+    <p>
+      The parser differential between MobSF's <code>_eocd_offset</code> and genuine ZIP structures can be proven deterministically with the following Python reproduction:
+    </p>
+    <pre><code>import struct
+
+_EOCD_SIG = b"PK\x05\x06"
+
+def buggy_mobsf_eocd_offset(data: bytes) -> int:
+    """Simulates MobSF <= 4.6.4 EOCD parser."""
+    window = min(len(data), 65535 + 22)
+    tail = data[len(data) - window:]
+    rel = tail.rfind(_EOCD_SIG)
+    if rel < 0 or window - rel < 22:
+        raise ValueError("EOCD not found")
+    return len(data) - window + rel
+
+def fixed_mobsf_eocd_offset(data: bytes) -> int:
+    """Simulates MobSF 4.6.5 validated backward scanner."""
+    window = min(len(data), 65535 + 22)
+    tail = data[len(data) - window:]
+    pos = window - 22
+    while pos >= 0:
+        if tail[pos:pos + 4] == _EOCD_SIG:
+            comment_len = struct.unpack_from("<H", tail, pos + 20)[0]
+            if pos + 22 + comment_len <= window:
+                return len(data) - window + pos
+        pos -= 1
+    raise ValueError("EOCD not found")
+
+# Craft a valid ZIP EOCD with an 8-byte comment ending in PK\x05\x06
+comment = b"test" + _EOCD_SIG
+eocd_record = struct.pack("<4sHHHHIIH", _EOCD_SIG, 0, 0, 0, 0, 0, 0, len(comment)) + comment
+
+# Test Buggy Implementation: Throws ValueError despite valid structure
+try:
+    buggy_mobsf_eocd_offset(eocd_record)
+    print("[-] Buggy parser unexpectedly succeeded!")
+except ValueError as e:
+    print(f"[+] Buggy parser failed open as expected: {e}")
+
+# Test Fixed Implementation: Correctly validates comment length and locates EOCD
+offset = fixed_mobsf_eocd_offset(eocd_record)
+print(f"[+] Fixed parser located genuine EOCD at offset: {offset}")
+assert offset == 0</code></pre>
+
+    <h2>0x05 // Upstream Remediation in MobSF 4.6.5</h2>
+    <p>
+      In release <code>4.6.5</code>, MobSF maintainer Ajin Abraham (<code>@ajinabraham</code>) applied two key architectural fixes:
+    </p>
+    <ol>
+      <li><strong>Fail-Closed Exception Handling:</strong> If <code>neutralize_zip_special_modes</code> fails, <code>os_unzip()</code> immediately aborts extraction, records the error, and returns an empty file list rather than executing <code>unzip</code> on the raw archive.</li>
+      <li><strong>Backward Scan with Length Validation:</strong> The EOCD locator was rewritten to inspect every candidate signature and verify that the 16-bit <code>comment_length</code> field matches the remaining byte count in the file buffer.</li>
+    </ol>
+    <pre><code>--- a/mobsf/StaticAnalyzer/views/common/shared_func.py
++++ b/mobsf/StaticAnalyzer/views/common/shared_func.py
+@@ -240,10 +240,14 @@ def _eocd_offset(handle, size):
+     """Return the end-of-central-directory offset."""
+     window = min(size, 65535 + 22)
+     data = _read_at(handle, size - window, window)
+-    rel = data.rfind(_EOCD_SIG)
+-    if rel < 0 or window - rel < 22:
+-        raise ValueError('EOCD not found')
+-    return size - window + rel
++    pos = window - 22
++    while pos >= 0:
++        if data[pos:pos + 4] == _EOCD_SIG:
++            comment_len = struct.unpack_from('<H', data, pos + 20)[0]
++            if pos + 22 + comment_len <= window:
++                return size - window + pos
++        pos -= 1
++    raise ValueError('EOCD not found')
+
+@@ -397,13 +400,14 @@ def os_unzip(app_path, ext_path):
+-        extract_from = app_path
+         try:
+             patched = neutralize_zip_special_modes(app_path, ext_path)
+-            extract_from = patched
+         except Exception:
+-            logger.warning('Could not strip symlink modes before OS unzip')
++            msg = 'Refusing OS unzip because special modes could not be stripped'
++            logger.error(msg)
++            append_scan_status(checksum, msg)
++            return []
+         subprocess.call(
+-            [unzip_b, '-o', '-q', extract_from, '-d', ext_path])
++            [unzip_b, '-o', '-q', patched, '-d', ext_path])</code></pre>
+
+    <h2>0x06 // Takeaways for Defensive Software Engineering</h2>
+    <ul>
+      <li><strong>Never Fall Open on Sanitization Failures:</strong> If a preprocessing pass designed to strip dangerous capabilities fails, the only secure response is to abort the operation completely.</li>
+      <li><strong>Beware of Naive Signatures in Variable-Length Formats:</strong> Binary formats with trailing user comments (ZIP, TAR, PDF) cannot be safely indexed using simple right-to-left searches (<code>rfind</code>) without length verification.</li>
+      <li><strong>Defense in Depth Matters:</strong> MobSF's secondary defense layers (Info-ZIP 6.0 modern behaviors and synchronous post-extraction tree cleaning) prevented what could have been a Critical RCE from having catastrophic impact.</li>
+    </ul>
+  </div>
+</body>
+</html>
