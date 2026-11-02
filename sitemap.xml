@@ -21,4 +21,6 @@
   <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-6hh9-gpj4-cr69.html</loc><priority>0.7</priority></url>
   <url><loc>https://ccsimplyspolit.github.io/advisories/CVD-2026-RUBY-001.html</loc><priority>0.6</priority></url>
   <url><loc>https://ccsimplyspolit.github.io/advisories/H1-4148578.html</loc><priority>0.7</priority></url>
+  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-45rj-2wq9-r9mr.html</loc><priority>0.8</priority></url>
+  <url><loc>https://ccsimplyspolit.github.io/advisories/GHSA-8885-xrq4-j47h.html</loc><priority>0.8</priority></url>
 </urlset>

@@ -375,8 +375,8 @@
     <!-- Key Metrics Counter Section -->
     <section class="metrics-grid">
       <div class="metric-card">
-        <div class="metric-val">9</div>
-        <div class="metric-label">Published GHSAs (14+ Fixes)</div>
+        <div class="metric-val">11</div>
+        <div class="metric-label">Published GHSAs (16+ Fixes)</div>
       </div>
       <div class="metric-card">
         <div class="metric-val">3</div>
@@ -395,7 +395,7 @@
     <!-- Disclosures Section with Live Interactive Filtering & Search -->
     <section id="disclosures">
       <h2>
-        <span>0x00 // Maintainer-Acknowledged Coordinated Vulnerability Disclosures (9 Published GHSAs &amp; CVD Disclosures)</span>
+        <span>0x00 // Maintainer-Acknowledged Coordinated Vulnerability Disclosures (11 Published GHSAs &amp; CVD Disclosures)</span>
       </h2>
       <div class="embargo-banner">
         <strong>[CVD POLICY]</strong> All listed advisories have been formally accepted by maintainers, patched upstream, or awarded security bounties under ISO/IEC 29147 responsible disclosure standards. Zero uncoordinated 0-days are published.
@@ -403,15 +403,46 @@
 
       <!-- Filter Bar -->
       <div class="filter-bar">
-        <button class="filter-btn active" data-filter="all">All (14)</button>
-        <button class="filter-btn" data-filter="mcp">AI &amp; MCP Protocols (4)</button>
+        <button class="filter-btn active" data-filter="all">All (16)</button>
+        <button class="filter-btn" data-filter="mcp">AI &amp; MCP Protocols (5)</button>
         <button class="filter-btn" data-filter="memory">Memory &amp; Parsers (5)</button>
         <button class="filter-btn" data-filter="network">Network &amp; DPI (1)</button>
-        <button class="filter-btn" data-filter="web">Web &amp; Desktop (4)</button>
+        <button class="filter-btn" data-filter="web">Web &amp; Desktop (5)</button>
         <input type="text" id="disclosure-search" class="search-input" placeholder="Search target, GHSA, or CWE...">
       </div>
 
             <div class="grid" id="disclosure-grid">
+
+        <!-- 0A. electerm/electerm (GHSA-45rj-2wq9-r9mr) -->
+        <article class="card" data-category="mcp" data-text="electerm ghsa-45rj-2wq9-r9mr cwe-306 cwe-346 cwe-350 mcp dns rebinding rce high 8.8">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-45rj-2wq9-r9mr</span>
+              <span class="cwe-tag">CWE-306 / CWE-346 / CWE-350 (High 8.8)</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-45rj-2wq9-r9mr.html">Missing Host &amp; Origin Validation in Built-in MCP HTTP Server Enables DNS Rebinding RCE (<code>electerm/electerm</code>)</a></h3>
+            <p>Officially published by Electerm maintainer (17,000+ &starf;) as <a href="https://github.com/electerm/electerm/security/advisories/GHSA-45rj-2wq9-r9mr">GHSA-45rj-2wq9-r9mr</a> (CVSS 8.8 High) and patched upstream in <code>&gt; 5.8.1</code> with accepted reporter credit.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-45rj-2wq9-r9mr.html"><span class="embargo-tag">Published by Vendor &bull; Patched &gt; 5.8.1 &rarr;</span></a>
+          </div>
+        </article>
+
+        <!-- 0B. wekan/wekan (GHSA-8885-xrq4-j47h) -->
+        <article class="card" data-category="web" data-text="wekan ghsa-8885-xrq4-j47h cwe-359 cwe-639 cwe-863 checklist disclosure csv export bypass moderate 5.3">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">GHSA-8885-xrq4-j47h</span>
+              <span class="cwe-tag-moderate">CWE-359 / CWE-639 / CWE-863 (Moderate 5.3)</span>
+            </div>
+            <h3><a href="https://ccsimplyspolit.github.io/advisories/GHSA-8885-xrq4-j47h.html">Cross-Board Checklist Disclosure in Scoped Board Export &amp; Streaming CSV/TSV Policy Bypass (<code>wekan/wekan</code>)</a></h3>
+            <p>Officially published by WeKan lead maintainer Lauri Ojansivu (20,000+ &starf;) as <a href="https://github.com/wekan/wekan/security/advisories/GHSA-8885-xrq4-j47h">GHSA-8885-xrq4-j47h</a> (CVSS 5.3 Moderate) and patched in <code>WeKan v12.78</code>.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/advisories/GHSA-8885-xrq4-j47h.html"><span class="embargo-tag">Published by Vendor &bull; Fixed in v12.78 &rarr;</span></a>
+          </div>
+        </article>
+
 
         <!-- 1. MobSF (GHSA-j7g2-gm7j-mfvm) -->
         <article class="card" data-category="memory" data-text="mobsf mobile-security-framework ghsa-j7g2-gm7j-mfvm cwe-59 cwe-755 symlink unzip parser differential low 3.1">
