@@ -5,28 +5,316 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GHSA-g275-mf26-qx9r — SiYuan Advisory Record | Serhii Shunko (@sshunko)</title>
   <meta name="description" content="Coordinated vulnerability disclosure record GHSA-g275-mf26-qx9r in siyuan-note/siyuan (Critical (9.6), CWE-79 / CWE-94) reported by Serhii Shunko (@sshunko / @ccsimplyspolit).">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    :root {
+      --md-bg: #080b11;
+      --md-surface: #0f141f;
+      --md-border: #1e293b;
+      --md-text: #f1f5f9;
+      --md-text-muted: #94a3b8;
+      --md-accent: #38bdf8;
+      --md-accent-soft: rgba(56, 189, 248, 0.12);
+      --md-code-bg: #0b0f19;
+      --md-link: #7dd3fc;
+      --md-link-hover: #bae6fd;
+      --md-success: #34d399;
+      --md-warn: #fbbf24;
+      --md-danger: #f87171;
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      /* Strict 5-step type scale: 12px, 14px, 16px, 20px, 28px */
+      --fs-xs: 0.75rem;
+      --fs-sm: 0.875rem;
+      --fs-base: 1rem;
+      --fs-lg: 1.25rem;
+      --fs-xl: 1.75rem;
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
+      background: var(--md-bg);
+      color: var(--md-text);
+      font-family: var(--font-sans);
+      font-size: var(--fs-base);
+      line-height: 1.65;
+      font-variant-numeric: tabular-nums;
       overflow-wrap: anywhere;
-      word-break: break-word; background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.65; padding: 2rem 1.25rem 4rem; }
-    .container { max-width: 960px; margin: 0 auto; }
-    a { color: var(--accent); text-decoration: none; }
-    .back { font-family: var(--mono); font-size: 0.88rem; display: inline-block; margin-bottom: 1.5rem; }
-    h1 { font-size: 1.5rem; margin-bottom: 0.75rem; }
-    h2 { font-family: var(--mono); font-size: 1.05rem; color: var(--accent); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
-    .notice { background: rgba(52, 211, 153, 0.08); border: 1px solid rgba(52, 211, 153, 0.35); border-radius: 6px; padding: 1rem 1.2rem; margin: 1.25rem 0; font-size: 0.92rem; }
-    pre { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.5; margin: 0.75rem 0; white-space: pre-wrap; }
+      word-break: break-word;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--md-link); text-decoration: none; transition: color 150ms ease-out; }
+    a:hover { color: var(--md-link-hover); text-decoration: underline; }
+    a:focus-visible, button:focus-visible { outline: 2px solid var(--md-accent); outline-offset: 2px; border-radius: 4px; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(8, 11, 17, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--md-border);
+    }
+    .topbar-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .brand {
+      font-family: var(--font-mono);
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      color: var(--md-text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .brand-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--md-success);
+      box-shadow: 0 0 8px var(--md-success);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 4rem;
+    }
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+      color: var(--md-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    h1 {
+      font-size: var(--fs-xl);
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+      color: var(--md-text);
+      margin-bottom: 0.75rem;
+    }
+    h1 code, h2 code, h3 code {
+      font-size: inherit;
+      background: var(--md-surface);
+      border: 1px solid var(--md-border);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+    }
+    .meta {
+      font-family: var(--font-mono);
+      color: var(--md-text-muted);
+      font-size: var(--fs-xs);
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+      gap: 0.75rem;
+      margin: 1.25rem 0 1.5rem;
+    }
+    .kpi-card {
+      background: var(--md-surface);
+      border: 1px solid var(--md-border);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+    }
+    .kpi-label {
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+      color: var(--md-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.25rem;
+    }
+    .kpi-value {
+      font-family: var(--font-mono);
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      color: var(--md-text);
+    }
+    h2 {
+      font-family: var(--font-mono);
+      font-size: var(--fs-lg);
+      font-weight: 600;
+      color: var(--md-text);
+      margin: 2.25rem 0 0.85rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--md-border);
+    }
+    h3 {
+      font-family: var(--font-mono);
+      font-size: var(--fs-base);
+      font-weight: 600;
+      color: var(--md-warn);
+      margin: 1.5rem 0 0.5rem;
+    }
+    p { margin-bottom: 1rem; font-size: var(--fs-base); color: var(--md-text); max-width: 78ch; }
+    ul, ol { margin-left: 1.5rem; margin-bottom: 1rem; max-width: 78ch; }
+    li { margin-bottom: 0.4rem; font-size: var(--fs-base); }
+    .notice, .box {
+      background: rgba(52, 211, 153, 0.07);
+      border: 1px solid rgba(52, 211, 153, 0.32);
+      border-left: 3px solid var(--md-success);
+      border-radius: 6px;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      font-size: var(--fs-sm);
+    }
+    .box {
+      background: var(--md-accent-soft);
+      border-color: rgba(56, 189, 248, 0.3);
+      border-left-color: var(--md-accent);
+    }
+    .box-warn {
+      background: rgba(251, 191, 36, 0.07);
+      border-color: rgba(251, 191, 36, 0.3);
+      border-left-color: var(--md-warn);
+    }
+    .tag, .tag-low {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--md-success);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+    }
+    .tag-low {
+      background: var(--md-accent-soft);
+      color: var(--md-link);
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+    .pre-wrap {
+      position: relative;
+      margin: 0.85rem 0 1.25rem;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: var(--md-surface);
+      color: var(--md-text-muted);
+      border: 1px solid var(--md-border);
+      border-radius: 4px;
+      padding: 0.2rem 0.55rem;
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+      cursor: pointer;
+      transition: all 140ms ease-out;
+    }
+    .copy-btn:hover {
+      color: var(--md-text);
+      border-color: var(--md-accent);
+    }
+    pre {
+      background: var(--md-code-bg);
+      border: 1px solid var(--md-border);
+      border-radius: 6px;
+      padding: 1.1rem 1rem;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+    code {
+      font-family: var(--font-mono);
+      background: var(--md-surface);
+      border: 1px solid var(--md-border);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      font-size: var(--fs-sm);
+    }
+    pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: var(--fs-xs);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 1.5rem;
+      font-size: var(--fs-sm);
+    }
+    th, td {
+      border: 1px solid var(--md-border);
+      padding: 0.65rem 0.85rem;
+      text-align: left;
+    }
+    th {
+      background: var(--md-surface);
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+      text-transform: uppercase;
+      color: var(--md-text-muted);
+    }
+    td code { font-size: var(--fs-xs); }
+    .footer {
+      margin-top: 3rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--md-border);
+      font-family: var(--font-mono);
+      font-size: var(--fs-xs);
+      color: var(--md-text-muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
   </style>
 </head>
 <body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="https://ccsimplyspolit.github.io/">
+        <span class="brand-dot"></span>
+        <span>@ccsimplyspolit // Security Research Lab</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary Navigation">
+        <a href="https://ccsimplyspolit.github.io/">&larr; All Advisories &amp; Write-ups</a>
+        <a href="https://github.com/ccsimplyspolit">GitHub</a>
+        <a href="https://orcid.org/0009-0002-4183-0361">ORCID</a>
+      </nav>
+    </div>
+  </header>
   <div class="container">
-    <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Portal (ccsimplyspolit.github.io)</a>
+    <div class="eyebrow">Coordinated Vulnerability Disclosure Record</div>
     <h1>GHSA-g275-mf26-qx9r: Stored XSS Escalating to Arbitrary Code Execution via Unescaped Checkbox Column Name (<code>siyuan-note/siyuan</code>)</h1>
     <div class="notice">
       <strong>[OFFICIALLY PUBLISHED BY VENDOR &bull; PATCHED IN SiYuan v3.8.10]</strong><br>
       Officially published by SiYuan maintainers (42,000+ &starf;) on <code>2026-11-01T05:07:13Z</code> as <a href="https://github.com/siyuan-note/siyuan/security/advisories/GHSA-g275-mf26-qx9r">GHSA-g275-mf26-qx9r</a> (<code>state: published</code>, <code>Critical</code> severity, CVSS v3.1 9.6 / CVSS v4.0 9.4) with official author/reporter credit to <code>@ccsimplyspolit</code>, and patched in release <code>v3.8.10</code>.
+    </div>
+        <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">Advisory ID</div><div class="kpi-value">GHSA-g275-mf26-qx9r</div></div>
+      <div class="kpi-card"><div class="kpi-label">Target Repository</div><div class="kpi-value">siyuan-note/siyuan</div></div>
+      <div class="kpi-card"><div class="kpi-label">Severity / CVSS</div><div class="kpi-value">9.6 (CRITICAL)</div></div>
+      <div class="kpi-card"><div class="kpi-label">Patched / CWE</div><div class="kpi-value">v3.8.10 &bull; CWE-79, CWE-94</div></div>
     </div>
     <h2>0x00 // GitHub Security Advisory &amp; Remediation Metadata</h2>
     <pre><code>{
@@ -67,6 +355,30 @@
     "renderKanban"
   ]
 }</code></pre>
+    <footer class="footer">
+      <span>&copy; 2026 Serhii Shunko (@ccsimplyspolit) &bull; ISO/IEC 29147 Coordinated Vulnerability Disclosure</span>
+      <span><a href="https://ccsimplyspolit.github.io/">Research Portal</a> &bull; <a href="https://github.com/ccsimplyspolit">GitHub</a></span>
+    </footer>
   </div>
+  <script>
+    document.querySelectorAll('pre').forEach((pre) => {
+      if (pre.parentElement && pre.parentElement.classList.contains('pre-wrap')) return;
+      const wrap = document.createElement('div');
+      wrap.className = 'pre-wrap';
+      pre.parentNode.insertBefore(wrap, pre);
+      wrap.appendChild(pre);
+      const btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.type = 'button';
+      btn.textContent = 'Copy';
+      btn.addEventListener('click', () => {
+        navigator.clipboard.writeText(pre.innerText).then(() => {
+          btn.textContent = 'Copied';
+          setTimeout(() => { btn.textContent = 'Copy'; }, 1400);
+        });
+      });
+      wrap.appendChild(btn);
+    });
+  </script>
 </body>
 </html>
