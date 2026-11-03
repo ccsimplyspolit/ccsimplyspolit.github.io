@@ -8,7 +8,9 @@
   <style>
     :root { --bg: #0b0e14; --panel: #111621; --border: #1f293a; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --accent-amber: #fbbf24; --mono: "JetBrains Mono", Consolas, monospace; --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.65; padding: 2rem 1.25rem 4rem; }
+    body {
+      overflow-wrap: anywhere;
+      word-break: break-word; background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.65; padding: 2rem 1.25rem 4rem; }
     .container { max-width: 960px; margin: 0 auto; }
     a { color: var(--accent); text-decoration: none; }
     .back { font-family: var(--mono); font-size: 0.88rem; display: inline-block; margin-bottom: 1.5rem; }

@@ -19,7 +19,9 @@
       --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.7; padding: 2rem 1.25rem 4rem; }
+    body {
+      overflow-wrap: anywhere;
+      word-break: break-word; background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.7; padding: 2rem 1.25rem 4rem; }
     .container { max-width: 920px; margin: 0 auto; }
     a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; }

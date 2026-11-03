@@ -35,318 +35,409 @@
     ]
   }
   </script>
-  <style>
+    <style>
     :root {
-      --bg: #0b0e14;
-      --panel: #111622;
-      --panel-hover: #161e2e;
-      --border: #1f293d;
-      --border-accent: #38bdf8;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-      --accent: #38bdf8;
-      --accent-green: #34d399;
-      --accent-amber: #fbbf24;
-      --accent-red: #f87171;
-      --accent-purple: #c084fc;
+      --md-bg: #0b0e14;
+      --md-surface: #111622;
+      --md-surface-hover: #161e2e;
+      --md-border: #1f293d;
+      --md-text: #e2e8f0;
+      --md-text-muted: #94a3b8;
+      --md-accent: #38bdf8;
+      --md-accent-soft: rgba(56, 189, 248, 0.14);
+      --md-code-bg: #0d121c;
+      --md-link: #38bdf8;
+      --md-link-hover: #7dd3fc;
+      --md-success: #34d399;
+      --md-warn: #fbbf24;
+      --md-danger: #f87171;
       --mono: "JetBrains Mono", "Fira Code", Consolas, monospace;
-      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      /* Strict 5-step typographic scale (12 / 14 / 16 / 20 / 36 px) */
+      --fs-xs: 12px;
+      --fs-sm: 14px;
+      --fs-base: 16px;
+      --fs-lg: 20px;
+      --fs-xl: 36px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background-color: var(--bg);
-      color: var(--text);
+      background-color: var(--md-bg);
+      background-image: radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.08) 0%, transparent 45%);
+      color: var(--md-text);
       font-family: var(--sans);
-      line-height: 1.65;
-      padding: 0 1.25rem 4rem;
+      font-size: var(--fs-base);
+      line-height: 1.6;
+      padding: 0 20px 64px;
+      overflow-wrap: anywhere;
+    }
+    a {
+      color: var(--md-link);
+      text-decoration: underline;
+      text-decoration-color: rgba(56, 189, 248, 0.35);
+      text-underline-offset: 3px;
+      transition: color 0.15s ease, border-color 0.15s ease;
+    }
+    a:hover {
+      color: var(--md-link-hover);
+      text-decoration-color: var(--md-link-hover);
+    }
+    a:focus-visible, button:focus-visible, input:focus-visible {
+      outline: 2px solid var(--md-accent);
+      outline-offset: 2px;
     }
     .container {
-      max-width: 1040px;
+      max-width: 1080px;
       margin: 0 auto;
     }
     header {
-      border-bottom: 1px solid var(--border);
-      padding: 2.75rem 0 2rem;
-      margin-bottom: 2.25rem;
+      border-bottom: 1px solid var(--md-border);
+      padding: 48px 0 32px;
+      margin-bottom: 32px;
     }
     .prompt {
       font-family: var(--mono);
-      color: var(--accent-green);
-      font-size: 0.9rem;
-      margin-bottom: 0.5rem;
+      color: var(--md-success);
+      font-size: var(--fs-xs);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .prompt::before {
+      content: "";
+      display: inline-block;
+      width: 3px;
+      height: 12px;
+      background: var(--md-accent);
     }
     h1 {
-      font-size: 2.15rem;
+      font-size: var(--fs-xl);
       font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.5rem;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      margin-bottom: 12px;
     }
     .subtitle {
-      color: var(--muted);
-      font-size: 1.05rem;
-      max-width: 880px;
-      margin-bottom: 1.35rem;
+      color: var(--md-text-muted);
+      font-size: var(--fs-base);
+      max-width: 75ch;
+      margin-bottom: 24px;
     }
     .badges {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.6rem;
+      gap: 8px;
       font-family: var(--mono);
-      font-size: 0.82rem;
+      font-size: var(--fs-xs);
     }
     .badge {
       display: inline-flex;
       align-items: center;
-      padding: 0.35rem 0.75rem;
+      min-height: 32px;
+      padding: 6px 12px;
       border-radius: 4px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      color: var(--text);
+      background: var(--md-surface);
+      border: 1px solid var(--md-border);
+      color: var(--md-text);
       text-decoration: none;
-      transition: all 0.15s ease;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     }
     .badge:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      transform: translateY(-1px);
+      border-color: var(--md-accent);
+      color: var(--md-accent);
+      background: var(--md-surface-hover);
+      text-decoration: none;
     }
 
-    /* Metrics Grid */
+    /* Metrics Strip */
     .metrics-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 1rem;
-      margin: 2rem 0;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin: 32px 0;
     }
     .metric-card {
-      background: var(--panel);
-      border: 1px solid var(--border);
+      background: var(--md-surface);
+      border: 1px solid var(--md-border);
       border-radius: 6px;
-      padding: 1.25rem;
-      text-align: center;
+      padding: 20px;
+      text-align: left;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
       transition: border-color 0.15s ease;
     }
     .metric-card:hover {
-      border-color: var(--accent);
+      border-color: var(--md-accent);
     }
     .metric-val {
       font-family: var(--mono);
-      font-size: 2.2rem;
+      font-size: var(--fs-xl);
       font-weight: 700;
-      color: var(--accent);
-      line-height: 1.2;
+      font-variant-numeric: tabular-nums;
+      color: var(--md-accent);
+      line-height: 1.1;
     }
     .metric-label {
-      font-size: 0.82rem;
-      color: var(--muted);
+      font-family: var(--mono);
+      font-size: var(--fs-xs);
+      color: var(--md-text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-top: 0.35rem;
+      letter-spacing: 0.08em;
+      margin-top: 8px;
     }
 
     /* Section Headings */
     h2 {
       font-family: var(--mono);
-      font-size: 1.25rem;
-      color: var(--accent);
-      margin: 2.75rem 0 1rem;
-      padding-bottom: 0.4rem;
-      border-bottom: 1px solid var(--border);
+      font-size: var(--fs-lg);
+      font-weight: 600;
+      color: var(--md-accent);
+      margin: 48px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--md-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 8px;
     }
 
     /* Filter Controls */
     .filter-bar {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1.25rem;
+      gap: 8px;
+      margin-bottom: 20px;
       align-items: center;
     }
     .filter-btn {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      color: var(--muted);
-      padding: 0.35rem 0.85rem;
+      background: var(--md-surface);
+      border: 1px solid var(--md-border);
+      color: var(--md-text-muted);
+      min-height: 36px;
+      padding: 6px 14px;
       border-radius: 4px;
       font-family: var(--mono);
-      font-size: 0.8rem;
+      font-size: var(--fs-xs);
+      font-variant-numeric: tabular-nums;
       cursor: pointer;
       transition: all 0.15s ease;
     }
     .filter-btn:hover, .filter-btn.active {
-      color: var(--accent);
-      border-color: var(--accent);
-      background: rgba(56, 189, 248, 0.08);
+      color: var(--md-accent);
+      border-color: var(--md-accent);
+      background: var(--md-accent-soft);
+    }
+    .search-wrap {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     .search-input {
-      margin-left: auto;
-      background: var(--panel);
-      border: 1px solid var(--border);
+      background: var(--md-surface);
+      border: 1px solid var(--md-border);
       border-radius: 4px;
-      color: var(--text);
+      color: var(--md-text);
       font-family: var(--mono);
-      font-size: 0.82rem;
-      padding: 0.35rem 0.75rem;
-      min-width: 220px;
+      font-size: var(--fs-sm);
+      min-height: 36px;
+      padding: 6px 12px;
+      min-width: 240px;
     }
     .search-input:focus {
       outline: none;
-      border-color: var(--accent);
+      border-color: var(--md-accent);
+    }
+    .kbd-hint {
+      font-family: var(--mono);
+      font-size: var(--fs-xs);
+      color: var(--md-text-muted);
+      background: var(--md-surface);
+      border: 1px solid var(--md-border);
+      border-radius: 4px;
+      padding: 4px 8px;
+    }
+    .empty-state {
+      display: none;
+      background: var(--md-surface);
+      border: 1px dashed var(--md-border);
+      border-radius: 6px;
+      padding: 24px;
+      text-align: center;
+      color: var(--md-text-muted);
+      font-size: var(--fs-sm);
+      margin-bottom: 16px;
     }
 
     /* Cards Grid */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
-      gap: 1.15rem;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
     }
     .card {
-      background: var(--panel);
-      border: 1px solid var(--border);
+      background: var(--md-surface);
+      border: 1px solid var(--md-border);
       border-radius: 6px;
-      padding: 1.3rem;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: all 0.15s ease;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      transition: background 0.15s ease, border-color 0.15s ease;
     }
     .card:hover {
-      background: var(--panel-hover);
-      border-color: rgba(56, 189, 248, 0.4);
-      transform: translateY(-2px);
+      background: var(--md-surface-hover);
+      border-color: rgba(56, 189, 248, 0.45);
     }
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.65rem;
+      margin-bottom: 12px;
       font-family: var(--mono);
-      font-size: 0.8rem;
+      font-size: var(--fs-xs);
+      font-variant-numeric: tabular-nums;
       flex-wrap: wrap;
-      gap: 0.35rem;
+      gap: 6px;
     }
-    .id-tag { color: var(--accent-amber); font-weight: 600; }
+    .id-tag { color: var(--md-warn); font-weight: 600; font-size: var(--fs-xs); }
     .cwe-tag {
       background: rgba(248, 113, 113, 0.12);
-      color: var(--accent-red);
+      color: var(--md-danger);
       border: 1px solid rgba(248, 113, 113, 0.3);
-      padding: 0.1rem 0.45rem;
-      border-radius: 3px;
-      font-size: 0.76rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: var(--fs-xs);
     }
     .cwe-tag-moderate {
       background: rgba(251, 191, 36, 0.12);
-      color: var(--accent-amber);
+      color: var(--md-warn);
       border: 1px solid rgba(251, 191, 36, 0.3);
-      padding: 0.1rem 0.45rem;
-      border-radius: 3px;
-      font-size: 0.76rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: var(--fs-xs);
     }
     .cwe-tag-low {
       background: rgba(56, 189, 248, 0.12);
-      color: var(--accent);
+      color: var(--md-accent);
       border: 1px solid rgba(56, 189, 248, 0.3);
-      padding: 0.1rem 0.45rem;
-      border-radius: 3px;
-      font-size: 0.76rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: var(--fs-xs);
     }
     .embargo-tag {
       display: inline-block;
       background: rgba(52, 211, 153, 0.12);
-      color: var(--accent-green);
+      color: var(--md-success);
       border: 1px solid rgba(52, 211, 153, 0.35);
-      padding: 0.18rem 0.6rem;
-      border-radius: 3px;
+      padding: 4px 10px;
+      border-radius: 4px;
       font-family: var(--mono);
-      font-size: 0.76rem;
+      font-size: var(--fs-xs);
     }
     .tool-tag {
       background: rgba(52, 211, 153, 0.12);
-      color: var(--accent-green);
+      color: var(--md-success);
       border: 1px solid rgba(52, 211, 153, 0.3);
-      padding: 0.1rem 0.45rem;
-      border-radius: 3px;
-      font-size: 0.76rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: var(--fs-xs);
     }
     .embargo-banner {
       background: rgba(56, 189, 248, 0.08);
       border: 1px solid rgba(56, 189, 248, 0.35);
+      border-left: 3px solid var(--md-accent);
       border-radius: 6px;
-      padding: 0.95rem 1.25rem;
-      margin-bottom: 1.25rem;
-      font-size: 0.9rem;
-      color: var(--text);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      font-size: var(--fs-sm);
+      color: var(--md-text);
     }
     .embargo-banner strong {
-      color: var(--accent);
+      color: var(--md-accent);
       font-family: var(--mono);
+      font-size: var(--fs-sm);
     }
     .card h3 {
-      font-size: 1.05rem;
-      margin-bottom: 0.55rem;
+      font-size: var(--fs-base);
+      margin-bottom: 8px;
       font-weight: 600;
+      line-height: 1.4;
     }
     .card h3 a {
-      color: var(--text);
+      color: var(--md-text);
       text-decoration: none;
     }
     .card h3 a:hover {
-      color: var(--accent);
+      color: var(--md-accent);
       text-decoration: underline;
     }
     .card p {
-      color: var(--muted);
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
+      color: var(--md-text-muted);
+      font-size: var(--fs-sm);
+      margin-bottom: 16px;
       line-height: 1.55;
+    }
+    .card p a {
+      color: var(--md-link);
+      font-weight: 500;
     }
     .card-footer {
       font-family: var(--mono);
-      font-size: 0.8rem;
+      font-size: var(--fs-xs);
       margin-top: auto;
     }
     .card-footer a {
-      color: var(--accent);
+      color: var(--md-accent);
       text-decoration: none;
     }
     .card-footer a:hover { text-decoration: underline; }
 
     /* Code block */
     pre {
-      background: var(--panel);
-      border: 1px solid var(--border);
+      background: var(--md-code-bg);
+      border: 1px solid var(--md-border);
       border-radius: 6px;
-      padding: 1.15rem;
+      padding: 16px;
       overflow-x: auto;
       font-family: var(--mono);
-      font-size: 0.84rem;
+      font-size: var(--fs-sm);
       line-height: 1.5;
-      margin: 0.75rem 0;
+      margin: 12px 0;
     }
     code {
       font-family: var(--mono);
-      background: rgba(255,255,255,0.06);
-      padding: 0.12rem 0.35rem;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 5px;
       border-radius: 3px;
-      font-size: 0.88em;
+      font-size: inherit;
+    }
+    pre code {
+      background: transparent;
+      padding: 0;
     }
 
     footer {
-      margin-top: 4rem;
-      padding-top: 1.75rem;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 0.85rem;
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--md-border);
+      color: var(--md-text-muted);
+      font-size: var(--fs-xs);
       font-family: var(--mono);
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 0.75rem;
+      gap: 12px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
     }
   </style>
 </head>
@@ -375,8 +466,8 @@
     <!-- Key Metrics Counter Section -->
     <section class="metrics-grid">
       <div class="metric-card">
-        <div class="metric-val">11</div>
-        <div class="metric-label">Published GHSAs (16+ Fixes)</div>
+        <div class="metric-val">12</div>
+        <div class="metric-label">Verified GHSAs (16+ Fixes)</div>
       </div>
       <div class="metric-card">
         <div class="metric-val">3</div>
@@ -387,15 +478,15 @@
         <div class="metric-label">Upstream Remediation</div>
       </div>
       <div class="metric-card">
-        <div class="metric-val">5</div>
-        <div class="metric-label">Defensive Security Tools</div>
+        <div class="metric-val">7</div>
+        <div class="metric-label">Security &amp; RE Suites</div>
       </div>
     </section>
 
     <!-- Disclosures Section with Live Interactive Filtering & Search -->
     <section id="disclosures">
       <h2>
-        <span>0x00 // Maintainer-Acknowledged Coordinated Vulnerability Disclosures (11 Published GHSAs &amp; CVD Disclosures)</span>
+        <span>0x00 // Maintainer-Acknowledged Coordinated Vulnerability Disclosures (12 Verified GHSAs &amp; 16+ CVD Fixes)</span>
       </h2>
       <div class="embargo-banner">
         <strong>[CVD POLICY]</strong> All listed advisories have been formally accepted by maintainers, patched upstream, or awarded security bounties under ISO/IEC 29147 responsible disclosure standards. Zero uncoordinated 0-days are published.
@@ -408,10 +499,14 @@
         <button class="filter-btn" data-filter="memory">Memory &amp; Parsers (5)</button>
         <button class="filter-btn" data-filter="network">Network &amp; DPI (1)</button>
         <button class="filter-btn" data-filter="web">Web &amp; Desktop (5)</button>
-        <input type="text" id="disclosure-search" class="search-input" placeholder="Search target, GHSA, or CWE...">
+        <div class="search-wrap">
+          <input type="text" id="disclosure-search" class="search-input" aria-label="Filter disclosures by target, GHSA, or CWE" placeholder="Filter target, GHSA, or CWE...">
+          <span class="kbd-hint" title="Press / to focus search, Esc to reset">/</span>
+        </div>
       </div>
 
-            <div class="grid" id="disclosure-grid">
+            <div id="disclosure-empty" class="empty-state" role="status" aria-live="polite">No matching advisories found. Press <code>Esc</code> to clear the filter.</div>
+      <div class="grid" id="disclosure-grid">
 
         <!-- 0A. electerm/electerm (GHSA-45rj-2wq9-r9mr) -->
         <article class="card" data-category="mcp" data-text="electerm ghsa-45rj-2wq9-r9mr cwe-306 cwe-346 cwe-350 mcp dns rebinding rce high 8.8">
@@ -659,8 +754,36 @@
 
     <!-- Defensive Security Tools Showcase -->
     <section id="tools">
-      <h2>0x01 // Defensive Security Tooling Repositories</h2>
+      <h2>0x01 // Defensive Security, Binary Auditing &amp; Embedded Suites</h2>
       <div class="grid">
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">EMBEDDED MIPS32 / RF</span>
+              <span class="tool-tag">OpenWrt 4.14.187 r3</span>
+            </div>
+            <h3><a href="https://github.com/ccsimplyspolit/tenda-ac10-v1-hybrid-openwrt">tenda-ac10-v1-hybrid-openwrt</a></h3>
+            <p>Hybrid OpenWrt 4.14.187 firmware and full reverse-engineering suite for Tenda AC10 V1.0 (<code>RTL8197FS</code> + <code>RTL8822BE</code> + <code>RTL8367RB</code>). Includes 34 <code>vmlinux</code> switch/HWNAT binary patches, <code>VHT80</code> RFE Type 6 calibration, and autonomous Windows TFTP/SSH recovery tools.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://ccsimplyspolit.github.io/tenda-ac10-v1-hybrid-openwrt/">Live Documentation Portal &rarr;</a> &bull; <a href="https://github.com/ccsimplyspolit/tenda-ac10-v1-hybrid-openwrt">GitHub &rarr;</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="card-header">
+              <span class="id-tag">PE64 &amp; WASM AUDIT</span>
+              <span class="tool-tag">IDA Pro / Python 3</span>
+            </div>
+            <h3><a href="https://github.com/ccsimplyspolit/discord-quest-helper">discord-quest-helper</a></h3>
+            <p>Full IDA Pro reverse-engineering audit of <code>discord_utils.node</code> (<code>sub_a3990</code> / <code>sub_a4120</code> / <code>sub_1350</code> 146-byte <code>executableFingerprint</code>), <code>libdiscore-wasm</code> (128-bit <code>launch_signature</code>), and standalone Python cryptographic verification CLI.</p>
+          </div>
+          <div class="card-footer">
+            <a href="https://github.com/ccsimplyspolit/discord-quest-helper">View Repository &amp; Audit (GitHub) &rarr;</a>
+          </div>
+        </article>
+
         <article class="card">
           <div>
             <div class="card-header">
@@ -840,6 +963,8 @@ Bugcrowd:         https://bugcrowd.com/h/sshunko</code></pre>
         const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
         const query = searchInput.value.toLowerCase().trim();
 
+        let visible = 0;
+        const emptyEl = document.getElementById('disclosure-empty');
         cards.forEach(card => {
           const category = card.dataset.category;
           const text = (card.dataset.text || card.innerText).toLowerCase();
@@ -849,10 +974,12 @@ Bugcrowd:         https://bugcrowd.com/h/sshunko</code></pre>
 
           if (matchesCategory && matchesSearch) {
             card.style.display = 'flex';
+            visible++;
           } else {
             card.style.display = 'none';
           }
         });
+        if (emptyEl) emptyEl.style.display = (visible === 0) ? 'block' : 'none';
       }
 
       filterBtns.forEach(btn => {
@@ -861,9 +988,23 @@ Bugcrowd:         https://bugcrowd.com/h/sshunko</code></pre>
           this.classList.add('active');
           filterCards();
         });
+        if (emptyEl) emptyEl.style.display = (visible === 0) ? 'block' : 'none';
       });
 
       searchInput.addEventListener('input', filterCards);
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === '/' && document.activeElement !== searchInput) {
+          e.preventDefault();
+          searchInput.focus();
+        } else if (e.key === 'Escape') {
+          searchInput.value = '';
+          searchInput.blur();
+          filterBtns.forEach(b => b.classList.remove('active'));
+          filterBtns[0].classList.add('active');
+          filterCards();
+        }
+      });
     });
   </script>
 </body>
