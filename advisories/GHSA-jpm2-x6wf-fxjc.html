@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GHSA-jpm2-x6wf-fxjc -- nektos/act Security Advisory | Serhii Shunko (@ccsimplyspolit)</title>
-  <meta name="description" content="Git Command Flag Injection in Actions Checkout & Container Mount Handling (GHSA-jpm2-x6wf-fxjc). Reported by Serhii Shunko (@ccsimplyspolit).">
+  <meta name="description" content="Project .actrc allowlist bypass via boolean, inline-assignment, and clustered short-flag argument smuggling in nektos/act (GHSA-jpm2-x6wf-fxjc). Reported by Serhii Shunko (@ccsimplyspolit).">
   <link rel="canonical" href="https://ccsimplyspolit.github.io/advisories/GHSA-jpm2-x6wf-fxjc.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,7 +54,7 @@
 <body>
   <div class="container">
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Index</a>
-    <h1>Git Command Flag Injection in Actions Checkout & Container Mount Handling (<code>nektos/act</code>)</h1>
+    <h1>Project .actrc allowlist bypass via boolean, inline-assignment, and clustered short-flag argument smuggling in nektos/act (<code>nektos/act</code>)</h1>
     <div class="meta">
       <span class="badge badge-pub">PUBLISHED GHSA: GHSA-jpm2-x6wf-fxjc</span>
       <span class="badge badge-sev">HIGH (8.6)</span>
@@ -65,7 +65,7 @@
 
     <div class="card">
       <h2>0x01 // Advisory Summary</h2>
-      <p>Improper neutralization of argument delimiters and incomplete denylist handling in nektos/act (< 0.2.95) allow crafted workflow action references or repository inputs to inject arbitrary flags into git subprocess invocations.</p>
+      <p>In nektos/act (< 0.2.95), readProjectArgsFile and projectFlag in cmd/actrc.go allow untrusted repository ./.actrc files to bypass the projectActrcFlags allowlist via boolean, inline-assignment, and clustered short-flag argument smuggling.</p>
     </div>
 
     <div class="card">

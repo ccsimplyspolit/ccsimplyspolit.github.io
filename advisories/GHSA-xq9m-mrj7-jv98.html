@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GHSA-xq9m-mrj7-jv98 -- containers/kubernetes-mcp-server Security Advisory | Serhii Shunko (@ccsimplyspolit)</title>
-  <meta name="description" content="Unencrypted Bearer Token Transmission over Cleartext HTTP on Redirect or Unvalidated Target URLs (GHSA-xq9m-mrj7-jv98). Reported by Serhii Shunko (@ccsimplyspolit).">
+  <meta name="description" content="Kiali Toolset Status Probes can leak Bearer Token (GHSA-xq9m-mrj7-jv98). Reported by Serhii Shunko (@ccsimplyspolit).">
   <link rel="canonical" href="https://ccsimplyspolit.github.io/advisories/GHSA-xq9m-mrj7-jv98.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,7 +54,7 @@
 <body>
   <div class="container">
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Index</a>
-    <h1>Unencrypted Bearer Token Transmission over Cleartext HTTP on Redirect or Unvalidated Target URLs (<code>containers/kubernetes-mcp-server</code>)</h1>
+    <h1>Kiali Toolset Status Probes can leak Bearer Token (<code>containers/kubernetes-mcp-server</code>)</h1>
     <div class="meta">
       <span class="badge badge-pub">PUBLISHED GHSA: GHSA-xq9m-mrj7-jv98</span>
       <span class="badge badge-sev">MODERATE (6.8)</span>
@@ -65,7 +65,7 @@
 
     <div class="card">
       <h2>0x01 // Advisory Summary</h2>
-      <p>containers/kubernetes-mcp-server (0.1.0 - 0.1.1) forwarded sensitive bearer credentials without enforcing HTTPS transport schemes across outbound cluster/provider requests and redirects, exposing tokens over cleartext HTTP (CWE-319 / CWE-918).</p>
+      <p>In containers/kubernetes-mcp-server (>= 0.1.0, <= 0.1.1), Kiali toolset status probes construct HTTP URLs from Kiali custom resources and can transmit the Kubernetes Bearer token over cleartext HTTP (CWE-319 / CWE-918).</p>
     </div>
 
     <div class="card">

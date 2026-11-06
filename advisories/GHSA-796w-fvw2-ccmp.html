@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GHSA-796w-fvw2-ccmp -- github/gh-aw Security Advisory | Serhii Shunko (@ccsimplyspolit)</title>
-  <meta name="description" content="Insecure World-Writable Shared /tmp/gh-aw Execution Directory & Symlink Clobbering (GHSA-796w-fvw2-ccmp). Reported by Serhii Shunko (@ccsimplyspolit).">
+  <meta name="description" content="Predictable Non-Exclusive .tmp File Write and Permissive Mode Retention in writeMCPCompileProgress (compile_pipeline.go) (GHSA-796w-fvw2-ccmp). Reported by Serhii Shunko (@ccsimplyspolit).">
   <link rel="canonical" href="https://ccsimplyspolit.github.io/advisories/GHSA-796w-fvw2-ccmp.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,7 +54,7 @@
 <body>
   <div class="container">
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Index</a>
-    <h1>Insecure World-Writable Shared /tmp/gh-aw Execution Directory & Symlink Clobbering (<code>github/gh-aw</code>)</h1>
+    <h1>Predictable Non-Exclusive .tmp File Write and Permissive Mode Retention in writeMCPCompileProgress (compile_pipeline.go) (<code>github/gh-aw</code>)</h1>
     <div class="meta">
       <span class="badge badge-pub">PUBLISHED GHSA: GHSA-796w-fvw2-ccmp</span>
       <span class="badge badge-sev">HIGH (7.1)</span>
@@ -66,7 +66,7 @@
 
     <div class="card">
       <h2>0x01 // Advisory Summary</h2>
-      <p>github/gh-aw (<= 0.2.0) created and reused a shared /tmp/gh-aw directory without sticky-bit / owner verification or symlink containment, allowing a local unprivileged user on shared runners to pre-create symlinks or intercept agent workflow artifacts.</p>
+      <p>In github/gh-aw (<= 0.2.0), writeMCPCompileProgress() in pkg/cli/compile_pipeline.go writes to a predictable non-exclusive .tmp file without O_EXCL and retains permissive file modes on pre-existing files during atomic rename.</p>
     </div>
 
     <div class="card">

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GHSA-jr85-7366-xrm2 -- akitaonrails/ai-memory Security Advisory | Serhii Shunko (@ccsimplyspolit)</title>
-  <meta name="description" content="Predictable /tmp Symlink Clobbering in Install & Hook Scripts (GHSA-jr85-7366-xrm2). Reported by Serhii Shunko (@ccsimplyspolit).">
+  <meta name="description" content="Arbitrary File Overwrite via Unchecked Predictable Temporary Dotfile Symlink in companions/ai-memory-wikisync/src/sync.rs (atomic_write()) (GHSA-jr85-7366-xrm2). Reported by Serhii Shunko (@ccsimplyspolit).">
   <link rel="canonical" href="https://ccsimplyspolit.github.io/advisories/GHSA-jr85-7366-xrm2.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,7 +54,7 @@
 <body>
   <div class="container">
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Index</a>
-    <h1>Predictable /tmp Symlink Clobbering in Install & Hook Scripts (<code>akitaonrails/ai-memory</code>)</h1>
+    <h1>Arbitrary File Overwrite via Unchecked Predictable Temporary Dotfile Symlink in companions/ai-memory-wikisync/src/sync.rs (atomic_write()) (<code>akitaonrails/ai-memory</code>)</h1>
     <div class="meta">
       <span class="badge badge-pub">PUBLISHED GHSA: GHSA-jr85-7366-xrm2</span>
       <span class="badge badge-sev">HIGH (8.2)</span>
@@ -65,7 +65,7 @@
 
     <div class="card">
       <h2>0x01 // Advisory Summary</h2>
-      <p>ai-memory (< 3.3.2) used predictable, fixed temporary file paths in /tmp across installation and runtime hook scripts without O_NOFOLLOW or mktemp isolation, enabling local symlink arbitrary file overwrite and denial of service.</p>
+      <p>In akitaonrails/ai-memory (< 3.3.2), atomic_write() in companions/ai-memory-wikisync/src/sync.rs constructs a predictable hidden temporary path (.wikisync-tmp) without O_CREAT|O_EXCL or symlink checks, enabling arbitrary file overwrite via symlink clobbering.</p>
     </div>
 
     <div class="card">

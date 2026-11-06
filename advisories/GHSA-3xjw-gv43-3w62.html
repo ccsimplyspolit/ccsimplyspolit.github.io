@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GHSA-3xjw-gv43-3w62 -- mastodon/mastodon Security Advisory | Serhii Shunko (@ccsimplyspolit)</title>
-  <meta name="description" content="Pre-OTP Session Fixation & Unthrottled 2FA Brute-Force via Shared Pending User Session State (GHSA-3xjw-gv43-3w62). Reported by Serhii Shunko (@ccsimplyspolit).">
+  <meta name="description" content="Password verification bypass when logging into inactive accounts (GHSA-3xjw-gv43-3w62). Reported by Serhii Shunko (@ccsimplyspolit).">
   <link rel="canonical" href="https://ccsimplyspolit.github.io/advisories/GHSA-3xjw-gv43-3w62.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,7 +54,7 @@
 <body>
   <div class="container">
     <a class="back" href="https://ccsimplyspolit.github.io/">&larr; Back to Security Research Index</a>
-    <h1>Pre-OTP Session Fixation & Unthrottled 2FA Brute-Force via Shared Pending User Session State (<code>mastodon/mastodon</code>)</h1>
+    <h1>Password verification bypass when logging into inactive accounts (<code>mastodon/mastodon</code>)</h1>
     <div class="meta">
       <span class="badge badge-pub">PUBLISHED GHSA: GHSA-3xjw-gv43-3w62</span>
       <span class="badge badge-sev">HIGH (8.8)</span>
@@ -66,7 +66,7 @@
 
     <div class="card">
       <h2>0x01 // Advisory Summary</h2>
-      <p>Mastodon authentication session handling permitted pre-OTP session fixation and unthrottled two-factor authentication (2FA) verification attempts across concurrent requests. Patched upstream in Mastodon v4.7.5 and v5.0.0-alpha.4.</p>
+      <p>A flaw in the log-in logic allowed a local user to switch to a different inactive local user mid-login, generating a sign-in token email for them without their password. Patched upstream in Mastodon v4.7.5 and v5.0.0-alpha.4.</p>
     </div>
 
     <div class="card">
